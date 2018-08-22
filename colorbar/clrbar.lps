@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="11"/>
+    <BuildModes Active="MacOS"/>
+    <Units Count="35">
+      <Unit0>
+        <Filename Value="clrbar.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="22" Y="6"/>
+        <UsageCount Value="135"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="clrbarmain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos Y="26"/>
+        <UsageCount Value="135"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="gltext.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="69" Y="7"/>
+        <UsageCount Value="64"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="texmain.pas"/>
+        <ComponentName Value="GLForm1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UsageCount Value="19"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="basic.lpr"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="12"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="basicmain.pas"/>
+        <ComponentName Value="GLForm1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="140"/>
+        <CursorPos X="6" Y="145"/>
+        <UsageCount Value="13"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="/usr/local/share/fpcsrc/packages/opengl/src/gl.pp"/>
+        <UnitName Value="GL"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1864"/>
+        <CursorPos Y="1870"/>
+        <UsageCount Value="2"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="glext.pp"/>
+        <UnitName Value="GLext"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="11398"/>
+        <CursorPos X="24" Y="5164"/>
+        <UsageCount Value="2"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="glcorearb.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1683"/>
+        <CursorPos X="2" Y="1696"/>
+        <UsageCount Value="60"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="/usr/local/share/fpcsrc/rtl/inc/systemh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="399"/>
+        <CursorPos X="3" Y="406"/>
+        <UsageCount Value="2"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="/usr/local/share/fpcsrc/rtl/inc/dynlibs.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="51"/>
+        <CursorPos X="10" Y="58"/>
+        <UsageCount Value="2"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="/usr/local/share/fpcsrc/rtl/objpas/math.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="614"/>
+        <CursorPos X="10" Y="621"/>
+        <UsageCount Value="2"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="gl_core_utils.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="13" Y="7"/>
+        <UsageCount Value="53"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="gl_core_matrix.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="20"/>
+        <UsageCount Value="46"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../../../lazarus/lcl/controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1644"/>
+        <CursorPos X="14" Y="1650"/>
+        <UsageCount Value="2"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="../../../lazarus/components/tachart/tadrawutils.pas"/>
+        <UnitName Value="TADrawUtils"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="185"/>
+        <CursorPos X="27" Y="194"/>
+        <UsageCount Value="9"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="../../../lazarus/lcl/graphics.pp"/>
+        <UnitName Value="Graphics"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="932"/>
+        <CursorPos X="3" Y="941"/>
+        <UsageCount Value="9"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="../../../lazarus/lcl/graphtype.pp"/>
+        <UnitName Value="GraphType"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1578"/>
+        <CursorPos X="32" Y="1601"/>
+        <UsageCount Value="10"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="glclrbar.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="66"/>
+        <CursorPos X="28" Y="82"/>
+        <UsageCount Value="14"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="glcube.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="347"/>
+        <CursorPos Y="372"/>
+        <UsageCount Value="11"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="fnt.lrs"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="glmtext.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="17" Y="8"/>
+        <UsageCount Value="10"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="../gl/glfont.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="414"/>
+        <CursorPos X="69" Y="428"/>
+        <UsageCount Value="10"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="../gl/GLTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="5"/>
+        <UsageCount Value="10"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="../../lazarus/lcl/lresources.pp"/>
+        <UnitName Value="LResources"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="5353"/>
+        <CursorPos Y="5359"/>
+        <UsageCount Value="10"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="../../lazarus/lcl/include/wincontrol.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7539"/>
+        <CursorPos X="37" Y="7548"/>
+        <UsageCount Value="10"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="mtlclrbar.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="480"/>
+        <CursorPos Y="493"/>
+        <UsageCount Value="10"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="mtlfont.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="5"/>
+        <CursorPos X="39" Y="13"/>
+        <UsageCount Value="10"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="15"/>
+        <CursorPos X="9" Y="30"/>
+        <UsageCount Value="10"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="../gl/SimdUtils.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="56"/>
+        <CursorPos X="38" Y="62"/>
+        <UsageCount Value="10"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="../gl/glclrbar.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="47"/>
+        <CursorPos X="42" Y="50"/>
+        <UsageCount Value="10"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="../../../LazTrunk/lcl/interfaces/cocoa/cocoa_extra.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="12"/>
+        <CursorPos X="2" Y="18"/>
+        <UsageCount Value="10"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="../gl/gl_core_utils.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="3"/>
+        <CursorPos X="77" Y="10"/>
+        <UsageCount Value="10"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="../gl/mtlfont.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="136"/>
+        <CursorPos X="30" Y="139"/>
+        <UsageCount Value="10"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="../gl/sdffont.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="13"/>
+        <CursorPos Y="29"/>
+        <UsageCount Value="10"/>
+      </Unit34>
+    </Units>
+    <JumpHistory Count="11" HistoryIndex="10">
+      <Position1>
+        <Filename Value="clrbarmain.pas"/>
+        <Caret Line="162" Column="19" TopLine="154"/>
+      </Position1>
+      <Position2>
+        <Filename Value="clrbarmain.pas"/>
+        <Caret Line="6" Column="5"/>
+      </Position2>
+      <Position3>
+        <Filename Value="clrbarmain.pas"/>
+        <Caret Line="5" Column="28"/>
+      </Position3>
+      <Position4>
+        <Filename Value="clrbarmain.pas"/>
+        <Caret Line="66" Column="28" TopLine="63"/>
+      </Position4>
+      <Position5>
+        <Filename Value="clrbarmain.pas"/>
+        <Caret Line="6" Column="5"/>
+      </Position5>
+      <Position6>
+        <Filename Value="clrbarmain.pas"/>
+        <Caret Line="6" Column="3"/>
+      </Position6>
+      <Position7>
+        <Filename Value="clrbarmain.pas"/>
+        <Caret Line="11" Column="33"/>
+      </Position7>
+      <Position8>
+        <Filename Value="clrbarmain.pas"/>
+        <Caret Line="31" Column="30" TopLine="7"/>
+      </Position8>
+      <Position9>
+        <Filename Value="clrbarmain.pas"/>
+        <Caret Line="88" Column="5" TopLine="81"/>
+      </Position9>
+      <Position10>
+        <Filename Value="clrbarmain.pas"/>
+        <Caret Line="29" Column="24" TopLine="14"/>
+      </Position10>
+      <Position11>
+        <Filename Value="clrbarmain.pas"/>
+        <Caret Line="88" Column="34" TopLine="65"/>
+      </Position11>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode="default"/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

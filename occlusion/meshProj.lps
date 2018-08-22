@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="11"/>
+    <BuildModes Active="Default"/>
+    <Units Count="29">
+      <Unit0>
+        <Filename Value="meshProj.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="200"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="meshform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="meshForm"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="228"/>
+        <CursorPos X="83" Y="244"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../Metal-Framework/lazarus/package/utils/MetalUtils.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="65"/>
+        <CursorPos X="10" Y="72"/>
+        <UsageCount Value="17"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="SIMDTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="50"/>
+        <CursorPos Y="66"/>
+        <UsageCount Value="2"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="GLTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="130"/>
+        <CursorPos X="24" Y="130"/>
+        <UsageCount Value="2"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../Metal-Framework/lazarus/package/metalcontrol.pas"/>
+        <UnitName Value="MetalControl"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="140"/>
+        <CursorPos X="17" Y="160"/>
+        <UsageCount Value="2"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../metal1/unit1.pas"/>
+        <UnitName Value="Unit1"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="2"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../Metal-Framework/lazarus/package/utils/MetalTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="42"/>
+        <CursorPos X="93" Y="52"/>
+        <UsageCount Value="16"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="loadNifti.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="11"/>
+        <CursorPos X="73" Y="22"/>
+        <UsageCount Value="11"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="mesh.pas"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="13" Y="8"/>
+        <UsageCount Value="90"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../../Metal-Framework/lazarus/package/metalcontrol.pas"/>
+        <UnitName Value="MetalControl"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="39"/>
+        <CursorPos X="23" Y="56"/>
+        <UsageCount Value="4"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalPipeline.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="83"/>
+        <CursorPos X="129" Y="94"/>
+        <UsageCount Value="69"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalUtils.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="71"/>
+        <CursorPos X="77" Y="78"/>
+        <UsageCount Value="67"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../../Metal-Framework/lazarus/package/framework/metal/MTLRenderCommandEncoder.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="65" Y="21"/>
+        <UsageCount Value="8"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../../lazarus/lcl/interfaces/cocoa/cocoatabcontrols.pas"/>
+        <UnitName Value="CocoaTabControls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="30"/>
+        <CursorPos X="32" Y="37"/>
+        <UsageCount Value="6"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="210"/>
+        <CursorPos Y="211"/>
+        <UsageCount Value="41"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="meshmetal.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="47"/>
+        <CursorPos Y="60"/>
+        <UsageCount Value="30"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="meshgl.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="87"/>
+        <CursorPos X="19" Y="102"/>
+        <UsageCount Value="23"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../gl/gl_core_utils.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="17"/>
+        <CursorPos X="56" Y="17"/>
+        <UsageCount Value="18"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="../gl/glcorearb.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1591"/>
+        <CursorPos X="91" Y="1616"/>
+        <UsageCount Value="6"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="../gl/GLTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="141"/>
+        <CursorPos X="37" Y="150"/>
+        <UsageCount Value="7"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="../../lazarus/components/lazutils/laztracer.pas"/>
+        <UnitName Value="LazTracer"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="36"/>
+        <CursorPos X="19" Y="43"/>
+        <UsageCount Value="3"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="glmesh.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="10"/>
+        <CursorPos X="9" Y="22"/>
+        <UsageCount Value="3"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="mtlmesh.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="133"/>
+        <CursorPos X="16" Y="139"/>
+        <UsageCount Value="46"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="../gl/glmesh.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="113"/>
+        <CursorPos X="29" Y="119"/>
+        <UsageCount Value="3"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="mtlmesh_ssao.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="232"/>
+        <CursorPos X="46" Y="254"/>
+        <UsageCount Value="10"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="../../Metal-Framework/lazarus/package/framework/metal/MTLPixelFormat.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="31"/>
+        <CursorPos X="25" Y="31"/>
+        <UsageCount Value="10"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="../colorbar/clrbarmain.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="6"/>
+        <UsageCount Value="10"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="../common/mtlmesh_ssao.pas"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="203"/>
+        <CursorPos X="38" Y="219"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit28>
+    </Units>
+    <Build>
+      <CleanOutputFileMask Value="*.ppu;*.ppl;*.o;*.or"/>
+    </Build>
+    <JumpHistory Count="16" HistoryIndex="15">
+      <Position1>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="270" Column="18" TopLine="259"/>
+      </Position1>
+      <Position2>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="208" Column="44" TopLine="200"/>
+      </Position2>
+      <Position3>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="212" Column="3" TopLine="200"/>
+      </Position3>
+      <Position4>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="216" Column="9" TopLine="200"/>
+      </Position4>
+      <Position5>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="234" Column="13" TopLine="216"/>
+      </Position5>
+      <Position6>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="259" Column="3" TopLine="243"/>
+      </Position6>
+      <Position7>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="5" Column="5"/>
+      </Position7>
+      <Position8>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="91" Column="21" TopLine="77"/>
+      </Position8>
+      <Position9>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="225" Column="38" TopLine="212"/>
+      </Position9>
+      <Position10>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="259" Column="17" TopLine="245"/>
+      </Position10>
+      <Position11>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="6" Column="43"/>
+      </Position11>
+      <Position12>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="5" Column="3"/>
+      </Position12>
+      <Position13>
+        <Filename Value="../common/mtlmesh_ssao.pas"/>
+        <Caret Line="8" Column="20"/>
+      </Position13>
+      <Position14>
+        <Filename Value="mesh.pas"/>
+        <Caret Line="8" Column="13"/>
+      </Position14>
+      <Position15>
+        <Filename Value="../common/mtlmesh_ssao.pas"/>
+        <Caret Line="215" Column="43" TopLine="202"/>
+      </Position15>
+      <Position16>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="8" Column="46"/>
+      </Position16>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

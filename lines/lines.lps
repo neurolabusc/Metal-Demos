@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="11"/>
+    <BuildModes Active="Default"/>
+    <Units Count="42">
+      <Unit0>
+        <Filename Value="lines.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="9" Y="6"/>
+        <UsageCount Value="26"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="linesmain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="3" Y="6"/>
+        <UsageCount Value="26"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="gltext.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="69" Y="7"/>
+        <UsageCount Value="72"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="clrbar.lpr"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="22" Y="6"/>
+        <UsageCount Value="136"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="clrbarmain.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="linesmain"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="26" Y="25"/>
+        <UsageCount Value="136"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="texmain.pas"/>
+        <ComponentName Value="GLForm1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UsageCount Value="19"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="basic.lpr"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="12"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="basicmain.pas"/>
+        <ComponentName Value="GLForm1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="140"/>
+        <CursorPos X="6" Y="145"/>
+        <UsageCount Value="13"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="/usr/local/share/fpcsrc/packages/opengl/src/gl.pp"/>
+        <UnitName Value="GL"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1864"/>
+        <CursorPos Y="1870"/>
+        <UsageCount Value="2"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="glext.pp"/>
+        <UnitName Value="GLext"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="11398"/>
+        <CursorPos X="24" Y="5164"/>
+        <UsageCount Value="2"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="glcorearb.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1683"/>
+        <CursorPos X="2" Y="1696"/>
+        <UsageCount Value="60"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="/usr/local/share/fpcsrc/rtl/inc/systemh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="399"/>
+        <CursorPos X="3" Y="406"/>
+        <UsageCount Value="2"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="/usr/local/share/fpcsrc/rtl/inc/dynlibs.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="51"/>
+        <CursorPos X="10" Y="58"/>
+        <UsageCount Value="2"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="/usr/local/share/fpcsrc/rtl/objpas/math.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="614"/>
+        <CursorPos X="10" Y="621"/>
+        <UsageCount Value="2"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="gl_core_utils.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="13" Y="7"/>
+        <UsageCount Value="53"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="gl_core_matrix.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="20"/>
+        <UsageCount Value="46"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="../../../lazarus/lcl/controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1644"/>
+        <CursorPos X="14" Y="1650"/>
+        <UsageCount Value="2"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="../../../lazarus/components/tachart/tadrawutils.pas"/>
+        <UnitName Value="TADrawUtils"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="185"/>
+        <CursorPos X="27" Y="194"/>
+        <UsageCount Value="9"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../../../lazarus/lcl/graphics.pp"/>
+        <UnitName Value="Graphics"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="932"/>
+        <CursorPos X="3" Y="941"/>
+        <UsageCount Value="9"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="../../../lazarus/lcl/graphtype.pp"/>
+        <UnitName Value="GraphType"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1578"/>
+        <CursorPos X="32" Y="1601"/>
+        <UsageCount Value="10"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="glclrbar.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="66"/>
+        <CursorPos X="28" Y="82"/>
+        <UsageCount Value="14"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="glcube.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="347"/>
+        <CursorPos Y="372"/>
+        <UsageCount Value="11"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="fnt.lrs"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="glmtext.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="17" Y="8"/>
+        <UsageCount Value="10"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="../gl/glfont.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="84"/>
+        <CursorPos X="42" Y="99"/>
+        <UsageCount Value="10"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="../gl/GLTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="5"/>
+        <UsageCount Value="10"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="../../lazarus/lcl/lresources.pp"/>
+        <UnitName Value="LResources"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="5353"/>
+        <CursorPos Y="5359"/>
+        <UsageCount Value="10"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="../../lazarus/lcl/include/wincontrol.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7539"/>
+        <CursorPos X="37" Y="7548"/>
+        <UsageCount Value="10"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="mtlclrbar.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="45" Y="21"/>
+        <UsageCount Value="11"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="mtlfont.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="288"/>
+        <CursorPos X="9" Y="289"/>
+        <UsageCount Value="11"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="15"/>
+        <CursorPos X="9" Y="30"/>
+        <UsageCount Value="11"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="../gl/gllines.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="163"/>
+        <CursorPos X="69" Y="179"/>
+        <UsageCount Value="11"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="../gl/gl_core_utils.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="16"/>
+        <UsageCount Value="10"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="mtllines.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="70"/>
+        <CursorPos X="65" Y="74"/>
+        <UsageCount Value="10"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="../../Metal-Framework/lazarus/package/framework/metal/MTLRenderCommandEncoder.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="27" Y="17"/>
+        <UsageCount Value="10"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalUtils.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="54"/>
+        <CursorPos X="12" Y="75"/>
+        <UsageCount Value="10"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalPipeline.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="11" Y="89"/>
+        <UsageCount Value="10"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="../gl/mtl_utils.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="5"/>
+        <UsageCount Value="10"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="../mesh/mesh.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="48" Y="10"/>
+        <UsageCount Value="10"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="../common/gl_core_utils.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="4" Y="6"/>
+        <UsageCount Value="10"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="../common/mtllines.pas"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="13" Y="11"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="../common/gllines.pas"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="39" Y="9"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit41>
+    </Units>
+    <JumpHistory Count="20" HistoryIndex="19">
+      <Position1>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="134" Column="3" TopLine="113"/>
+      </Position1>
+      <Position2>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="44" Column="18" TopLine="44"/>
+      </Position2>
+      <Position3>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="161" Column="23" TopLine="139"/>
+      </Position3>
+      <Position4>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="88" Column="20" TopLine="78"/>
+      </Position4>
+      <Position5>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="161" Column="44" TopLine="139"/>
+      </Position5>
+      <Position6>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="8"/>
+      </Position6>
+      <Position7>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="136" Column="29" TopLine="125"/>
+      </Position7>
+      <Position8>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="6" Column="2"/>
+      </Position8>
+      <Position9>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="6" Column="5"/>
+      </Position9>
+      <Position10>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="134" Column="3" TopLine="128"/>
+      </Position10>
+      <Position11>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="147" Column="25" TopLine="143"/>
+      </Position11>
+      <Position12>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="27" Column="30" TopLine="13"/>
+      </Position12>
+      <Position13>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="58" Column="33" TopLine="34"/>
+      </Position13>
+      <Position14>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="81" Column="21" TopLine="59"/>
+      </Position14>
+      <Position15>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="61" Column="14" TopLine="55"/>
+      </Position15>
+      <Position16>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="133" Column="32" TopLine="128"/>
+      </Position16>
+      <Position17>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="134" Column="3" TopLine="128"/>
+      </Position17>
+      <Position18>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="6" Column="3"/>
+      </Position18>
+      <Position19>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="138" Column="62" TopLine="128"/>
+      </Position19>
+      <Position20>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="6" Column="5"/>
+      </Position20>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode="default"/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

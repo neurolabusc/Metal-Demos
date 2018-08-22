@@ -1,0 +1,61 @@
+object Form1: TForm1
+  Left = 534
+  Height = 600
+  Top = 132
+  Width = 600
+  Caption = 'ColorBar'
+  Menu = MainMenu1
+  OnShow = FormShow
+  Position = poScreenCenter
+  LCLVersion = '1.9.0.0'
+  object MainMenu1: TMainMenu
+    left = 27
+    top = 25
+    object MenuItem1: TMenuItem
+      Caption = 'View'
+      object MenuItem2: TMenuItem
+        Caption = 'Colorbar'
+        object ClrbarOffMenu: TMenuItem
+          AutoCheck = True
+          Caption = 'Off'
+          GroupIndex = 123
+          RadioItem = True
+          OnClick = ClrMenu
+        end
+        object WhiteMenu: TMenuItem
+          Tag = 1
+          AutoCheck = True
+          Caption = 'White'
+          GroupIndex = 123
+          RadioItem = True
+          OnClick = ClrMenu
+        end
+        object TranslucentWhiteMenu: TMenuItem
+          Tag = 2
+          AutoCheck = True
+          Caption = 'Translucent White'
+          GroupIndex = 123
+          RadioItem = True
+          OnClick = ClrMenu
+        end
+        object BlackMenu: TMenuItem
+          Tag = 3
+          AutoCheck = True
+          Caption = 'Black'
+          GroupIndex = 123
+          RadioItem = True
+          OnClick = ClrMenu
+        end
+        object TranslucentBlackMenu: TMenuItem
+          Tag = 4
+          AutoCheck = True
+          Caption = 'Translucent Black'
+          Checked = True
+          GroupIndex = 123
+          RadioItem = True
+          OnClick = ClrMenu
+        end
+      end
+    end
+  end
+end

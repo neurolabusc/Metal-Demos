@@ -1,0 +1,87 @@
+object Form1: TForm1
+  Left = 416
+  Height = 240
+  Top = 157
+  Width = 320
+  Caption = 'Volume Rendering'
+  Menu = MainMenu
+  OnCreate = FormCreate
+  Position = poScreenCenter
+  LCLVersion = '1.9.0.0'
+  object MainMenu: TMainMenu
+    left = 8
+    top = 136
+    object AppleMenu: TMenuItem
+      Caption = ''
+      object AboutMenu: TMenuItem
+        Caption = 'About'
+        OnClick = AboutMenuClick
+      end
+    end
+    object FileMenu: TMenuItem
+      Caption = 'File'
+      object OpenMenu: TMenuItem
+        Caption = 'Open'
+        OnClick = OpenMenuClick
+      end
+      object SaveMenu: TMenuItem
+        Caption = 'Save'
+        OnClick = SaveMenuClick
+      end
+      object NewInstanceMenu: TMenuItem
+        Caption = 'New Instance'
+        OnClick = NewInstanceMenuClick
+      end
+    end
+    object ViewMenu: TMenuItem
+      Caption = 'View'
+      object BackColorMenu: TMenuItem
+        Caption = 'Back color'
+        OnClick = BackColorMenuClick
+      end
+      object ContrastMenu: TMenuItem
+        Caption = 'Contrast'
+        OnClick = ContrastMenuClick
+      end
+    end
+    object ShaderMenu: TMenuItem
+      Caption = 'Shader'
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    left = 17
+    top = 73
+  end
+  object ColorDialog1: TColorDialog
+    Color = clBlack
+    CustomColors.Strings = (
+      'ColorA=000000'
+      'ColorB=000080'
+      'ColorC=008000'
+      'ColorD=008080'
+      'ColorE=800000'
+      'ColorF=800080'
+      'ColorG=808000'
+      'ColorH=808080'
+      'ColorI=C0C0C0'
+      'ColorJ=0000FF'
+      'ColorK=00FF00'
+      'ColorL=00FFFF'
+      'ColorM=FF0000'
+      'ColorN=FF00FF'
+      'ColorO=FFFF00'
+      'ColorP=FFFFFF'
+      'ColorQ=C0DCC0'
+      'ColorR=F0CAA6'
+      'ColorS=F0FBFF'
+      'ColorT=A4A0A0'
+    )
+    left = 117
+    top = 48
+  end
+  object SaveDialog1: TSaveDialog
+    DefaultExt = '.png'
+    left = 99
+    top = 115
+  end
+end

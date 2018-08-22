@@ -1,0 +1,280 @@
+unit glmesh;
+interface
+
+uses
+  //clipbrd,
+  SimdUtils, classes, dialogs,OpenGLContext,mesh, VectorMath, glcorearb, gl_core_utils,SysUtils, Math;
+const
+  kDefaultDistance = 1.0;
+  kMaxDistance = 2;
+type
+  TGPUMesh = class
+      private
+        fMeshColor: TRGBA;
+        fAzimuth,fElevation: integer;
+        fDistance: single;
+        fLightPos: TVec4;
+        vbo_face, vbo_point, vao_point, shaderProgram, vertexArrayObject: GLuint;
+        nface, uniform_lightPos, uniform_ModelViewProjectionMatrix, uniform_ModelViewMatrix, uniform_NormalMatrix: GLint;
+        fPerspective: boolean;
+        glControl: TOpenGLControl;
+        fMeshName: string;
+      public
+        property MeshName: string read fMeshName;
+        property Perspective: boolean read fPerspective write fPerspective;
+        property MeshColor: TRGBA read fMeshColor write fMeshColor;
+        property Azimuth: integer read fAzimuth write fAzimuth;
+        property Elevation: integer read fElevation write fElevation;
+        property Distance: single read fDistance write fDistance;
+        property LightPosition: TVec4 read fLightPos write fLightPos;
+        procedure Prepare();
+        constructor Create(fromView: TOpenGLControl); overload;
+        constructor Create(fromView: TOpenGLControl; InitMeshName: string); overload;
+        procedure Paint();
+        procedure OpenMesh(Filename: string; isSwapYZ: boolean = true);
+        procedure SetShader(shaderName: string);
+  end;
+
+implementation
+
+uses meshForm;
+
+const
+kVertStr = '#version 330'
++#10'layout(location = 0) in vec3 Vert;'
++#10'layout(location = 3) in vec3 Norm;'
++#10'layout(location = 6) in vec4 Clr;'
++#10'out vec3 vN, vL, vV;'
++#10'out vec4 vClr;'
++#10'uniform mat4 ModelViewProjectionMatrix;'
++#10'uniform mat4 ModelViewMatrix;'
++#10'uniform mat4 NormalMatrix;'
++#10'uniform vec3 LightPosition = vec3(0.0, 20.0, 30.0); //LR, -DU+, -FN+'
++#10'void main() {'
++#10'    //vN = normalize((NormalMatrix * Norm));'
++#10'    vN = normalize((NormalMatrix * vec4(Norm,1.0)).xyz);'
++#10'    gl_Position = ModelViewProjectionMatrix * vec4(Vert, 1.0);'
++#10'    vL = normalize(LightPosition);'
++#10'    vV = -vec3(ModelViewMatrix*vec4(Vert,1.0));'
++#10'    vClr = Clr;'
++#10'}';
+
+//Blinn/Phong Shader GPLv2 (C) 2007 Dave Griffiths, FLUXUS GLSL library
+kFragStr = '#version 330'
++#10'in vec4 vClr;'
++#10'in vec3 vN, vL, vV;'
++#10'out vec4 color;'
++#10'uniform float Ambient = 0.4;'
++#10'uniform float Diffuse = 0.7;'
++#10'uniform float Specular = 0.6;'
++#10'uniform float Roughness = 0.1;'
++#10'void main() {'
++#10' vec3 n = normalize(vN);'
++#10' //color = vec4(abs(n * 2.0) - 1.0,1.0); return;'
++#10' vec3 v = normalize(vV);'
++#10' vec3 h = normalize(vL+v);'
++#10' float diffuse = dot(vL,n);'
++#10' vec3 AmbientColour = vClr.rgb;'
++#10' vec3 DiffuseColour = vClr.rgb;'
++#10' vec3 SpecularColour = vec3(1.0, 1.0, 1.0);'
++#10' float specular =  pow(max(0.0,dot(n,h)),1.0/(Roughness * Roughness));'
++#10' color = vec4(AmbientColour*Ambient + DiffuseColour*diffuse*Diffuse +SpecularColour*specular* Specular, 1.0);'
++#10'}';
+
+
+type
+  TVtxNormClr = Packed Record
+    vtx   : TPoint3f; //vertex coordinates
+    norm : int32;
+    clr : TRGBA;
+  end;
+
+procedure TGPUMesh.SetShader(shaderName: string);
+var
+  VertexProgram, FragmentProgram: string;
+begin
+  glControl.MakeCurrent();
+  glUseProgram(0);
+  if (shaderProgram <> 0) then glDeleteProgram(shaderProgram);
+  loadVertFrag(shaderName, VertexProgram, FragmentProgram);
+  if VertexProgram = '' then VertexProgram := kVertStr;
+  if FragmentProgram = '' then FragmentProgram := kFragStr;
+  shaderProgram :=  initVertFrag(VertexProgram,  FragmentProgram);
+  uniform_ModelViewProjectionMatrix := glGetUniformLocation(shaderProgram, pAnsiChar('ModelViewProjectionMatrix'));
+  uniform_ModelViewMatrix := glGetUniformLocation(shaderProgram, pAnsiChar('ModelViewMatrix'));
+  uniform_NormalMatrix := glGetUniformLocation(shaderProgram, pAnsiChar('NormalMatrix'));
+  uniform_lightPos := glGetUniformLocation(shaderProgram, pAnsiChar('LightPosition'));
+  glFinish;
+  glControl.ReleaseContext;
+  //ClipBoard.AsText:=shaderName+#13#10+VertexProgram+#13#10+FragmentProgram;
+  if GLErrorStr <> '' then begin
+        showmessage(GLErrorStr);
+        GLErrorStr := '';
+  end;
+end;
+
+procedure TGPUMesh.Prepare();
+begin
+     vbo_face := 0;
+     vbo_point := 0;
+     vao_point := 0;
+     shaderProgram :=0;
+     vertexArrayObject := 0;
+     shaderProgram := 0;
+     SetShader(ResourceFile('Phong', 'glsl'));
+end;
+
+constructor TGPUMesh.Create(fromView: TOpenGLControl; InitMeshName: string);  overload;
+begin
+  glControl := fromView;
+  fDistance := kDefaultDistance;
+  fMeshName := InitMeshName;
+  fPerspective := false;
+  fAzimuth := 110;
+  fElevation := 30;
+  fLightPos := Vec4(0,0.707, 0.707, 0.0);
+  fMeshColor.r := 210;
+  fMeshColor.g := 148;
+  fMeshColor.b := 148;
+end;
+
+constructor TGPUMesh.Create(fromView: TOpenGLControl);  overload;
+begin
+  {$IFDEF SSAO}
+  fMeshName := ResourceFolderPath+pathdelim+'brain.mz3';
+  {$ELSE}
+  fMeshName := '';//  ResourceFolderPath+pathdelim+'teapot.ply';
+  {$ENDIF}
+  Create(fromView, fMeshName);
+end;
+
+
+function Float2Int16(fv: single): int16;
+var
+   f: single;
+begin
+     f := fv;
+     if f > 1 then
+        f := 1;
+     if f < -1 then
+        f := -1;
+     if f > 0 then
+        result := round(f * 32767)
+     else
+         result := round(f * 32768);
+end;
+
+function AsGL_INT_2_10_10_10_REV(f: TPoint3f): int32;
+//pack 3 32-bit floats as 10 bit signed integers, assumes floats normalized to -1..1
+var
+   x,y,z: uint16;
+begin
+     x := uint16(Float2Int16(f.X)) shr 6;
+     y := uint16(Float2Int16(f.Y)) shr 6;
+     z := uint16(Float2Int16(f.Z)) shr 6;
+     result := (z shl 20)+ (y shl 10) + (x shl 0);
+end;
+
+procedure TGPUMesh.OpenMesh(Filename: string; isSwapYZ: boolean = true);
+const
+    kATTRIB_VERT = 0;  //vertex XYZ are positions 0,1,2
+    kATTRIB_NORM = 3;  //normal XYZ are positions 3,4,5
+    kATTRIB_CLR = 6;   //color RGBA are positions 6,7,8,9
+var
+  faces: TFaces;
+  verts, vNorm: TVertices;
+  colors: TVertexRGBA;
+  vnc: array of TVtxNormClr;
+  i: integer;
+begin
+  LoadMesh(Filename, faces, verts, vNorm, colors, fMeshColor, isSwapYZ);
+  glControl.MakeCurrent(false);
+  //create VBO that combines vertex, normal and color information
+  setlength(vnc, length(verts));
+  for i := 0 to (length(verts) -1) do begin
+      vnc[i].vtx := verts[i];
+      vnc[i].norm :=  AsGL_INT_2_10_10_10_REV(vNorm[i]);
+      vnc[i].clr := colors[i];
+  end;
+  if (vbo_point <> 0) then
+     glDeleteBuffers(1, @vbo_point);
+  glGenBuffers(1, @vbo_point);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo_point);
+  glBufferData(GL_ARRAY_BUFFER, Length(vnc)*SizeOf(TVtxNormClr), @vnc[0], GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  // Prepare vertrex array object (VAO)
+  if vao_point <> 0 then
+     glDeleteVertexArrays(1,@vao_point);
+  glGenVertexArrays(1, @vao_point);
+  glBindVertexArray(vao_point);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo_point);
+  //Vertices
+  glVertexAttribPointer(kATTRIB_VERT, 3, GL_FLOAT, GL_FALSE, sizeof(TVtxNormClr), PChar(0));
+  glEnableVertexAttribArray(kATTRIB_VERT);
+  //Normals typically stored as 3*32 bit floats (96 bytes), but we will pack them as 10-bit integers in a single 32-bit value with GL_INT_2_10_10_10_REV
+  //  https://www.opengl.org/wiki/Vertex_Specification_Best_Practices
+  glVertexAttribPointer(kATTRIB_NORM, 4, GL_INT_2_10_10_10_REV, GL_FALSE, sizeof(TVtxNormClr), PChar(sizeof(TPoint3f)));
+  glEnableVertexAttribArray(kATTRIB_NORM);
+  //Color
+  glVertexAttribPointer(kATTRIB_CLR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TVtxNormClr), PChar(sizeof(int32)+ sizeof(TPoint3f)));
+  glEnableVertexAttribArray(kATTRIB_CLR);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray(0);
+  if (vbo_face <> 0) then
+     glDeleteBuffers(1, @vbo_face);
+  glGenBuffers(1, @vbo_face);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_face);
+  nface := Length(faces)* 3; //each face has 3 vertices
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, Length(faces)*sizeof(TPoint3i), @faces[0], GL_STATIC_DRAW);
+  GetError(2);
+  glControl.invalidate;
+end; //OpenMesh()
+
+procedure TGPUMesh.Paint();
+var
+  modelViewProjectionMatrix, projectionMatrix, modelMatrix, modelViewMatrix, normalMatrix: TMat4;
+  whratio, scale: single;
+begin
+  if vbo_point = 0 then
+     OpenMesh(fMeshName, false);
+  if (glControl.width = 0) or (glControl.height = 0) then exit; //avoid divide by zero
+  scale := 0.6*fDistance;
+  whratio := glControl.clientwidth/glControl.clientheight;
+  //Form1.Caption := format('%g %d', [whratio, fromView.Width]);
+  if fPerspective then
+     projectionMatrix := TMat4.PerspectiveGL(fDistance/kMaxDistance * 120.0, whratio, 0.01, kMaxDistance)
+  else if (whratio > 1) or (whratio = 0) then //Wide window
+     projectionMatrix := TMat4.OrthoGL (-scale * whratio, scale * whratio, -scale, scale, 0.01, 5.0)
+  else
+      projectionMatrix := TMat4.OrthoGL (-scale, scale, -scale/whratio, scale/whratio, 0.01, 5.0);
+  modelMatrix := TMat4.Identity;
+  scale := 1.0;
+  modelMatrix *= TMat4.Scale(0.5/Scale, 0.5/Scale, 0.5/Scale);
+  modelMatrix *= TMat4.Translate(0, 0, -Scale*2);
+  modelMatrix *= TMat4.RotateX(-DegToRad(90-fElevation));
+  modelMatrix *= TMat4.RotateZ(DegToRad(fAzimuth));
+  modelViewMatrix := modelMatrix;
+  modelViewProjectionMatrix := ( projectionMatrix * modelMatrix);
+  normalMatrix := modelMatrix.Inverse.Transpose;
+  glEnable (GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glViewport(0, 0, glControl.ClientWidth, glControl.ClientHeight); //required for form resize
+  glUseProgram(shaderProgram);
+  //glClearColor( ClearColor.R/255, ClearColor.G/255, ClearColor.B/255, 1.0); //Set blue background
+  glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  glEnable(GL_DEPTH_TEST);
+  glUniformMatrix4fv(uniform_ModelViewProjectionMatrix, 1, GL_FALSE, @modelViewProjectionMatrix); // note model not MVP!
+  glUniformMatrix4fv(uniform_ModelViewMatrix, 1, GL_FALSE, @modelViewMatrix);
+  //glUniformMatrix4fv(uniform_NormalMatrix, 1, GL_FALSE, @lMatrix);
+  glUniformMatrix4fv(uniform_NormalMatrix, 1, GL_FALSE, @normalMatrix);
+  //glUniformMatrix3fv(uniform_NormalMatrix, 1, GL_FALSE, @normalMatrix);
+  glVertexAttrib3fv(uniform_lightPos , @fLightPos);
+  glBindVertexArray(vao_point);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_face);
+  glDrawElements(GL_TRIANGLES, nface, GL_UNSIGNED_INT, nil);
+  glBindVertexArray(0);
+  glControl.SwapBuffers;
+end;
+
+end.
+

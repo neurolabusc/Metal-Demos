@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="11"/>
+    <BuildModes Active="Default"/>
+    <Units Count="35">
+      <Unit0>
+        <Filename Value="font.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="33" Y="10"/>
+        <UsageCount Value="99"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="unit1.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Unit1"/>
+        <CursorPos X="2" Y="6"/>
+        <UsageCount Value="139"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="pfont.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="41" Y="13"/>
+        <UsageCount Value="45"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="fontbase.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="76" Y="5"/>
+        <UsageCount Value="45"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="texture.lpr"/>
+        <UsageCount Value="16"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="basic.lpr"/>
+        <UsageCount Value="13"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="project1.lpr"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="50"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../Metal-Framework/lazarus/package/utils/MetalPipeline.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="24"/>
+        <CursorPos X="23" Y="36"/>
+        <UsageCount Value="19"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../Metal-Framework/lazarus/package/metalcontrol.pas"/>
+        <UnitName Value="MetalControl"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="110"/>
+        <CursorPos X="7" Y="132"/>
+        <UsageCount Value="19"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../../Metal-Framework/lazarus/package/metalcontrol.pas"/>
+        <UnitName Value="MetalControl"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="190"/>
+        <CursorPos X="19" Y="197"/>
+        <UsageCount Value="6"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="56"/>
+        <CursorPos X="9" Y="64"/>
+        <UsageCount Value="27"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="SIMDTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="48"/>
+        <CursorPos X="19" Y="66"/>
+        <UsageCount Value="3"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalUtils.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="69"/>
+        <CursorPos X="33" Y="77"/>
+        <UsageCount Value="29"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../../Metal-Framework/lazarus/package/framework/metal/MTLPixelFormat.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="28"/>
+        <CursorPos X="26" Y="40"/>
+        <UsageCount Value="25"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../../Metal-Framework/lazarus/package/lazmetalcontrol.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="61" Y="11"/>
+        <UsageCount Value="25"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="mtltext.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="336"/>
+        <CursorPos X="3" Y="343"/>
+        <UsageCount Value="28"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="../../Metal-Framework/lazarus/package/framework/metal/MTLRenderCommandEncoder.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="16" Y="3"/>
+        <UsageCount Value="22"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalPipeline.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="23"/>
+        <CursorPos X="25" Y="35"/>
+        <UsageCount Value="9"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../../Metal-Framework/lazarus/package/framework/metal/MTLRenderPipeline.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="10"/>
+        <CursorPos X="45" Y="14"/>
+        <UsageCount Value="9"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="glmtext.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="436"/>
+        <CursorPos X="5" Y="454"/>
+        <UsageCount Value="7"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="gltexture.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="182"/>
+        <CursorPos X="5" Y="188"/>
+        <UsageCount Value="7"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="mtlfont.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="101"/>
+        <CursorPos X="14" Y="112"/>
+        <UsageCount Value="25"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="mtltexture.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="67" Y="9"/>
+        <UsageCount Value="10"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="../texture/mtltexture.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="34" Y="10"/>
+        <UsageCount Value="7"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="../../lazarus/lcl/interfaces/cocoa/cocoatextedits.pas"/>
+        <UnitName Value="CocoaTextEdits"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="394"/>
+        <CursorPos X="31" Y="400"/>
+        <UsageCount Value="7"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="../../lazarus/ide/lazarus.pp"/>
+        <UnitName Value="Lazarus"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="116"/>
+        <CursorPos X="3" Y="57"/>
+        <UsageCount Value="7"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="../gl/glfont.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="15" Y="366"/>
+        <UsageCount Value="8"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="../../lazarus/lcl/interfaces/cocoa/cocoawsmenus.pas"/>
+        <UnitName Value="CocoaWSMenus"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="55"/>
+        <CursorPos X="14" Y="66"/>
+        <UsageCount Value="10"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="../../../LazTrunk/lcl/interfaces/cocoa/cocoa_extra.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="8"/>
+        <CursorPos X="37" Y="13"/>
+        <UsageCount Value="7"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="../gl/gltexture.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="177"/>
+        <CursorPos X="69" Y="184"/>
+        <UsageCount Value="7"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="sdffont.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="11"/>
+        <CursorPos X="4" Y="12"/>
+        <UsageCount Value="23"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="glfont.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="59" Y="12"/>
+        <UsageCount Value="21"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="glfontx.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="167"/>
+        <CursorPos Y="188"/>
+        <UsageCount Value="14"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="../gl/SimdTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="9" Y="16"/>
+        <UsageCount Value="11"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="../common/mtltexture.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="13" Y="9"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit34>
+    </Units>
+    <JumpHistory Count="4" HistoryIndex="3">
+      <Position1>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="6" Column="4"/>
+      </Position1>
+      <Position2>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="16" Column="51"/>
+      </Position2>
+      <Position3>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="170" Column="5" TopLine="158"/>
+      </Position3>
+      <Position4>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="6" Column="2"/>
+      </Position4>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>
