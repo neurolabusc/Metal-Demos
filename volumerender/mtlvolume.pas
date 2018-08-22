@@ -194,8 +194,8 @@ begin
         MTLSetTexture(gradTex, 1);//out
         MTLSetDispatchThreadgroups(threadgroupCount, threadgroupSize);
     MTLEndEncoding;
-  MTLEndCommand;
-  //waitUntilCompleted
+  //MTLEndCommand; //does not wait for completion
+  MTLEndCommand(true); //<- syncrhonous: waitUntilCompleted, reduce flicker
   sobelShader.Free;
   blurShader.Free;
   tempTex := nil;
