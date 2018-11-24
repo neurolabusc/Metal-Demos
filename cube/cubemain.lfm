@@ -3,7 +3,7 @@ object Form1: TForm1
   Height = 302
   Top = 138
   Width = 498
-  Caption = 'Lines'
+  Caption = 'Cube'
   Menu = MainMenu1
   OnShow = FormShow
   Position = poScreenCenter

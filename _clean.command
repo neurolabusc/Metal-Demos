@@ -11,6 +11,8 @@ cd "$here" || exit 1
 cd "$here" || exit 1
 ./compute/_clean.command
 cd "$here" || exit 1
+./cube/_clean.command
+cd "$here" || exit 1
 ./font/_clean.command
 cd "$here" || exit 1
 ./gl/_clean.command

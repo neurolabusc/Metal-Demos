@@ -100,6 +100,7 @@ begin
   ViewGPU1.Align:= alClient;
   ViewGPU1.OnMouseDown := @ViewGPU1MouseDown;
   ViewGPU1.OnPaint := @ViewGPU1Paint;
+  {$IFDEF METALAPI}ViewGPU1.renderView.setSampleCount(4);{$ENDIF}
   {$IFNDEF METALAPI}
   ViewGPU1.MakeCurrent(false);
   if (not  Load_GL_version_3_3_CORE) then begin
@@ -138,6 +139,7 @@ end;
 procedure TForm1.ViewGPU1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
+  {$IFDEF METALAPI} caption := 'multisample = '+inttostr(ViewGPU1.renderView.sampleCount);{$ENDIF}
    if (gClrbar.isVertical) then
      gClrbar.isTopOrRight := not gClrbar.isTopOrRight;
   gClrbar.isVertical := not gClrbar.isVertical;

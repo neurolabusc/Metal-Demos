@@ -21,6 +21,7 @@ type
         pipeline: TMetalPipeline;
         mtlControl: TMetalControl;
         volTex, gradTex: MTLTextureProtocol;
+        procedure Prepare();
         procedure LoadCube(var fromView: TMetalControl);
         procedure LoadTexture(var vol: TNIfTI; fromView: TMetalControl);
       public
@@ -28,7 +29,6 @@ type
         property Elevation: integer read fElevation write fElevation;
         property Distance: single read fDistance write fDistance;
         property LightPosition: TVec4 read fLightPos write fLightPos;
-        procedure Prepare();
         constructor Create(fromView: TMetalControl);
         procedure Paint(var vol: TNIfTI);
         procedure SetShader(shaderName: string);
@@ -65,7 +65,10 @@ begin
  options := TMetalPipelineOptions.Default;
  options.libraryName := shaderName;
  if not fileexists(shaderName) then
-    writeln('Unable to find shader ' + shaderName);
+    writeln('Unable to find shader ' + shaderName)
+ else
+     writeln('Using shader ' + shaderName);
+
  options.pipelineDescriptor := MTLCreatePipelineDescriptor;
  options.pipelineDescriptor.colorAttachmentAtIndex(0).setBlendingEnabled(true);
  options.pipelineDescriptor.colorAttachmentAtIndex(0).setRgbBlendOperation(MTLBlendOperationAdd);
@@ -98,6 +101,7 @@ begin
   //fClearColor.g := 200;
   //fClearColor.b := 255;
   vertexBuffer := nil;
+  pipeline := nil;
 end;
 
 function VertVertex(x, y, z: TScalar): TVertVertex;
@@ -229,6 +233,8 @@ var
 begin
  //if MetalControl1.Tag = 0 then exit;
  //MetalControl1.Tag := 0;
+ if pipeline = nil then
+    Prepare;
   if vertexBuffer = nil then // only once
     LoadCube(mtlControl);
   if (vol.VolRGBA <> nil) then

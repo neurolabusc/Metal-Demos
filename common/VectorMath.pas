@@ -9,7 +9,7 @@ uses
 // NOTE: constref is bugged on 3.0.4 and below
 {$macro on}
 {$if FPC_FULLVERSION < 30005}
-{$define constref:=}
+  {$define constref:=}
 {$endif}
 
 type

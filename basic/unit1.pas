@@ -9,6 +9,9 @@ uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics,
     Dialogs, ExtCtrls, MetalPipeline, MetalUtils, MetalControl, Metal, VectorMath;
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     procedure FormCreate(Sender: TObject);
     procedure MetalControl1MouseMove(Sender: TObject; Shift: TShiftState; X,

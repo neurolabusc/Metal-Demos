@@ -43,6 +43,7 @@ type
     procedure BackColorMenuClick(Sender: TObject);
     procedure FlipMenuClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure MeshColorMenuClick(Sender: TObject);
     procedure OcclusionMenuClick(Sender: TObject);
     procedure PerspectiveMenuClick(Sender: TObject);
@@ -145,7 +146,7 @@ end;
 procedure TForm1.FormResize(Sender: TObject);
 begin
   {$IFDEF METALAPI}
-  ViewGPU1.Invalidate();
+  //ViewGPU1.Invalidate();
   {$ENDIF}
 end;
 
@@ -198,6 +199,12 @@ begin
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
+//procedure TForm1.FormShow(Sender: TObject);
+begin
+
+end;
+procedure TForm1.FormShow(Sender: TObject);
+//procedure TForm1.FormCreate(Sender: TObject);
 var
  i: integer;
  shaderName, shaderPath: string;
@@ -252,11 +259,12 @@ begin
      end;
   end;
   shaderNames.Free;
+  ViewGPU1.Invalidate();
 end;
 
 procedure TForm1.ViewGPUPrepare(Sender: TObject);
 begin
-  Mesh1.Prepare();
+  //Mesh1.Prepare();
   {$IFDEF METALAPI}
   ViewGPU1.setPreferredFrameRate(0);
   Form1.OnResize := @FormResize;

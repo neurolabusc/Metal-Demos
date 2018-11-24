@@ -6,6 +6,7 @@ interface
 
 
 uses
+  {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
   glcorearb, gl_core_utils, VectorMath, SimdUtils, Classes, SysUtils, Graphics, OpenGLContext, dialogs;
 
 type

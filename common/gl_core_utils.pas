@@ -7,13 +7,15 @@ interface
 {$ENDIF}
 uses
   //{$IFDEF Darwin} CocoaAll, MacOSAll, {$ENDIF}
-  Dialogs,
+  {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
+  Dialogs, clipbrd,
   glcorearb, SysUtils, OpenGLContext, Graphics, lcltype, LCLIntf, GraphType;
   procedure  loadVertFrag(shaderName: string; out VertexProgram, FragmentProgram: string);
   function  initVertFrag(vert, frag: string): GLuint;
   procedure GetError(p: integer);  //report OpenGL Error
   function ScreenShot(GLBox : TOpenGLControl): TBitmap;
   procedure SaveBmp(pngName: string; GLBox : TOpenGLControl);
+  procedure ScreenToClipBoard(GLBox : TOpenGLControl);
 var
    GLErrorStr: string = '';
 
@@ -32,13 +34,8 @@ var
 begin
  GLBox.MakeCurrent;
  glGetIntegerv(GL_MAX_VIEWPORT_DIMS, @maxXY);  //GL_MAX_TEXTURE_SIZE
-  {$IFDEF RETINA} //requires Lazarus 1.9 svn 55355 or later
-  w := Round(GLBox.Width * LBackingScaleFactor(GLBox.Handle));
-  h := Round(GLBox.Height * LBackingScaleFactor(GLBox.Handle));
-  {$ELSE}
-  w := GLBox.Width;
-  h := GLBox.Height;
-  {$ENDIF}
+  w := GLBox.ClientWidth;
+  h := GLBox.ClientHeight;
  Result:=TBitmap.Create;
  Result.Width:=w;
  Result.Height:=h;
@@ -49,6 +46,9 @@ begin
  RawImage := Result.RawImage;
  BytePerPixel := RawImage.Description.BitsPerPixel div 8;
  setlength(p, 4*w* h);
+ glFlush;
+ glFinish;//<-this would pause until all jobs finished: generally a bad idea! required here
+
  {$IFDEF Darwin} //http://lists.apple.com/archives/mac-opengl/2006/Nov/msg00196.html
  glReadPixels(0, 0, w, h, $80E1, $8035, @p[0]); //OSX-Darwin   GL_BGRA = $80E1;  GL_UNSIGNED_INT_8_8_8_8_EXT = $8035;
  {$ELSE}
@@ -79,13 +79,29 @@ begin
    end; //for y : each line in image
  end;
  setlength(p, 0);
- GLbox.ReleaseContext;
+ //{$DEFINE ISOPAQUE} //see ScreenCaptureTransparentBackground
+ {$IFDEF ISOPAQUE}
+ DestPtr := PInteger(RawImage.Data);
+ for z := 0 to ((w * h)-1) do begin
+     DestPtr[z] := DestPtr[z] and $FFFFFF00;
+ end;
+ {$ENDIF}
+ //GLbox.ReleaseContext;
+end;
+
+procedure ScreenToClipBoard(GLBox : TOpenGLControl);
+var
+  bmp: TBitmap;
+begin
+  bmp := ScreenShot(GLBox);
+  if (bmp = nil) then exit;
+   Clipboard.Assign(bmp);
+  bmp.Free;
 end;
 
 procedure SaveBmp(pngName: string; GLBox : TOpenGLControl);
 var
-        bmp: TBitmap;
-
+  bmp: TBitmap;
   PNG: TPortableNetworkGraphic;
 begin
   bmp := ScreenShot(GLBox);

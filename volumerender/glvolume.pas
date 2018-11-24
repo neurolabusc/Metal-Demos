@@ -25,12 +25,12 @@ type
         procedure LoadCube();
         {$IFDEF GPUGRADIENTS}procedure CreateGradientVolumeGPU(Xsz,Ysz,Zsz: integer);{$ENDIF}
         function LoadTexture(var vol: TNIfTI): boolean;
+        procedure Prepare();
       public
         property Azimuth: integer read fAzimuth write fAzimuth;
         property Elevation: integer read fElevation write fElevation;
         property Distance: single read fDistance write fDistance;
         property LightPosition: TVec4 read fLightPos write fLightPos;
-        procedure Prepare();
         constructor Create(fromView: TOpenGLControl);
         procedure Paint(var vol: TNIfTI);
         procedure SetShader(shaderName: string);
@@ -303,9 +303,11 @@ begin
   {$IFDEF GPUGRADIENTS}
   programBlur := initVertFrag(kBlurSobelVert,kBlurFrag);
   programSobel := initVertFrag(kBlurSobelVert,kSobelFrag);
+  {$ELSE}
+  programBlur := 1;
   {$ENDIF}
   LoadCube();
-  glControl.ReleaseContext;
+  //glControl.ReleaseContext;
 end;
 
 constructor TGPUVolume.Create(fromView: TOpenGLControl);
@@ -317,6 +319,7 @@ begin
   RaycastQuality1to10 := 6;
   fLightPos := Vec4(0,0.707,0.707, 0.0);
   vao:= 0;
+  programBlur := 0;
 end;
 
 procedure TGPUVolume.LoadCube();
@@ -458,6 +461,8 @@ var
   modelLightPos, v, rayDir: TVec4;
   whratio, scale: single;
 begin
+  if programBlur = 0 then
+    Prepare();
   if vao = 0 then // only once
     LoadCube();
   if (vol.VolRGBA <> nil) then

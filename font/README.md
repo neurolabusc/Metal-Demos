@@ -5,7 +5,4 @@ This is a simple Lazarus project that displays text using the Apple Metal framew
  - This project exploits Viktor Chlumský's [Multi-channel signed distance field generator](https://github.com/Chlumsky/msdfgen).
  - This project is ports a cross platform [OpenGL](https://github.com/neurolabusc/OpenGLCoreTutorials) project.
 
-**This project is not yet completed  [BlendingEnabled not yet implemented](http://metalbyexample.com/translucency-and-transparency/)**
-
-
 ![Font rendering](font.png)

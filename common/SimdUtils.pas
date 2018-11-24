@@ -13,7 +13,7 @@ const
   kMaxUniform = 12;//for Metal: divisible by 4
 type
  TUniform = record
-   Name: string;
+   Name,Hint: string;
    Widget: integer;
    Min,DefaultV,Max: single;
    Bool: boolean;
@@ -48,13 +48,12 @@ type
   function prod(v:TVec3i): integer;
   function SetRGBA(r,g,b,a: byte): TRGBA;
   function pti(x,y,z: integer): TVec3i; //create integer vector
+  procedure SortVec3i(var lo, hi: TVec3i);
   function  loadShaderPrefs(shaderName: string): TShaderPrefs;
   function ResourceDir (): string;
   function ScriptDir (): string;
   function ResourceFile (name: pchar; ofType: pchar): string;
   function ShaderDir (): string;
-
-
 
 implementation
 
@@ -117,6 +116,7 @@ var
   lLen,lP,lN: integer;
 begin
   result.Name := '';
+  result.Hint := '';
   result.Widget := kError;
   lLen := length(lS);
   //read values
@@ -158,6 +158,7 @@ begin
             end;
           4: result.defaultv := strtofloatdef(lV,0);
           5: result.max := strtofloatdef(lV,0);
+          6: result.Hint := lV;
         end;
         lV := '';
     end;
@@ -219,6 +220,22 @@ begin
  CloseFile(F);
 end;
 
+procedure LoHi(var lo,hi: integer);
+var
+  s: integer;
+begin
+     if lo <= hi then exit;
+     s := hi;
+     hi := lo;
+     lo := s;
+end;
+
+procedure SortVec3i(var lo, hi: TVec3i);
+begin
+     LoHi(lo.X, hi.X);
+     LoHi(lo.Y, hi.Y);
+     LoHi(lo.Z, hi.Z);
+end;
 
 function prod(v:TVec3i): integer;
 begin

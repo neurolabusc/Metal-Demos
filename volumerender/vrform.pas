@@ -37,6 +37,7 @@ type
     procedure AboutMenuClick(Sender: TObject);
     procedure BackColorMenuClick(Sender: TObject);
     procedure ContrastMenuClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure NewInstanceMenuClick(Sender: TObject);
     procedure SaveMenuClick(Sender: TObject);
     procedure ViewGPUMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -44,9 +45,9 @@ type
     procedure ViewGPUMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure OpenMenuClick(Sender: TObject);
     procedure ShaderMenuClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
+    //procedure FormCreate(Sender: TObject);
     procedure ViewGPUMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure ViewGPUPrepare(Sender: TObject);
+    //procedure ViewGPUPrepare(Sender: TObject);
     procedure ViewGPUPaint(Sender: TObject);
   private
     //
@@ -179,6 +180,7 @@ procedure TForm1.ViewGPUMouseDown(Sender: TObject; Button: TMouseButton;
 begin
  gMouse.Y := Y;
  gMouse.X := X;
+ {$IFDEF METALAPI} caption := 'multisample = '+inttostr(ViewGPU1.renderView.sampleCount);{$ENDIF}
 end;
 
 procedure TForm1.ViewGPUMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -216,7 +218,7 @@ begin
   ViewGPU1.Invalidate;
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TForm1.FormShow(Sender: TObject);
 var
  i: integer;
  shaderPath, shaderName: string;
@@ -230,8 +232,9 @@ begin
   niftiVol := TNIfTI.Create();
   {$IFDEF METALAPI}
   ViewGPU1 :=  TMetalControl.Create(Form1);
-  ViewGPU1.renderView.setPreferredFramesPerSecond(0);
-  ViewGPU1.OnPrepare := @ViewGPUPrepare;
+  //{$IFDEF METALAPI}ViewGPU1.renderView.setSampleCount(4);{$ENDIF}
+  //ViewGPU1.renderView.setPreferredFramesPerSecond(0);
+  //ViewGPU1.OnPrepare := @ViewGPUPrepare;
   {$ELSE}
   ViewGPU1 :=  TOpenGLControl.Create(Form1);
   ViewGPU1.OpenGLMajorVersion:= 3;
@@ -244,6 +247,7 @@ begin
   ViewGPU1.OnMouseUp := @ViewGPUMouseUp;
   ViewGPU1.OnMouseWheel := @ViewGPUMouseWheel;
   ViewGPU1.OnPaint := @ViewGPUPaint;
+  {$IFDEF METALAPI}ViewGPU1.renderView.setSampleCount(4);{$ENDIF}
   Vol1 := TGPUVolume.Create(ViewGPU1);
   {$IFNDEF METALAPI}
   ViewGPU1.MakeCurrent(false);
@@ -253,7 +257,7 @@ begin
   end;
   Form1.caption := glGetString(GL_VENDOR)+'; OpenGL= '+glGetString(GL_VERSION)+'; Shader='+glGetString(GL_SHADING_LANGUAGE_VERSION);
   ViewGPU1.ReleaseContext;
-  Vol1.Prepare();
+  //Vol1.Prepare();
   {$ENDIF}
   //auto generate shaders
   shaderPath := ResourceDir;
@@ -275,11 +279,6 @@ begin
      end;
   end;
   shaderNames.Free;
-end;
-
-procedure TForm1.ViewGPUPrepare(Sender: TObject);
-begin
-    Vol1.Prepare();
 end;
 
 procedure TForm1.ShaderMenuClick(Sender: TObject);

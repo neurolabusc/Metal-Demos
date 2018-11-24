@@ -1,5 +1,5 @@
-unit mtlmesh;
-//{$DEFINE SSAO}
+unit mtlmesh_ssao;
+{$DEFINE SSAO}
 {$mode objfpc}{$H+}
 {$modeswitch objectivec1}
 interface
@@ -31,8 +31,6 @@ type
         ssaoShader: TMetalPipeline;
         {$ENDIF}
         fMeshName: string;
-      private
-             procedure Prepare();
       public
         property MeshName: string read fMeshName;
         property Perspective: boolean read fPerspective write fPerspective;
@@ -42,6 +40,7 @@ type
         property Elevation: integer read fElevation write fElevation;
         property Distance: single read fDistance write fDistance;
         property LightPosition: TVec4 read fLightPos write fLightPos;
+        procedure Prepare();
         constructor Create(fromView: TMetalControl); overload;
         constructor Create(fromView: TMetalControl; InitMeshName: string); overload;
         procedure Paint();
@@ -136,7 +135,7 @@ begin
   screenHeight := -1;
   {$ELSE}
   shaderName := ResourceFolderPath+pathdelim+'Phong.metal';
-  SetShader(shaderName);
+  SetShader(fromView, shaderName);
   {$ENDIF}
 end;
 
@@ -153,7 +152,6 @@ begin
   fMeshColor.b := 148;
   fPerspective := false;
   vertexBuffer := nil;
-  meshShader := nil;
   {$IFDEF SSAO}
   fFracAO := 0.25;
   screenVerts[0] := V4(-1, -1, 0, 1);
@@ -206,8 +204,6 @@ var
   w,h: integer;
   whratio, scale: single;
 begin
-  if meshShader = nil then
-     Prepare();
   if vertexBuffer = nil then
      OpenMesh(fMeshName, false);
   w := trunc(mtlControl.renderView.drawableSize.width);

@@ -1,4 +1,4 @@
-unit linesmain;
+unit cubemain;
 
 {$mode objfpc}{$H+}
 {$IFDEF LCLCocoa}
@@ -29,6 +29,9 @@ type
     procedure ClrMenu(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ViewGPU1Paint(Sender: TObject);
+    procedure ViewGPUMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure ViewGPUMouseMove(Sender: TObject; Shift: TShiftState; X,Y: Integer);
+
   private
 
   public
@@ -43,30 +46,55 @@ implementation
 {$R *.lfm}
 
 {$IFDEF METALAPI}
-uses Metal, MetalPipeline, MetalControl, mtllines, VectorMath;
+uses Metal, MetalPipeline, MetalControl, mtlcube, VectorMath;
 {$ELSE}
-uses {$IFDEF LCLCocoa}retinahelper,{$ENDIF} glcorearb, OpenGLContext, gl_core_utils, VectorMath, gllines;
+uses {$IFDEF LCLCocoa}retinahelper,{$ENDIF} glcorearb, OpenGLContext, gl_core_utils, VectorMath,  glcube;
 {$ENDIF}
 var
-  gLines: TGPULines;
+  gCube : TGPUCube;
+  gMouse : TPoint;
   {$IFDEF METALAPI}
   ViewGPU1: TMetalControl;
   {$ELSE}
   ViewGPU1: TOpenGLControl;
+
   {$ENDIF}
+
 
 procedure TForm1.ViewGPU1Prepare(Sender: TObject);
 begin
-{$IFDEF METALAPI}
-    ViewGPU1.SetPreferredFrameRate(0);
-    Form1.OnResize := @FormResize;
+  {$IFDEF METALAPI}
+  ViewGPU1.SetPreferredFrameRate(0);
+  Form1.OnResize := @FormResize;
   {$ENDIF}
 end;
 
 procedure TForm1.ViewGPU1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
- ClrMenu(Sender);
+  gMouse.Y := Y;
+  gMouse.X := X;
+  {$IFDEF METALAPI} caption := 'multisample = '+inttostr(ViewGPU1.renderView.sampleCount);{$ENDIF}
+end;
+
+procedure TForm1.ViewGPUMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+begin
+  if gMouse.Y < 0 then exit; //mouse is not down
+  gCube.Azimuth := gCube.Azimuth + (X - gMouse.X);
+  gCube.Elevation := gCube.Elevation - (Y - gMouse.Y);
+  while gCube.Azimuth > 360 do gCube.Azimuth := gCube.Azimuth - 360;
+  while gCube.Azimuth < 0 do gCube.Azimuth := gCube.Azimuth + 360;
+  if gCube.Elevation > 90 then gCube.Elevation := 90;
+  if gCube.Azimuth < -90 then gCube.Elevation := -90;
+  gMouse.X := X;
+  gMouse.Y := Y;
+  ViewGPU1.Invalidate;
+end;
+
+procedure TForm1.ViewGPUMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+    gMouse.Y := -1; //released
 end;
 
 procedure TForm1.FormResize(Sender: TObject);
@@ -78,6 +106,7 @@ end;
 
 procedure TForm1.FormShow(Sender: TObject);
 begin
+  gMouse.Y := -1;
   {$IFDEF METALAPI}
   ViewGPU1 :=  TMetalControl.Create(Form1);
   ViewGPU1.OnPrepare := @ViewGPU1Prepare;
@@ -88,10 +117,12 @@ begin
   ViewGPU1.MultiSampling:=4;
   {$ENDIF}
   ViewGPU1.Parent := Form1;
+  {$IFDEF METALAPI}ViewGPU1.renderView.setSampleCount(4);{$ENDIF}
   ViewGPU1.Align:= alClient;
   ViewGPU1.OnPaint := @ViewGPU1Paint;
   ViewGPU1.OnMouseDown := @ViewGPU1MouseDown;
-  {$IFDEF METALAPI}ViewGPU1.renderView.setSampleCount(4);{$ENDIF}
+  ViewGPU1.OnMouseUp := @ViewGPUMouseUp;
+  ViewGPU1.OnMouseMove := @ViewGPUMouseMove;
   {$IFNDEF METALAPI}
   ViewGPU1.MakeCurrent(false);
   {$IFDEF LCLCocoa}
@@ -111,7 +142,7 @@ begin
      GLErrorStr := '';
   end;
   {$ENDIF}
-  gLines := TGPULines.Create(ViewGPU1);
+  gCube := TGPUCube.Create(ViewGPU1);
   ClrMenu(Sender);
   ViewGPU1.Invalidate;
 end;
@@ -132,29 +163,8 @@ begin
 end;
 
 procedure TForm1.ClrMenu(Sender: TObject);
-const
-  kLines = 1024;
-var
-   w, h, i: integer;
 begin
-  {$IFDEF METALAPI} caption := 'multisample = '+inttostr(ViewGPU1.renderView.sampleCount);{$ENDIF}
-  w := ViewGPU1.ClientWidth;
-  h := ViewGPU1.ClientHeight;
-  gLines.ClearLines();
-  for i := 1 to kLines do begin
-      gLines.LineWidth:= 1 + random(6);
-      gLines.LineColor := RandClr();
-      gLines.AddLine(RandVec(w,h),RandVec(w,h));
-  end;
-  //draw fine lines to show pixel position: e.g. 1 pixel line at position 2 should span 1..2 not darken two pixels (1.5..2.5)
-  gLines.LineWidth:= 1;
-  gLines.LineColor := setRGBA(0,0,0,255);
-  gLines.AddLine(0,2, 100, 2);
-  gLines.AddLine(2,0, 2, 100);
-  gLines.AddLine(0,20, 100, 20);
-  gLines.AddLine(20,0, 20, 100);
-  gLines.AddLine(0,22, 100, 22);
-  gLines.AddLine(22,0, 22, 100);
+  gCube.Size := 0.01 * (1+random(18));
   ViewGPU1.Invalidate;
 end;
 
@@ -162,15 +172,22 @@ procedure TForm1.ViewGPU1Paint(Sender: TObject);
 begin
   {$IFDEF METALAPI}
   MTLSetClearColor(MTLClearColorMake(0.3, 0.5, 0.8, 1));
+  //ctx :=  ViewGPU1.renderView.;  //SharedContext  ViewGPU1
+  //ViewGPU1.renderView.sampleCount;
   MTLBeginFrame();
-    gLines.Draw();
+    gCube.Draw(ViewGPU1.ClientWidth, ViewGPU1.ClientHeight);
   MTLEndFrame;
   {$ELSE}
+  //glViewPort(0,0,ViewGPU1.ClientWidth, ViewGPU1.ClientHeight);
   glViewPort(0,0,ViewGPU1.ClientWidth, ViewGPU1.ClientHeight);
   glClearColor(0.3, 0.5, 0.8, 1.0); //Set blue background
   glClear(GL_COLOR_BUFFER_BIT);
-  gLines.Draw();
+  gCube.Draw(ViewGPU1.ClientWidth, ViewGPU1.ClientHeight);
   ViewGPU1.SwapBuffers;
+  if GLErrorStr <> '' then begin
+     caption := GLErrorStr;
+     GLErrorStr := '';
+  end;
   {$ENDIF}
 end;
 

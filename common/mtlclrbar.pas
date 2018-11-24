@@ -48,10 +48,12 @@ type
     property BackColor : TRGBA read BackClr write SetBackColor;
     property FontColor : TRGBA read FontClr write SetFontColor;
     property SizeFraction : single read SizeFrac write SetSizeFrac;
+    function PanelFraction: single; //size of all color tables and surrounding border
     procedure Draw(nLUT: integer); overload; //must be called while TOpenGLControl is current context
     procedure Draw(); overload;  //must be called while TOpenGLControl is current context
-    procedure SetLUT(index: integer; LUT: TLUT; min,max: single);
+    procedure SetLUT(index: integer; LUT: TLUT; mn,mx: single; isFromZero: boolean = false);
     constructor Create(fromView: TMetalControl);
+    destructor Destroy; overload;
   end;
 
 implementation
@@ -73,6 +75,19 @@ var
     g2DNew: boolean;
     gnface: integer;
 
+destructor TGPUClrbar.Destroy;
+begin
+  g2Dvnc := nil;
+  txt.Free;
+  inherited;
+end;
+
+function TGPUClrbar.PanelFraction (): single;
+begin
+  result := 0.0;
+  if (not isVisible) or (nLUTs < 1) then exit; //nothing to do
+  result := sizeFrac*((nLUTs * 2)+0.5);
+end;
 
 procedure TGPUClrbar.CreateStrips();
 type
@@ -179,13 +194,33 @@ begin
      fisVertical := isV;
 end;
 
-procedure TGPUClrbar.SetLUT(index: integer; LUT: TLUT; min,max: single);
+procedure TGPUClrbar.SetLUT(index: integer; LUT: TLUT; mn,mx: single; isFromZero: boolean = false);
+var
+  j,k: integer;
+  frac: single;
 begin
      if (index > kMaxClrBar) or (index < 1) then exit;
      LUTs[index].LUT := LUT;
-     LUTs[index].mn := min;
-     LUTs[index].mx := max;
+     if (mn > mx) then begin
+       frac := mx;
+       mx := mn;
+       mn := frac;
+     end;
+     LUTs[index].mn := mn;
+     LUTs[index].mx := mx;
      isRedraw := true;
+     if not isFromZero then exit;
+     if (mn = mx) then exit;
+     if ((mn > 0) or (mx < 0)) then begin //range does not cross zero
+       if (mn > 0) then
+         frac := mn/mx
+       else
+          frac := abs(mx)/abs(mn);
+       for j := 1 to 255 do begin
+          k := round (255 * (frac + ((1-frac) * j/255)));
+          LUTs[index].LUT[j] := lut[k];
+       end;
+     end;
 end;
 
 procedure TGPUClrbar.ScreenSize(nLUT,Width,Height: integer);

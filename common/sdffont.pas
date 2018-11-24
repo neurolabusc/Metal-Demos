@@ -53,6 +53,7 @@ TQuads = array[0..(kMaxChar-1)] of TQuad;
 
 implementation
 
+
 procedure TSDFFont.TextColor(red,green,blue: byte); overload;
 begin
   FontClr.r := red/255;

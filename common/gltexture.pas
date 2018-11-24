@@ -5,6 +5,7 @@ interface
 {$DEFINE COREGL} //<- defines CORE OpenGL >=3.3, else uses LEGACY OpenGL 2.1
 
 uses
+  {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
   glcorearb, gl_core_utils,Classes, SysUtils, Graphics, OpenGLContext, dialogs;
 
 type

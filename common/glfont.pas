@@ -8,6 +8,7 @@ unit glfont;
 interface
 
 uses
+  retinahelper,
   sdffont, VectorMath, glcorearb, gl_core_utils,
   Dialogs,Classes, SysUtils, Graphics, OpenGLContext, math;
 
@@ -165,6 +166,7 @@ end; //LoadTex()
 procedure TGPUFont.DrawText();
 begin
   if self.NumChar < 1 then exit; //nothing to draw
+  glControl.SetViewport();
   glEnable (GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glUseProgram(shaderProgram);

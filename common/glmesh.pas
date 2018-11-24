@@ -2,7 +2,7 @@ unit glmesh;
 interface
 
 uses
-  //clipbrd,
+  {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
   SimdUtils, classes, dialogs,OpenGLContext,mesh, VectorMath, glcorearb, gl_core_utils,SysUtils, Math;
 const
   kDefaultDistance = 1.0;
@@ -19,6 +19,8 @@ type
         fPerspective: boolean;
         glControl: TOpenGLControl;
         fMeshName: string;
+      private
+        procedure Prepare();
       public
         property MeshName: string read fMeshName;
         property Perspective: boolean read fPerspective write fPerspective;
@@ -27,7 +29,6 @@ type
         property Elevation: integer read fElevation write fElevation;
         property Distance: single read fDistance write fDistance;
         property LightPosition: TVec4 read fLightPos write fLightPos;
-        procedure Prepare();
         constructor Create(fromView: TOpenGLControl); overload;
         constructor Create(fromView: TOpenGLControl; InitMeshName: string); overload;
         procedure Paint();
@@ -115,12 +116,6 @@ end;
 
 procedure TGPUMesh.Prepare();
 begin
-     vbo_face := 0;
-     vbo_point := 0;
-     vao_point := 0;
-     shaderProgram :=0;
-     vertexArrayObject := 0;
-     shaderProgram := 0;
      SetShader(ResourceFile('Phong', 'glsl'));
 end;
 
@@ -136,6 +131,12 @@ begin
   fMeshColor.r := 210;
   fMeshColor.g := 148;
   fMeshColor.b := 148;
+  vbo_face := 0;
+  vbo_point := 0;
+  vao_point := 0;
+  shaderProgram :=0;
+  vertexArrayObject := 0;
+  shaderProgram := 0;
 end;
 
 constructor TGPUMesh.Create(fromView: TOpenGLControl);  overload;
@@ -235,6 +236,8 @@ var
   modelViewProjectionMatrix, projectionMatrix, modelMatrix, modelViewMatrix, normalMatrix: TMat4;
   whratio, scale: single;
 begin
+  if shaderProgram = 0 then
+     Prepare();
   if vbo_point = 0 then
      OpenMesh(fMeshName, false);
   if (glControl.width = 0) or (glControl.height = 0) then exit; //avoid divide by zero

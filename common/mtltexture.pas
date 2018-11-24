@@ -17,6 +17,7 @@ type
     shaderPipeline: TMetalPipeline;
     mtlControl: TMetalControl;
     procedure LoadTex(fnm : string);
+    procedure InitShader;
   public
     property Pipeline: TMetalPipeline read shaderPipeline;
     property BitmapHeight: integer read bmpHt;
@@ -65,7 +66,7 @@ begin
  pngTexDesc.setHeight(bmpHt);
  pngTexDesc.setDepth(1);
  pngTex := mtlControl.renderView.device.newTextureWithDescriptor(pngTexDesc);
- Fatal(pngTex = nil, 'newTextureWithDescriptor failed');
+ Fatal(pngTex = nil, 'mtltexture: newTextureWithDescriptor failed');
  pngRegion := MTLRegionMake2D(0, 0, bmpWid, bmpHt);
  pngTex.replaceRegion_mipmapLevel_withBytes_bytesPerRow(pngRegion, 0, PInteger(px.Bitmap.RawImage.Data), bmpWid*4);
  px.Free;
@@ -77,37 +78,42 @@ begin
      Create(fnm, fromView, shaderPipeline);
 end;
 
+
 constructor TGPUTexture.Create(fnm : string; fromView: TMetalControl; var existingPipeline: TMetalPipeline); overload;
-var
- options: TMetalPipelineOptions;
- shaderName: string;
 begin
  mtlControl := fromView;
  OffsetX := 0;
  OffsetY := 0;
  Zoom := 1;
- if existingPipeline = nil then begin
-    options := TMetalPipelineOptions.Default;
-    shaderName := ResourceDir + pathdelim + 'texture.metal';
-    if not fileexists(shaderName) then
-       shaderName := ShaderDir + pathdelim +  '_Texture.metal';
-    options.libraryName := shaderName;
-    if not fileexists(shaderName) then begin
-      writeln('Unable to find ' + shaderName);
-    end;
-    options.pipelineDescriptor := MTLCreatePipelineDescriptor;
-    options.pipelineDescriptor.colorAttachmentAtIndex(0).setBlendingEnabled(true);
-    options.pipelineDescriptor.colorAttachmentAtIndex(0).setRgbBlendOperation(MTLBlendOperationAdd);
-    options.pipelineDescriptor.colorAttachmentAtIndex(0).setAlphaBlendOperation(MTLBlendOperationAdd);
-    options.pipelineDescriptor.colorAttachmentAtIndex(0).setSourceRGBBlendFactor(MTLBlendFactorSourceAlpha);
-    options.pipelineDescriptor.colorAttachmentAtIndex(0).setSourceAlphaBlendFactor(MTLBlendFactorSourceAlpha);
-    options.pipelineDescriptor.colorAttachmentAtIndex(0).setDestinationRGBBlendFactor(MTLBlendFactorOneMinusSourceAlpha);
-    options.pipelineDescriptor.colorAttachmentAtIndex(0).setDestinationAlphaBlendFactor(MTLBlendFactorOneMinusSourceAlpha);
-    shaderPipeline := MTLCreatePipeline(options);
- end else
-     shaderPipeline := existingPipeline;
+ shaderPipeline := existingPipeline;
  LoadTex(fnm);
 end;
+
+procedure TGPUTexture.InitShader;
+var
+ options: TMetalPipelineOptions;
+ shaderName: string;
+begin
+  if pipeline <> nil then exit;
+  options := TMetalPipelineOptions.Default;
+  shaderName := ResourceDir + pathdelim + 'texture.metal';
+  if not fileexists(shaderName) then
+    shaderName := ShaderDir + pathdelim +  '_Texture.metal';
+  options.libraryName := shaderName;
+  if not fileexists(shaderName) then begin
+   writeln('Unable to find ' + shaderName);
+  end;
+  options.pipelineDescriptor := MTLCreatePipelineDescriptor;
+  options.pipelineDescriptor.colorAttachmentAtIndex(0).setBlendingEnabled(true);
+  options.pipelineDescriptor.colorAttachmentAtIndex(0).setRgbBlendOperation(MTLBlendOperationAdd);
+  options.pipelineDescriptor.colorAttachmentAtIndex(0).setAlphaBlendOperation(MTLBlendOperationAdd);
+  options.pipelineDescriptor.colorAttachmentAtIndex(0).setSourceRGBBlendFactor(MTLBlendFactorSourceAlpha);
+  options.pipelineDescriptor.colorAttachmentAtIndex(0).setSourceAlphaBlendFactor(MTLBlendFactorSourceAlpha);
+  options.pipelineDescriptor.colorAttachmentAtIndex(0).setDestinationRGBBlendFactor(MTLBlendFactorOneMinusSourceAlpha);
+  options.pipelineDescriptor.colorAttachmentAtIndex(0).setDestinationAlphaBlendFactor(MTLBlendFactorOneMinusSourceAlpha);
+  options.pipelineDescriptor.setSampleCount(mtlControl.renderView.sampleCount);
+  shaderPipeline := MTLCreatePipeline(options);
+end; //InitShader()
 
 type
   TVertUniforms = record //Uniforms for vertex shader
@@ -132,6 +138,7 @@ var
  vertUniforms: TVertUniforms;
  ZoomX,ZoomY: single;
 begin
+ InitShader;
   MTLSetShader(shaderPipeline);
   if (pngTex = nil) then
     LoadTex('');

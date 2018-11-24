@@ -66,7 +66,7 @@ begin
   pngTexDesc.setHeight(bmpHt);
   pngTexDesc.setDepth(1);
   pngTex := mtlControl.renderView.device.newTextureWithDescriptor(pngTexDesc);
-  Fatal(pngTex = nil, 'newTextureWithDescriptor failed');
+  Fatal(pngTex = nil, format('mtlfont: newTextureWithDescriptor failed %dx%d', [bmpHt, bmpWid]));
   pngRegion := MTLRegionMake3D(0, 0, 0, bmpWid, bmpHt, 1);
   pngTex.replaceRegion_mipmapLevel_withBytes_bytesPerRow(pngRegion, 0, PInteger(px.Bitmap.RawImage.Data), bmpWid*4);
   px.Free;
