@@ -65,6 +65,7 @@ begin
   pngTexDesc.setWidth(bmpWid);
   pngTexDesc.setHeight(bmpHt);
   pngTexDesc.setDepth(1);
+  if (pngTex <> nil) then pngTex.release;
   pngTex := mtlControl.renderView.device.newTextureWithDescriptor(pngTexDesc);
   Fatal(pngTex = nil, format('mtlfont: newTextureWithDescriptor failed %dx%d', [bmpHt, bmpWid]));
   pngRegion := MTLRegionMake3D(0, 0, 0, bmpWid, bmpHt, 1);
@@ -84,6 +85,7 @@ begin
   //CreateX(fnm, success);
   if not success then exit;
   mtlControl := fromView;
+  pngTex := nil;
   pipeline := nil;
   vertexBuffer := nil;
   //set face indices

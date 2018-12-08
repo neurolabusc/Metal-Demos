@@ -135,22 +135,17 @@ procedure TGPUVolume.LoadTexture(var vol: TNIfTI; fromView: TMetalControl);
 var
  volTexDesc, gradTexDesc: MTLTextureDescriptor;
  volRegion: MTLRegion;
- //Xo,Yo,Zo: integer;
- //volData: TRGBAs;
- //startTime: TDateTime;
  {$IFDEF GPUGRADIENTS}
  options: TMetalPipelineOptions;
  blurShader, sobelShader : TMetalPipeline;
  threadgroupSize: MTLSize;
  threadgroupCount: MTLSize;
- //tempRegion: MTLRegion;
  tempTex: MTLTextureProtocol;
  {$ELSE}
  gradData: TRGBAs;
  gradRegion: MTLRegion;
  {$ENDIF}
 begin
- volTex := nil;
  if (Vol.VolRGBA = nil) then exit;
  slices := max(Vol.Dim.X,max(Vol.Dim.Y,Vol.Dim.Z));
  volTexDesc := MTLTextureDescriptor.alloc.init.autorelease;
@@ -159,6 +154,7 @@ begin
  volTexDesc.setWidth(Vol.Dim.X);
  volTexDesc.setHeight(Vol.Dim.Y);
  volTexDesc.setDepth(Vol.Dim.Z);
+ if (volTex <> nil) then volTex.release;
  volTex := fromView.renderView.device.newTextureWithDescriptor(volTexDesc);
  Fatal(volTex = nil, 'newTextureWithDescriptor failed');
  volRegion := MTLRegionMake3D(0, 0, 0, Vol.Dim.X, Vol.Dim.Y, Vol.Dim.Z);
@@ -173,6 +169,7 @@ begin
  gradTexDesc.setWidth(Vol.Dim.X);
  gradTexDesc.setHeight(Vol.Dim.Y);
  gradTexDesc.setDepth(Vol.Dim.Z);
+ if (gradTex <> nil) then gradTex.release;
  gradTex := fromView.renderView.device.newTextureWithDescriptor(gradTexDesc);
  Fatal(gradTex = nil, 'newTextureWithDescriptor failed');
  {$IFDEF GPUGRADIENTS}
@@ -202,6 +199,7 @@ begin
   MTLEndCommand(true); //<- syncrhonous: waitUntilCompleted, reduce flicker
   sobelShader.Free;
   blurShader.Free;
+  tempTex.release;
   tempTex := nil;
  {$ELSE}
  gradRegion := MTLRegionMake3D(0, 0, 0, Vol.Dim.X, Vol.Dim.Y, Vol.Dim.Z);

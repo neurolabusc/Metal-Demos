@@ -65,6 +65,7 @@ begin
  pngTexDesc.setWidth(bmpWid);
  pngTexDesc.setHeight(bmpHt);
  pngTexDesc.setDepth(1);
+ if (pngTex <> nil) then pngTex.release;
  pngTex := mtlControl.renderView.device.newTextureWithDescriptor(pngTexDesc);
  Fatal(pngTex = nil, 'mtltexture: newTextureWithDescriptor failed');
  pngRegion := MTLRegionMake2D(0, 0, bmpWid, bmpHt);
@@ -75,6 +76,7 @@ end;
 constructor TGPUTexture.Create(fnm : string; fromView: TMetalControl); overload;
 begin
      shaderPipeline := nil;
+     pngTex := nil;
      Create(fnm, fromView, shaderPipeline);
 end;
 

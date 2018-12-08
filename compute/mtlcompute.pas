@@ -78,6 +78,7 @@ begin
  pngTexDesc.setHeight(bmpHt);
  pngTexDesc.setDepth(1);
  pngTexDesc.setUsage(MTLTextureUsageShaderWrite or MTLTextureUsageShaderRead);
+ if (pngTex <> nil) then pngTex.release;
  pngTex := mtlControl.renderView.device.newTextureWithDescriptor(pngTexDesc);
  Fatal(pngTex = nil, 'newTextureWithDescriptor failed');
  pngRegion := MTLRegionMake2D(0, 0, bmpWid, bmpHt);
