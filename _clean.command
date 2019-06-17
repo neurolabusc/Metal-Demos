@@ -15,7 +15,7 @@ cd "$here" || exit 1
 cd "$here" || exit 1
 ./font/_clean.command
 cd "$here" || exit 1
-./gl/_clean.command
+./graph/_clean.command
 cd "$here" || exit 1
 ./lines/_clean.command
 cd "$here" || exit 1
@@ -23,10 +23,10 @@ cd "$here" || exit 1
 cd "$here" || exit 1
 ./metal_or_gl/_clean.command
 cd "$here" || exit 1
+./occlusion/_clean.command
+cd "$here" || exit 1
 ./texture/_clean.command
 cd "$here" || exit 1
 ./volumerender/_clean.command
-cd "$here" || exit 1
-./occlusion/_clean.command
 cd "$here" || exit 1
 find . -name "*.exe" -exec rm '{}' \;

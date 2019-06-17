@@ -11,6 +11,7 @@ struct VertexIn {
 struct VertexOut {
 	float4 position [[position]];
 	float4 color;
+	float4 vN;
 };
 
 struct Uniforms {
@@ -28,17 +29,18 @@ vertex VertexOut vertexShader(  unsigned int vertexID               [[ vertex_id
 	VertexIn VertexIn = verticies[vertexID];
 	VertexOut VertexOut;
 	VertexOut.position = uniforms->modelViewProjectionMatrix * float4(VertexIn.position, 1);
-	float d = VertexOut.position.z;
-	d = 1.0 - d; //make more distant items DARKER
-	if (d < 0.0)
-		VertexOut.color =  float4(1.0, 0.0, 0.0, 1.0);
-	else if (d > 1.0)
-		VertexOut.color =  float4(0.0, 0.0, 1.0, 1.0);
-	else
-		VertexOut.color =  float4(d, d, d, 1.0);
+	VertexOut.color = VertexIn.color;
+	//VertexOut.vL = normalize(uniforms->lightPos);
+	//VertexOut.vV = -(uniforms->ModelViewMatrix*float4(VertexIn.position,1.0));
+	VertexOut.vN = normalize((uniforms->NormalMatrix * VertexIn.normal));
 	return VertexOut;
 }
 
-fragment float4 fragmentShader(VertexOut  in [[stage_in]]) {
-	return float4(in.color);
+fragment float4 fragmentShader(VertexOut  in [[stage_in]], texture2d<float> matCapTexture [[ texture(0) ]]) {
+    constexpr sampler textureSampler (mag_filter::linear,min_filter::linear);
+   	//return matCapTexture.sample(textureSampler, in.color.xy);
+	float3 n = normalize(in.vN.xyz);
+	float2 uv = n.xy * 0.5 + 0.5;
+	float3 color = matCapTexture.sample(textureSampler, uv).bgr;
+	return float4(color, 1.0);
 }

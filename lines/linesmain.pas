@@ -63,8 +63,7 @@ begin
   {$ENDIF}
 end;
 
-procedure TForm1.ViewGPU1MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TForm1.ViewGPU1MouseDown(Sender: TObject; Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
 begin
  ClrMenu(Sender);
 end;

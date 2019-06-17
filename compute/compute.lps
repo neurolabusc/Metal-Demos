@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectSession>
-    <Version Value="11"/>
+    <Version Value="12"/>
     <BuildModes Active="Default"/>
     <Units Count="7">
       <Unit0>
@@ -16,7 +16,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
-        <IsVisibleTab Value="True"/>
         <TopLine Value="22"/>
         <CursorPos X="63" Y="37"/>
         <UsageCount Value="24"/>
@@ -39,8 +38,9 @@
       </Unit3>
       <Unit4>
         <Filename Value="mtlcompute.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="13" Y="9"/>
+        <CursorPos X="42" Y="10"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit4>

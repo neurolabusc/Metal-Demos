@@ -11,7 +11,7 @@ struct VertexIn {
 struct VertexOut {
 	float4 position [[position]];
 	float4 color;
-	float4 vL, vV, vN;
+	float4 vN;
 };
 
 struct Uniforms {
@@ -29,26 +29,17 @@ vertex VertexOut vertexShader(  unsigned int vertexID               [[ vertex_id
 	VertexIn VertexIn = verticies[vertexID];
 	VertexOut VertexOut;
 	VertexOut.position = uniforms->modelViewProjectionMatrix * float4(VertexIn.position, 1);
-	//VertexOut.position.z = 1.0 - VertexOut.position.z;
 	VertexOut.color = VertexIn.color;
-	VertexOut.vL = normalize(uniforms->lightPos);
-	VertexOut.vV = -(uniforms->ModelViewMatrix*float4(VertexIn.position,1.0));
 	VertexOut.vN = normalize((uniforms->NormalMatrix * VertexIn.normal));
 	return VertexOut;
 }
 
-fragment float4 fragmentShader(VertexOut  in [[stage_in]]) {
-    float Ambient = 0.4;
-	float Diffuse = 0.7;
-	float Specular = 0.6;
-	float Roughness = 0.1;
+fragment float4 fragmentShader(VertexOut  in [[stage_in]], texture2d<float> matCapTexture [[ texture(0) ]]) {
+    constexpr sampler textureSampler (mag_filter::linear,min_filter::linear);
+   	//return matCapTexture.sample(textureSampler, in.color.xy);
 	float3 n = normalize(in.vN.xyz);
-	float3 v = normalize(in.vV.xyz);
-	float3 h = normalize(in.vL.xyz+v.xyz);
-	float diffuse = dot(in.vL.xyz,n);
-	float3 AmbientColour = in.color.rgb;
-	float3 DiffuseColour = in.color.rgb;
-	float3 SpecularColour = float3(1.0, 1.0, 1.0);
-	float specular =  pow(max(0.0,dot(n,h)),1.0/(Roughness * Roughness));
-	return float4(AmbientColour*Ambient + DiffuseColour*diffuse*Diffuse +SpecularColour*specular* Specular, 1.0);
+	float2 uv = n.xy * 0.5 + 0.5;
+	float3 color = matCapTexture.sample(textureSampler, uv).bgr;
+	color *= in.color.rgb;
+	return float4(color, 1.0);
 }

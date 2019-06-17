@@ -8,6 +8,7 @@ unit meshForm;
 {$IFNDEF METALAPI}
  This project does not yet support OpenGL
 {$ENDIF}
+{$DEFINE MATCAP}
 
 interface
 
@@ -19,6 +20,7 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    MatCapMenu: TMenuItem;
     ColorDialog1: TColorDialog;
     MainMenu: TMainMenu;
     FileMenu: TMenuItem;
@@ -49,6 +51,7 @@ type
     procedure PerspectiveMenuClick(Sender: TObject);
     procedure SaveMenuClick(Sender: TObject);
     procedure LoadMesh;
+    procedure MatCapMenuClick(Sender: TObject);
     procedure ViewGPUMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure ViewGPUMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ViewGPUMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
@@ -72,6 +75,7 @@ implementation
 {$IFDEF METALAPI}
 uses
   SimdUtils, MetalPipeline, MetalUtils, MetalControl, Metal, mtlmesh_ssao;
+  //SimdUtils, MetalPipeline, MetalUtils, MetalControl, Metal, mtlmesh_ssao;
 const  kExt = '.metal';
 {$ELSE}
 uses OpenGLContext,  SimdUtils, glmesh, mesh, glcorearb, gl_core_utils;
@@ -207,7 +211,7 @@ procedure TForm1.FormShow(Sender: TObject);
 //procedure TForm1.FormCreate(Sender: TObject);
 var
  i: integer;
- shaderName, shaderPath: string;
+ shaderName, shaderPth: string;
  shaderNames : TStringList;
  newMenu: TMenuItem;
 begin
@@ -241,9 +245,9 @@ begin
   Mesh1.Prepare(ViewGPU1);
   {$ENDIF}
   //auto generate shaders
-  shaderPath := ResourceFolderPath;
-  if not fileexists(shaderPath) then exit;
-  shaderNames := FindAllFiles(shaderPath, '*'+kExt, true);
+  shaderPth := Mesh1.ShaderPath();
+  if not fileexists(shaderPth) then exit;
+  shaderNames := FindAllFiles(shaderPth, '*'+kExt, true);
   if shaderNames.Count > 0 then begin
      shaderNames.Sort;
      for i := 0 to (shaderNames.Count-1) do begin
@@ -258,6 +262,31 @@ begin
          ShaderMenu.Add(newMenu);
      end;
   end;
+  {$IFDEF MATCAP}
+  shaderNames.Clear;
+  shaderPth := Mesh1.MatCapPath;
+  if not DirectoryExists(shaderPth) then showmessage('Could not find "'+shaderPth+'"');
+  shaderNames := FindAllFiles(shaderPth, '*'+'.jpg', true);
+  if shaderNames.Count > 0 then begin
+     shaderNames.Sort;
+     for i := 0 to (shaderNames.Count-1) do begin
+         shaderName := ChangeFileExt(ExtractFileName(shaderNames[i]),'');
+         if (length(shaderName) < 1) or (shaderName[1]='_') or (shaderName[1] = '.')  then continue;
+         newMenu := TMenuItem.Create(MainMenu);
+         newMenu.Caption := shaderName;
+         newMenu.OnClick:= @MatCapMenuClick;
+         newMenu.GroupIndex:=133;
+         newMenu.AutoCheck:=true;
+         newMenu.RadioItem:=true;
+         MatCapMenu.Add(newMenu);
+     end;
+     //newMenu.Click;
+     //matCapName := Mesh1.MatCapPath + (Sender as TMenuItem).caption+'.jpg';
+     MatCapMenu.enabled := Mesh1.uniform_MatCap >= 0;
+     Mesh1.SetMatCap(Mesh1.MatCapPath + shaderName+'.jpg');
+  end;
+  MatCapMenu.visible := true;
+  {$ENDIF}
   shaderNames.Free;
   ViewGPU1.Invalidate();
 end;
@@ -271,20 +300,39 @@ begin
   {$ENDIF}
 end;
 
+procedure TForm1.MatCapMenuClick(Sender: TObject);
+{$IFDEF MATCAP}
+var
+ matCapName: string;
+begin
+ matCapName := Mesh1.MatCapPath + (Sender as TMenuItem).caption+'.jpg';
+ Mesh1.SetMatCap(matCapName);
+ //Caption := inttostr(mesh1.uniform_MatCap)+' '+inttostr(mesh1.matCapTexture);
+ ViewGPU1.Invalidate;
+end;
+{$ELSE}
+begin
+  //
+end;
+{$ENDIF}
+
 procedure TForm1.ShaderMenuClick(Sender: TObject);
 var
  shaderName: string;
 begin
- shaderName := ResourceFolderPath + pathdelim + (Sender as TMenuItem).caption+kExt;
+ shaderName := Mesh1.ShaderPath() + (Sender as TMenuItem).caption+kExt;
  Mesh1.SetShader(shaderName);
  ViewGPU1.Invalidate;
+  {$IFDEF MATCAP}
+  MatCapMenu.enabled := Mesh1.uniform_MatCap >= 0;
+  {$ENDIF}
 end;
 
 procedure TForm1.ViewGPUPaint(Sender: TObject);
 begin
  {$IFDEF METALAPI}
  MTLSetClearColor(MTLClearColorMake(gClearColor.r/255, gClearColor.g/255, gClearColor.b/255, 0.0));
- {$ELSE}
+{$ELSE}
  glClearColor(gClearColor.R/255, gClearColor.G/255, gClearColor.B/255, 1.0);
  {$ENDIF}
  Mesh1.Paint();

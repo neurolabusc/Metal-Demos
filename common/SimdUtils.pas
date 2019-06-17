@@ -22,13 +22,12 @@ type
         nUniform: integer;
         Uniform: array [1..kMaxUniform] of TUniform;
  end;
-
-
- TUInt32s = array of uint32;
+  TUInt32s = array of uint32;
   TInt32s = array of int32;
   TUInt16s = array of uint16;
   TInt16s = array of int16;
   TUInt8s = array of uint8;
+  TInt8s = array of int8;
   TFloat32s = array of single;
   TFloat64s = array of double;
   TRGB = packed record //red,green,blue

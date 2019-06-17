@@ -25,6 +25,8 @@ type
     property LineColor : TRGBA read LineClr write LineClr;
     procedure AddLine(startX,startY,endX,endY: single); overload;
     procedure AddLine(startXY, endXY: TVec2); overload;
+    procedure AddLine(nodes: TVec2s); overload;
+    procedure AddRectangle(Left,Top,Right,Bottom: single);
     procedure ClearLines();
     procedure Draw(); //must be called while TOpenGLControl is current context
     constructor Create(fromView: TOpenGLControl);
@@ -163,6 +165,83 @@ end;
 procedure TGPULines.AddLine(startXY, endXY: TVec2); overload;
 begin
      AddLine(startXY.X, startXY.Y, endXY.X, endXY.Y);
+end;
+
+function lineNormal(startXY, endXY: TVec2): TVec2;
+//https://stackoverflow.com/questions/1243614/how-do-i-calculate-the-normal-vector-of-a-line-segment
+//  if we define dx=x2-x1 and dy=y2-y1, then the normals are (-dy, dx) and (dy, -dx).
+begin
+  result.x := (endXY.y-startXY.y);
+  result.y := (endXY.x-startXY.x);
+  result := result.Normalize;
+end;
+
+procedure TGPULines.AddLine(nodes: TVec2s); overload;
+//https://forum.libcinder.org/topic/smooth-thick-lines-using-geometry-shader
+var
+   i, j: integer;
+   d, lw: TScalar;
+   n: array [0..2] of TVec2; //normals - previous[0], current[1], next[2] line
+   m: array [0..1] of TVec2; //miter - link start[0], end[1]
+begin
+     if length(nodes) < 2 then exit;
+     if length(nodes) = 2 then begin
+        AddLine(nodes[0],nodes[1]);
+        exit;
+     end;
+     //ensure enough storage
+     j := (length(nodes) - 1) * 6; //-1 : fence post problem
+     if (numVertices+j) > length(g2Dvnc) then
+        setlength(g2Dvnc, length(g2Dvnc)+j+kBlockSz);
+     //set color
+     for i := 0 to (j-1) do
+         g2Dvnc[numVertices +i].clr := LineClr;
+     lw := lineWid * 0.5;
+     //add each link
+     n[0] := lineNormal(nodes[0], nodes[1]); //previous link (does not yet exist)
+     n[1] := n[0]; //current link
+     m[0] := n[1];
+     d := abs(m[0].dot(n[1]));
+     if d < 0.0001 then d := 0.0001 ; //angle too acute
+     //if d <> 0.0 then
+     m[0] := (m[0]*lw)/d;
+     for i := 1 to (length(nodes)-1) do begin
+         if i < (length(nodes)-1) then
+            n[2] := lineNormal(nodes[i], nodes[i+1]); //next link
+         m[1] := 0.5 * (n[1] + n[2]); //miter end average of current and next link normals
+         d := abs(m[1].dot(n[2]));
+         if d < 0.0001 then d := 0.0001 ; //angle too acute
+         //if d <> 0.0 then
+         m[1] := (m[1]*lw)/d;
+         g2Dvnc[numVertices+0].vtx := pt(nodes[i-1].x+m[0].x,nodes[i-1].y-m[0].y);
+         g2Dvnc[numVertices+1].vtx := pt(nodes[i-1].x-m[0].x,nodes[i-1].y+m[0].y);
+         g2Dvnc[numVertices+2].vtx := pt(nodes[i].x+m[1].x,nodes[i].y-m[1].y);
+         g2Dvnc[numVertices+3].vtx := g2Dvnc[numVertices+1].vtx;
+         g2Dvnc[numVertices+4].vtx := g2Dvnc[numVertices+2].vtx;
+         g2Dvnc[numVertices+5].vtx := pt(nodes[i].x-m[1].x,nodes[i].y+m[1].y);
+         numVertices := numVertices + 6;
+         for j := 0 to 1 do
+             n[j] := n[j+1]; //increment one link
+         m[0] := m[1];
+     end;
+end;
+
+procedure TGPULines.AddRectangle(Left,Top,Right,Bottom: single);
+var
+  i: integer;
+begin
+  if (numVertices+6) > length(g2Dvnc) then
+     setlength(g2Dvnc, length(g2Dvnc)+kBlockSz);
+  for i := 0 to 5 do
+      g2Dvnc[numVertices +i].clr := LineClr;
+  g2Dvnc[numVertices+0].vtx := pt(Left,Top);
+  g2Dvnc[numVertices+1].vtx := pt(Left,Bottom);
+  g2Dvnc[numVertices+2].vtx := pt(Right,Top);
+  g2Dvnc[numVertices+3].vtx := g2Dvnc[numVertices+1].vtx;
+  g2Dvnc[numVertices+4].vtx := g2Dvnc[numVertices+2].vtx;
+  g2Dvnc[numVertices+5].vtx := pt(Right,Bottom);
+  numVertices := numVertices + 6;
+  isRedraw := true;
 end;
 
 procedure TGPULines.Draw();

@@ -12,7 +12,7 @@ uses
   glcorearb, SysUtils, OpenGLContext, Graphics, lcltype, LCLIntf, GraphType;
   procedure  loadVertFrag(shaderName: string; out VertexProgram, FragmentProgram: string);
   function  initVertFrag(vert, frag: string): GLuint;
-  procedure GetError(p: integer);  //report OpenGL Error
+  procedure GetError(p: integer; str: string = '');  //report OpenGL Error
   function ScreenShot(GLBox : TOpenGLControl): TBitmap;
   procedure SaveBmp(pngName: string; GLBox : TOpenGLControl);
   procedure ScreenToClipBoard(GLBox : TOpenGLControl);
@@ -175,7 +175,7 @@ begin
      GLErrorStr := 'GLSL error '+s;
 end;
 
-procedure GetError(p: integer);  //report OpenGL Error
+procedure GetError(p: integer; str: string = '');  //report OpenGL Error
 var
   Error: GLenum;
   s: string;
@@ -186,11 +186,11 @@ begin
  if Error = GL_INVALID_ENUM then
     s := s+'GL_INVALID_ENUM'
  else if Error = GL_INVALID_VALUE then
-    s := s+'GL_INVALID_VALUE'
+    s := s+'GL_INVALID_VALUE' //out of range https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/glGetError.xml
  else
      s := s + inttostr(Error);
  if GLErrorStr = '' then
-    GLErrorStr := 'GLSL error '+s;
+    GLErrorStr := 'GLSL error '+str+s;
 end;
 
 function compileShaderOfType (shaderType: GLEnum;  shaderText: string): GLuint;
@@ -260,7 +260,7 @@ begin
   glDetachShader(result, fs);
   glDeleteShader(fs);
   //glUseProgram(result);
-  GetError(123);
+  GetError(123,'newShader');
   glGetError();
 end;
 
@@ -280,7 +280,9 @@ begin
     glLinkProgram(result);
     glDeleteShader(vt);
     glDeleteShader(fr);
-    GetError(1);
+    GetError(1,'initX');
+    glGetError(); //<- ignore proior errors
+
 end;
 
 end.

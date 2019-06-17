@@ -10,7 +10,6 @@ uniform mat4 ModelViewMatrix;
 uniform mat4 NormalMatrix;
 uniform vec3 LightPosition = vec3(0.0, 20.0, 30.0); //LR, -DU+, -FN+
 void main() {
-    //vN = normalize((NormalMatrix * Norm));
     vN = normalize((NormalMatrix * vec4(Norm,1.0)).xyz);
     gl_Position = ModelViewProjectionMatrix * vec4(Vert, 1.0);
     vL = normalize(LightPosition);

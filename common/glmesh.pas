@@ -1,8 +1,10 @@
 unit glmesh;
 interface
-
+{$DEFINE MATCAP}
 uses
+  //clipbrd,
   {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
+  {$IFDEF MATCAP} Graphics, GraphType, FPImage, IntfGraphics, LCLType,{$ENDIF}
   SimdUtils, classes, dialogs,OpenGLContext,mesh, VectorMath, glcorearb, gl_core_utils,SysUtils, Math;
 const
   kDefaultDistance = 1.0;
@@ -14,15 +16,26 @@ type
         fAzimuth,fElevation: integer;
         fDistance: single;
         fLightPos: TVec4;
-        vbo_face, vbo_point, vao_point, shaderProgram, vertexArrayObject: GLuint;
-        nface, uniform_lightPos, uniform_ModelViewProjectionMatrix, uniform_ModelViewMatrix, uniform_NormalMatrix: GLint;
+        vbo, vao, shaderProgram: GLuint;
+        {$IFDEF MATCAP}
+        matCapFnm: string;
+        matCapTexture: GLuint;
+        {$ENDIF}
+        nface: integer;
+        uniform_lightPos, uniform_ModelViewProjectionMatrix, uniform_ModelViewMatrix, uniform_NormalMatrix: GLint;
         fPerspective: boolean;
         glControl: TOpenGLControl;
         fMeshName: string;
       private
         procedure Prepare();
       public
+        {$IFDEF MATCAP}
+        uniform_MatCap: GLint; // >=0 if shader supports matcaps
+        function SetMatCap(fnm: string): boolean;
+        function MatCapPath(): string;
+        {$ENDIF}
         property MeshName: string read fMeshName;
+        function ShaderPath(): string;
         property Perspective: boolean read fPerspective write fPerspective;
         property MeshColor: TRGBA read fMeshColor write fMeshColor;
         property Azimuth: integer read fAzimuth write fAzimuth;
@@ -34,6 +47,7 @@ type
         procedure Paint();
         procedure OpenMesh(Filename: string; isSwapYZ: boolean = true);
         procedure SetShader(shaderName: string);
+
   end;
 
 implementation
@@ -90,12 +104,18 @@ type
     clr : TRGBA;
   end;
 
+procedure printf (lS: AnsiString);
+begin
+{$IFNDEF WINDOWS} writeln(lS); {$ENDIF}
+end;
+
 procedure TGPUMesh.SetShader(shaderName: string);
 var
   VertexProgram, FragmentProgram: string;
 begin
   glControl.MakeCurrent();
   glUseProgram(0);
+  //ClipBoard.AsText:= shaderName;
   if (shaderProgram <> 0) then glDeleteProgram(shaderProgram);
   loadVertFrag(shaderName, VertexProgram, FragmentProgram);
   if VertexProgram = '' then VertexProgram := kVertStr;
@@ -105,18 +125,123 @@ begin
   uniform_ModelViewMatrix := glGetUniformLocation(shaderProgram, pAnsiChar('ModelViewMatrix'));
   uniform_NormalMatrix := glGetUniformLocation(shaderProgram, pAnsiChar('NormalMatrix'));
   uniform_lightPos := glGetUniformLocation(shaderProgram, pAnsiChar('LightPosition'));
+  {$IFDEF MATCAP}
+  uniform_MatCap := glGetUniformLocation(shaderProgram, pAnsiChar('MatCap'));
+  {$ENDIF}
   glFinish;
   glControl.ReleaseContext;
   //ClipBoard.AsText:=shaderName+#13#10+VertexProgram+#13#10+FragmentProgram;
   if GLErrorStr <> '' then begin
         showmessage(GLErrorStr);
+     printf(GLErrorStr);
         GLErrorStr := '';
   end;
+
+end;
+
+{$IFDEF WINDOWS}
+procedure FlipVertical (var px: TPicture);
+var
+  p: array of byte;
+  i, half, b: integer;
+  LoPtr, HiPtr: PInteger;
+begin
+    if px.Height < 3 then exit;
+    half := (px.Height div 2);
+    b := px.Bitmap.RawImage.Description.BytesPerLine;
+    LoPtr := PInteger(px.Bitmap.RawImage.Data);
+    HiPtr := PInteger(px.Bitmap.RawImage.Data+ ((px.Height -1) * b));
+    setlength(p, b);
+    for i := 1 to half do begin
+          System.Move(LoPtr^,p[0],b); //(src, dst,sz)
+          System.Move(HiPtr^,LoPtr^,b); //(src, dst,sz)
+          System.Move(p[0],HiPtr^,b); //(src, dst,sz)
+          Inc(PByte(LoPtr), b );
+          Dec(PByte(HiPtr), b);
+    end;
+end; //FlipVertical()
+{$ENDIF}
+
+function TGPUMesh.SetMatCap(fnm: string): boolean;
+var
+  px: TPicture;
+  ifnm: string;
+  {$IFNDEF WINDOWS}
+  AImage: TLazIntfImage;
+  lRawImage: TRawImage;
+  {$ENDIF}
+begin
+  result := false;
+  if not fileexists(fnm) then begin
+     ifnm := fnm;
+     fnm := MatCapPath+fnm+'.jpg';
+     if not fileexists(fnm) then begin
+        printf(format('LoadTex: unable to find "%s" or "%s"',[ifnm, fnm]));
+        exit;
+     end;
+  end;
+  matCapFnm := fnm;
+  px := TPicture.Create;
+    try
+       {$IFDEF WINDOWS}
+       px.LoadFromFile(fnm);
+       FlipVertical(px);
+       {$ELSE}
+       //ensure order is GL_RGBA8 - it is with many PNG files, but not JPEG
+       lRawImage.Init;
+       lRawImage.Description.Init_BPP32_R8G8B8A8_BIO_TTB(0,0);
+       lRawImage.Description.LineOrder := riloBottomToTop; // openGL uses cartesian coordinates
+       lRawImage.CreateData(false);
+       AImage := TLazIntfImage.Create(0,0);
+       try
+         AImage.SetRawImage(lRawImage);
+         AImage.LoadFromFile(fnm);
+         px.Bitmap.LoadFromIntfImage(AImage);
+       finally
+         AImage.Free;
+       end;
+       {$ENDIF}
+    except
+      px.Bitmap.Width:=-1;
+    end;
+  if ((px.Bitmap.PixelFormat <> pf24bit ) and  (px.Bitmap.PixelFormat <> pf32bit )) or (px.Bitmap.Width < 1) or (px.Bitmap.Height < 1) then begin
+     printf(format('LoadTex: unsupported pixel format bpp (%d) or size (%dx%d)',[PIXELFORMAT_BPP[px.Bitmap.PixelFormat], px.Bitmap.Width, px.Bitmap.Height]));
+     exit;
+  end;
+  px.Bitmap.Height;
+  px.Bitmap.Width;
+  if matCapTexture <> 0 then
+     glDeleteTextures(1,@matCapTexture);
+  glGenTextures(1, @matCapTexture);;
+  glBindTexture(GL_TEXTURE_2D,  matCapTexture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+  {$IFDEF WINDOWS}
+  glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, px.Width, px.Height, 0, GL_BGRA, GL_UNSIGNED_BYTE, PInteger(px.Bitmap.RawImage.Data));
+  {$ELSE}
+  glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, px.Width, px.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, PInteger(px.Bitmap.RawImage.Data));
+  {$ENDIF}
+  px.Free;
+  result := true;
+end;
+
+function TGPUMesh.MatCapPath(): string;
+begin
+     result := ResourceDir+pathdelim+'matcap'+pathdelim;
+end;
+
+
+function TGPUMesh.ShaderPath(): string;
+begin
+     result := ResourceDir+pathdelim+'shader'+pathdelim;
 end;
 
 procedure TGPUMesh.Prepare();
 begin
-     SetShader(ResourceFile('Phong', 'glsl'));
+     //SetShader(ResourceFile('Phong', 'glsl'));
+     SetShader(ShaderPath+'Phong.glsl');
 end;
 
 constructor TGPUMesh.Create(fromView: TOpenGLControl; InitMeshName: string);  overload;
@@ -131,11 +256,14 @@ begin
   fMeshColor.r := 210;
   fMeshColor.g := 148;
   fMeshColor.b := 148;
-  vbo_face := 0;
-  vbo_point := 0;
-  vao_point := 0;
+  vbo := 0;
+  vao := 0;
   shaderProgram :=0;
-  vertexArrayObject := 0;
+  {$IFDEF MATCAP}
+  matCapTexture := 0;
+  uniform_MatCap := -1;
+  //matCapFnm := '';
+  {$ENDIF}
   shaderProgram := 0;
 end;
 
@@ -149,16 +277,12 @@ begin
   Create(fromView, fMeshName);
 end;
 
-
-function Float2Int16(fv: single): int16;
-var
-   f: single;
+function Float2Int16(f: single): int16;
 begin
-     f := fv;
      if f > 1 then
-        f := 1;
+        exit(32767);
      if f < -1 then
-        f := -1;
+        exit(-32768);
      if f > 0 then
         result := round(f * 32767)
      else
@@ -184,11 +308,15 @@ const
 var
   faces: TFaces;
   verts, vNorm: TVertices;
+  //norm : TPoint3f;
   colors: TVertexRGBA;
   vnc: array of TVtxNormClr;
+  vbo_point : GLuint;
   i: integer;
 begin
+  glGetError(); //<- ignore proior errors
   LoadMesh(Filename, faces, verts, vNorm, colors, fMeshColor, isSwapYZ);
+  if (length(verts) <> length(vNorm)) or (length(verts) <> length(colors)) then exit;
   glControl.MakeCurrent(false);
   //create VBO that combines vertex, normal and color information
   setlength(vnc, length(verts));
@@ -197,37 +325,37 @@ begin
       vnc[i].norm :=  AsGL_INT_2_10_10_10_REV(vNorm[i]);
       vnc[i].clr := colors[i];
   end;
-  if (vbo_point <> 0) then
-     glDeleteBuffers(1, @vbo_point);
+  vbo_point := 0;
   glGenBuffers(1, @vbo_point);
   glBindBuffer(GL_ARRAY_BUFFER, vbo_point);
   glBufferData(GL_ARRAY_BUFFER, Length(vnc)*SizeOf(TVtxNormClr), @vnc[0], GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
-  // Prepare vertrex array object (VAO)
-  if vao_point <> 0 then
-     glDeleteVertexArrays(1,@vao_point);
-  glGenVertexArrays(1, @vao_point);
-  glBindVertexArray(vao_point);
+  if vao <> 0 then
+     glDeleteVertexArrays(1,@vao);
+  glGenVertexArrays(1, @vao);
+  glBindVertexArray(vao);
   glBindBuffer(GL_ARRAY_BUFFER, vbo_point);
-  //Vertices
   glVertexAttribPointer(kATTRIB_VERT, 3, GL_FLOAT, GL_FALSE, sizeof(TVtxNormClr), PChar(0));
   glEnableVertexAttribArray(kATTRIB_VERT);
   //Normals typically stored as 3*32 bit floats (96 bytes), but we will pack them as 10-bit integers in a single 32-bit value with GL_INT_2_10_10_10_REV
   //  https://www.opengl.org/wiki/Vertex_Specification_Best_Practices
+  //Vertices
   glVertexAttribPointer(kATTRIB_NORM, 4, GL_INT_2_10_10_10_REV, GL_FALSE, sizeof(TVtxNormClr), PChar(sizeof(TPoint3f)));
   glEnableVertexAttribArray(kATTRIB_NORM);
   //Color
+
   glVertexAttribPointer(kATTRIB_CLR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TVtxNormClr), PChar(sizeof(int32)+ sizeof(TPoint3f)));
   glEnableVertexAttribArray(kATTRIB_CLR);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
-  if (vbo_face <> 0) then
-     glDeleteBuffers(1, @vbo_face);
-  glGenBuffers(1, @vbo_face);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_face);
-  nface := Length(faces)* 3; //each face has 3 vertices
+  if (vbo <> 0) then
+     glDeleteBuffers(1, @vbo);
+  glGenBuffers(1, @vbo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, Length(faces)*sizeof(TPoint3i), @faces[0], GL_STATIC_DRAW);
-  GetError(2);
+  glDeleteBuffers(1, @vbo_point);
+  nface := Length(faces) * 3; //each face has 3 vertices
+  GetError(2, 'OpenMesh');
   glControl.invalidate;
 end; //OpenMesh()
 
@@ -238,9 +366,14 @@ var
 begin
   if shaderProgram = 0 then
      Prepare();
-  if vbo_point = 0 then
+  if vbo = 0 then
      OpenMesh(fMeshName, false);
   if (glControl.width = 0) or (glControl.height = 0) then exit; //avoid divide by zero
+  {$IFDEF MATCAP}
+  if (uniform_MatCap >= 0) and (matCapTexture = 0) then
+     SetMatCap(matCapFnm);
+  {$ENDIF}
+  glUseProgram(shaderProgram);
   scale := 0.6*fDistance;
   whratio := glControl.clientwidth/glControl.clientheight;
   //Form1.Caption := format('%g %d', [whratio, fromView.Width]);
@@ -257,14 +390,18 @@ begin
   modelMatrix *= TMat4.RotateX(-DegToRad(90-fElevation));
   modelMatrix *= TMat4.RotateZ(DegToRad(fAzimuth));
   modelViewMatrix := modelMatrix;
-  modelViewProjectionMatrix := ( projectionMatrix * modelMatrix);
+  //
   normalMatrix := modelMatrix.Inverse.Transpose;
-  glEnable (GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  modelViewProjectionMatrix := ( projectionMatrix * modelMatrix);
+  //normalMatrix := modelMatrix.Inverse.Transpose;
+
   glViewport(0, 0, glControl.ClientWidth, glControl.ClientHeight); //required for form resize
-  glUseProgram(shaderProgram);
   //glClearColor( ClearColor.R/255, ClearColor.G/255, ClearColor.B/255, 1.0); //Set blue background
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  glEnable (GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  //glEnable(GL_CULL_FACE); // <- ignore back face: teapot will appear hollow
+  glDisable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glUniformMatrix4fv(uniform_ModelViewProjectionMatrix, 1, GL_FALSE, @modelViewProjectionMatrix); // note model not MVP!
   glUniformMatrix4fv(uniform_ModelViewMatrix, 1, GL_FALSE, @modelViewMatrix);
@@ -272,10 +409,23 @@ begin
   glUniformMatrix4fv(uniform_NormalMatrix, 1, GL_FALSE, @normalMatrix);
   //glUniformMatrix3fv(uniform_NormalMatrix, 1, GL_FALSE, @normalMatrix);
   glVertexAttrib3fv(uniform_lightPos , @fLightPos);
-  glBindVertexArray(vao_point);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_face);
-  glDrawElements(GL_TRIANGLES, nface, GL_UNSIGNED_INT, nil);
+  {$IFDEF MATCAP}
+  if (uniform_MatCap >= 0) then begin
+     glActiveTexture(GL_TEXTURE1);
+     glBindTexture(GL_TEXTURE_2D, matCapTexture);
+     glUniform1i(uniform_MatCap, 1);
+  end;
+  {$ENDIF}
+  glBindVertexArray(vao);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,vbo);
+  //glDrawElements(GL_TRIANGLES,  nface, GL_UNSIGNED_INT, nil);
+  glDrawElements(GL_TRIANGLES,  nface, GL_UNSIGNED_INT, nil);
   glBindVertexArray(0);
+
+  //glBindVertexArray(vao);
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
+  //glDrawElements(GL_TRIANGLES, nface, GL_UNSIGNED_INT, nil);
+  //glBindVertexArray(0);
   glControl.SwapBuffers;
 end;
 

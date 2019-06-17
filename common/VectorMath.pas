@@ -51,6 +51,9 @@ type
 	end;
 
 type
+	TVec2s = array of TVec2;
+
+type
 	TVec3 = record
 		public
 			class function Up: TVec3; static; inline;
@@ -138,6 +141,8 @@ type
 			constructor Translate(const tx,ty,tz:TScalar); overload;
       constructor Translate(const pTranslate:TVec3); overload;
       constructor Translate(const tx,ty,tz,tw:TScalar); overload;
+      constructor Diag(const tx,ty,tz, ti:TScalar); overload; //Diag(1 2 3 4) is the same as matlab diag([1 2 3 4])
+      constructor Diag(const tx,ty,tz:TScalar);  overload;//4th component is 1: Diag(1 2 3) is the same as matlab diag([1 2 3 1])
       
 			constructor Scale (x, y, z: TScalar);
 			constructor RotateX(const Angle:TScalar);
@@ -211,8 +216,8 @@ var
 	
 const
 	DEG2RAD=pi/180.0;
-  RAD2DEG=180.0/pi;
-  HalfPI=pi*0.5;	
+  //RAD2DEG=180.0/pi;
+  //HalfPI=pi*0.5;	
 
 {=============================================}
 {@! ___PROCEDURAL___ } 
@@ -703,6 +708,32 @@ end;
 class function TMat4.Identity: TMat4;
 begin
 	result := Matrix4x4Identity;
+end;
+
+constructor TMat4.Diag(const tx,ty,tz, ti:TScalar); overload;
+begin
+ m[0,0]:=tx;
+ m[0,1]:=0.0;
+ m[0,2]:=0.0;
+ m[0,3]:=0.0;
+ m[1,0]:=0.0;
+ m[1,1]:=ty;
+ m[1,2]:=0.0;
+ m[1,3]:=0.0;
+ m[2,0]:=0.0;
+ m[2,1]:=0.0;
+ m[2,2]:=tz;
+ m[2,3]:=0.0;
+ m[3,0]:=0.0;
+ m[3,1]:=0.0;
+ m[3,2]:=0.0;
+ m[3,3]:=ti;
+end;
+
+constructor TMat4.Diag(const tx,ty,tz:TScalar); overload;
+begin
+     Diag(tx, ty, tz, 1);
+
 end;
 
 constructor TMat4.Translate(const tx,ty,tz:TScalar);

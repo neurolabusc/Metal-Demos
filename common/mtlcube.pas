@@ -32,7 +32,8 @@ type
     property Azimuth : single read fAzimuth write SetAzimuth;
     property Elevation : single read fElevation write fElevation;
     property Size : single read SizeFrac write SetSize;
-    procedure Draw(Width,Height: integer); //must be called while TOpenGLControl is current context
+    procedure Draw(Width,Height: integer);
+    //procedure Draw(Width,Height: integer; pass: MTLRenderPassDescriptor); overload;
     constructor Create(Ctx: TMetalControl);
   end;
 
@@ -228,6 +229,37 @@ begin
   MTLSetVertexBytes(@vertUniforms, sizeof(vertUniforms), 1);
   MTLDraw(MTLPrimitiveTypeTriangleStrip, 0, 36);
 end;
+
+(*procedure TGPUCube.Draw(Width,Height: integer; pass: MTLRenderPassDescriptor); overload;
+var
+  sz: single;
+  vertUniforms: TVertUniforms;
+  //modelViewProjectionMatrix,
+    projectionMatrix, modelMatrix: TMat4;
+begin
+  ScreenSize(Width,Height);
+  sz := min(ScrnW,ScrnH) * SizeFrac;
+  if sz < 5 then exit;
+  setPipeline;
+  MTLSetShader(shaderPipeline);
+  CreateCube(sz);
+  modelMatrix := TMat4.Identity;
+  projectionMatrix := TMat4.Ortho (0, ScrnW,0, ScrnH,-10*sz,10*sz);
+  projectionMatrix *= TMat4.Translate(0,0,sz*8);
+  projectionMatrix *= TMat4.Translate(1.8*sz,1.8*sz,0);
+    modelMatrix *= TMat4.RotateX(DegToRad(90-fElevation));
+  modelMatrix *= TMat4.RotateZ(DegToRad(180-fAzimuth));
+  //projectionMatrix *= TMat4.RotateX(-DegToRad(90-fElevation));
+  //projectionMatrix *= TMat4.RotateZ(-DegToRad(fAzimuth));
+  vertUniforms.modelViewProjectionMatrix := ( projectionMatrix * modelMatrix);
+  //MTLBeginEncoding(shaderPipeline, pass);
+  //MTLBeginEncoding(shaderPipeline);
+    MTLSetVertexBuffer(vertexBuffer, 0, 0);
+    MTLSetVertexBytes(@vertUniforms, sizeof(vertUniforms), 1);
+    MTLDraw(MTLPrimitiveTypeTriangleStrip, 0, 36);
+  //MTLEndEncoding
+
+end;*)
 
 end.
 

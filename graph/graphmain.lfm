@@ -1,0 +1,132 @@
+object Form1: TForm1
+  Left = 363
+  Height = 302
+  Top = 208
+  Width = 498
+  Caption = 'Graph'
+  Menu = MainMenu1
+  OnShow = FormShow
+  Position = poScreenCenter
+  LCLVersion = '2.1.0.0'
+  object MainMenu1: TMainMenu
+    left = 27
+    top = 25
+    object FileMenu: TMenuItem
+      Caption = 'File'
+      object OpenMenu: TMenuItem
+        Caption = 'Open'
+        ShortCut = 4175
+        OnClick = OpenMenuClick
+      end
+      object SaveMenu: TMenuItem
+        Caption = 'Save'
+        ShortCut = 4179
+        OnClick = SaveMenuClick
+      end
+    end
+    object EditMenu: TMenuItem
+      Caption = 'Edit'
+      object CopyMenu: TMenuItem
+        Caption = 'Copy text'
+        OnClick = CopyMenuClick
+      end
+    end
+    object MenuItem1: TMenuItem
+      Caption = 'View'
+      object MenuItem6: TMenuItem
+        Caption = 'Color Scheme'
+        object ColorSchemeW: TMenuItem
+          AutoCheck = True
+          Caption = 'White'
+          GroupIndex = 128
+          RadioItem = True
+          OnClick = ColorSchemeWClick
+        end
+        object ColorSchemeG: TMenuItem
+          Tag = 1
+          AutoCheck = True
+          Caption = 'Gray'
+          Checked = True
+          GroupIndex = 128
+          RadioItem = True
+          OnClick = ColorSchemeWClick
+        end
+        object ColorSchemeBk: TMenuItem
+          Tag = 2
+          AutoCheck = True
+          Caption = 'Black'
+          GroupIndex = 128
+          RadioItem = True
+          OnClick = ColorSchemeWClick
+        end
+        object ColorSchemeB: TMenuItem
+          Tag = 3
+          AutoCheck = True
+          Caption = 'Blue'
+          GroupIndex = 128
+          RadioItem = True
+          OnClick = ColorSchemeWClick
+        end
+        object ColorSchemeDarkB: TMenuItem
+          Tag = 4
+          Caption = 'Dark Blue'
+          OnClick = ColorSchemeWClick
+        end
+      end
+      object ModeMenu: TMenuItem
+        Caption = 'Mode'
+        object RawMenu: TMenuItem
+          AutoCheck = True
+          Caption = 'Raw'
+          Checked = True
+          GroupIndex = 123
+          RadioItem = True
+          OnClick = ScaleMenu
+        end
+        object DemeanMenu: TMenuItem
+          Tag = 1
+          AutoCheck = True
+          Caption = 'Demean'
+          GroupIndex = 123
+          RadioItem = True
+          OnClick = ScaleMenu
+        end
+        object NormalizeMenu: TMenuItem
+          Tag = 2
+          AutoCheck = True
+          Caption = 'Normalize (-1..1)'
+          GroupIndex = 123
+          RadioItem = True
+          OnClick = ScaleMenu
+        end
+        object Normalize01Menu: TMenuItem
+          Tag = 3
+          AutoCheck = True
+          Caption = 'Normalize (0..1)'
+          GroupIndex = 123
+          RadioItem = True
+          OnClick = ScaleMenu
+        end
+        object PercentMenu: TMenuItem
+          Tag = 4
+          AutoCheck = True
+          Caption = 'Percent'
+          GroupIndex = 123
+          RadioItem = True
+          OnClick = ScaleMenu
+        end
+      end
+      object NodeMarkerMenu: TMenuItem
+        AutoCheck = True
+        Caption = 'Show Node Markers'
+        OnClick = NodeMarkerMenuClick
+      end
+    end
+  end
+  object SaveDialog1: TSaveDialog
+    DefaultExt = '.txt'
+    Filter = 'Text|*.txt'
+    left = 152
+    top = 25
+  end
+end

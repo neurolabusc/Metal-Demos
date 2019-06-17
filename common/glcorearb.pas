@@ -23,7 +23,7 @@ unit glcorearb;
 
 interface
 
-uses {$IFDEF Windows} Windows, {$ENDIF} dynlibs, SysUtils, math;
+uses {$IFDEF Windows} Windows, {$ENDIF} dynlibs, SysUtils;//, math;
 (*
 ** Copyright (c) 2013-2014 The Khronos Group Inc.
 **

@@ -4,7 +4,6 @@ unit glclrbar;
 {$mode objfpc}{$H+}
 interface
 
-
 uses
   retinahelper,
   glcorearb, gl_core_utils, glfont, SimdUtils,
@@ -29,7 +28,6 @@ type
          fisVisible, fisVertical, fisTopOrRight, isRedraw, isText: boolean;
          txt: TGPUFont;
          glControl: TOpenGLControl;
-         //procedure CreateStrips;
          procedure CreateClrbar;
          procedure ScreenSize(nLUT,Width,Height: integer);
          procedure CreateTicksText(mn,mx: single; BarLength, BarTop, BarThick, fntScale: single);
@@ -56,7 +54,8 @@ type
 
 implementation
 
-//uses mainunit;
+uses
+  graphTicks;
 
 function TGPUClrbar.PanelFraction (): single;
 begin
@@ -90,10 +89,11 @@ end;
 
     const
         kBlockSz = 8192;
+    //the 'flat' in GLSL code below uses nearest neighbor for colorbars: useful for atlases with discrete colors
         kVert2D ='#version 330'
     +#10'layout(location = 0) in vec3 Vert;'
     +#10'layout(location = 3) in vec4 Clr;'
-    +#10'out vec4 vClr;'
+    +#10'flat out vec4 vClr;'
     +#10'uniform vec2 ViewportSize;'
     +#10'void main() {'
     +#10'    vec2 ptx = Vert.xy;'
@@ -103,7 +103,7 @@ end;
     +#10'    vClr = Clr;'
     +#10'}';
         kFrag2D = '#version 330'
-    +#10'in vec4 vClr;'
+    +#10'flat in vec4 vClr;'
     +#10'out vec4 color;'
     +#10'void main() {'
     +#10'    color = vClr;'
@@ -282,64 +282,6 @@ begin
      glControl.ReleaseContext;
 end;
 
-function fRemainder(const a,b:double):double;
-begin
-  result := a-b * Int(a/b);
-  if (result > (0.5 * b)) then result := b - result;
-end;
-
-type
-  TTicks = record
-    stepSize, remainder: single;
-    decimals: integer;
-  end;
-
-  function decimals(v: double): integer;
-  var
-    f: double;
-  begin
-    result := 0;
-    f := frac(v);
-    while (f > 0.001) and (f < 0.999) do begin
-          v := v * 10;
-          result := result + 1;
-          f := frac(v);
-    end;
-  end;
-
-function setStepSize(lRange: double; lDesiredSteps: integer): TTicks;
-var
-   lPower: integer;
-begin
-  result.stepSize := lRange / lDesiredSteps;
-  lPower := 0;
-  while result.stepSize >= 10 do begin
-        result.stepSize := result.stepSize/10;
-        inc(lPower);
-  end;
-  while result.stepSize < 1 do begin
-       result.stepSize := result.stepSize * 10;
-       dec(lPower);
-  end;
-  if lPower < 0 then
-        result.decimals := abs(lPower)
-  else
-        result.decimals := 0;
-  result.stepSize := round(result.stepSize) * Power(10,lPower);
-  result.remainder := fRemainder(lRange, result.stepSize);
-  if result.remainder < (0.001* result.stepSize) then
-     result.remainder := 0;
-end;
-
-function setStepSizeForce(lRange: double; lDesiredSteps: integer): TTicks;
-begin
-  result.stepSize := lRange / lDesiredSteps;
-  result.decimals := decimals(result.stepSize);
-  result.remainder := fRemainder(lRange, result.stepSize);
-  if result.remainder < (0.001* result.stepSize) then
-     result.remainder := 0;
-end;
-
 FUNCTION specialsingle (var s:single): boolean;
 //returns true if s is Infinity, NAN or Indeterminate
 //4byte IEEE: msb[31] = signbit, bits[23-30] exponent, bits[0..22] mantissa
@@ -357,7 +299,9 @@ procedure TGPUClrbar.CreateTicksText(mn,mx: single; BarLength, BarTop, BarThick,
 var
   lStep,lRange, t, MarkerSzX,MarkerSzY, lPosX, lPosY, StWid: double;
   isInvert: boolean;
-  tic, ticAlt: TTicks;
+  //tic, ticAlt: TTicks;
+  ticDecimals: integer;
+  ticMin, ticStep: double;
   St: string;
 begin
   if (mx = mn) or (BarThick = 0) or (BarLength = 0) then exit;
@@ -376,37 +320,7 @@ begin
   end else
       MarkerSzY := 1;
   //next: compute increment
-  lRange := abs(mx - mn);
-  if (mn < 0) and (mx > 0) then
-     lRange := max(abs(mn),mx);// + (0.5 * min(abs(mn),mx));
-  if lRange < 0.000001 then exit;
-  if ((mn < 0) and (mx > 0)) and ((min(abs(mn),mx)/lRange) > 0.65)  then  begin
-    tic := setStepSize(lRange, 2);
-    //now try forcing other values
-    ticAlt := setStepSizeForce(lRange, 3);
-    if (ticAlt.remainder < tic.remainder) and (ticAlt.decimals <= tic.decimals) then
-       tic := ticAlt;
-    ticAlt := setStepSizeForce(lRange, 4);
-    if (ticAlt.remainder < tic.remainder) and (ticAlt.decimals <= tic.decimals) then
-       tic := ticAlt;
-  end else begin
-       tic := setStepSize(lRange, 3);
-       //now try forcing other values
-       ticAlt := setStepSizeForce(lRange, 2);
-       if (ticAlt.remainder < tic.remainder) and (ticAlt.decimals <= tic.decimals) then
-          tic := ticAlt;
-       ticAlt := setStepSizeForce(lRange, 4);
-       if (ticAlt.remainder < tic.remainder) and (ticAlt.decimals <= tic.decimals) then
-          tic := ticAlt;
-       ticAlt := setStepSizeForce(lRange, 1);
-       if (ticAlt.remainder < tic.remainder) and (ticAlt.decimals < tic.decimals) then
-          tic := ticAlt;
-  end;
-  if (mn > 0) and (decimals(mn) <= tic.decimals) then
-     lStep := mn
-  else
-      lStep := trunc((mn)  / tic.stepSize)*tic.stepSize;
-  if (lStep < (mn)) and ((mn -lStep) > (lStep * 0.001) ) then lStep := lStep+tic.stepSize;
+  SelectTicks(mn, mx, lStep, ticStep, ticDecimals);
   lRange := abs(mx - mn); //full range, in case mn < 0 and mx > 0
   nglColor4ub (FontClr.r,FontClr.g,FontClr.b,255);//outline
   repeat
@@ -431,15 +345,15 @@ begin
           nglVertex2fr(lPosX+MarkerSzX,lPosY+MarkerSzY);
         nglEnd;
         if fntScale > 0 then begin
-           St := FloatToStrF(lStep, ffFixed,7,tic.decimals);
+           St := FloatToStrF(lStep, ffFixed,7,ticDecimals);
            StWid := Txt.TextWidth(fntScale, St);
            if not fisVertical then
               Txt.TextOut(lPosX-(StWid*0.5),BarTop-(BarThick*0.82),fntScale, St)
            else
                Txt.TextOut(lPosX+(BarThick*0.82),lPosY-(StWid*0.5),fntScale,90, St)
         end;
-        lStep := lStep + tic.stepSize;
-  until lStep > (mx+(tic.stepSize*0.01));
+        lStep := lStep + ticStep;
+  until lStep > (mx+(ticStep*0.01));
 end; //CreateTicksText()
 
 procedure TGPUClrbar.CreateClrbar;

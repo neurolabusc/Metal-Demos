@@ -2,7 +2,7 @@ unit meshForm;
 
 {$IFDEF LCLCocoa}
  //MetalAPI supported on modern MacOS: disable for Linux, Windows and old MacOS
-  {$DEFINE METALAPI}
+  //{$DEFINE METALAPI}
 {$ENDIF}
 {$IFDEF Darwin}
 {$modeswitch objectivec1}
@@ -10,9 +10,11 @@ unit meshForm;
 {$IFDEF LCLCarbon}
 MacOS must use Cocoa, regardless of whether OpenGL Core or Metal is used.
 {$ENDIF}
+{$DEFINE MATCAP}
 interface
 
 uses
+  {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, Types, fileutil;
 
 type
@@ -24,6 +26,7 @@ type
     MainMenu: TMainMenu;
     FileMenu: TMenuItem;
     FlipMenu: TMenuItem;
+    MatCapMenu: TMenuItem;
     SaveDialog1: TSaveDialog;
     SaveMenu: TMenuItem;
     PerspectiveMenu: TMenuItem;
@@ -49,6 +52,7 @@ type
     procedure ViewGPUMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure OpenMenuClick(Sender: TObject);
     procedure ShaderMenuClick(Sender: TObject);
+    procedure MatCapMenuClick(Sender: TObject);
     procedure ViewGPUMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     //procedure ViewGPUPrepare(Sender: TObject);
     procedure ViewGPUPaint(Sender: TObject);
@@ -218,6 +222,9 @@ begin
   Mesh1 := TGPUMesh.Create(ViewGPU1);
   {$IFNDEF METALAPI}
   ViewGPU1.MakeCurrent(false);
+  {$IFDEF LCLCocoa}
+  ViewGPU1.setRetina(true);
+  {$ENDIF}
   if (not  Load_GL_version_3_3_CORE) then begin
      showmessage('Unable to load OpenGL 3.3 Core');
      halt;
@@ -243,13 +250,37 @@ begin
          ShaderMenu.Add(newMenu);
      end;
   end;
+  {$IFDEF MATCAP}
+  shaderNames.Clear;
+  shaderPath := Mesh1.MatCapPath;
+  if not DirectoryExists(shaderPath) then showmessage('Could not find "'+shaderPath+'"');
+  shaderNames := FindAllFiles(shaderPath, '*'+'.jpg', true);
+  if shaderNames.Count > 0 then begin
+     shaderNames.Sort;
+     for i := 0 to (shaderNames.Count-1) do begin
+         shaderName := ChangeFileExt(ExtractFileName(shaderNames[i]),'');
+         if (length(shaderName) < 1) or (shaderName[1]='_') or (shaderName[1] = '.')  then continue;
+         newMenu := TMenuItem.Create(MainMenu);
+         newMenu.Caption := shaderName;
+         newMenu.OnClick:= @MatCapMenuClick;
+         newMenu.GroupIndex:=133;
+         newMenu.AutoCheck:=true;
+         newMenu.RadioItem:=true;
+         MatCapMenu.Add(newMenu);
+     end;
+     //newMenu.Click;
+     //matCapName := Mesh1.MatCapPath + (Sender as TMenuItem).caption+'.jpg';
+     MatCapMenu.enabled := Mesh1.uniform_MatCap >= 0;
+     Mesh1.SetMatCap(Mesh1.MatCapPath + shaderName+'.jpg');
+  end;
+  MatCapMenu.visible := true;
+  {$ENDIF}
   shaderNames.Free;
   {$IFDEF METALAPI}
   ViewGPU1.SetPreferredFrameRate(0);
   ViewGPU1.OnResize := @FormResize;
   {$ENDIF}
   ViewGPU1.Invalidate;
-
 end;
 
 (*procedure TForm1.ViewGPUPrepare(Sender: TObject);
@@ -260,14 +291,32 @@ begin
     ViewGPU1.OnResize := @FormResize;
     {$ENDIF}
 end;*)
+procedure TForm1.MatCapMenuClick(Sender: TObject);
+{$IFDEF MATCAP}
+var
+ matCapName: string;
+begin
+ matCapName := Mesh1.MatCapPath + (Sender as TMenuItem).caption+'.jpg';
+ Mesh1.SetMatCap(matCapName);
+ //Caption := inttostr(mesh1.uniform_MatCap)+' '+inttostr(mesh1.matCapTexture);
+ ViewGPU1.Invalidate;
+end;
+{$ELSE}
+begin
+  //
+end;
+{$ENDIF}
 
 procedure TForm1.ShaderMenuClick(Sender: TObject);
 var
  shaderName: string;
 begin
- shaderName := ResourceDir + pathdelim + (Sender as TMenuItem).caption+kExt;
- Mesh1.SetShader(shaderName);
- ViewGPU1.Invalidate;
+  shaderName := Mesh1.ShaderPath + (Sender as TMenuItem).caption+kExt;
+  Mesh1.SetShader(shaderName);
+  ViewGPU1.Invalidate;
+  {$IFDEF MATCAP}
+  MatCapMenu.enabled := Mesh1.uniform_MatCap >= 0;
+  {$ENDIF}
 end;
 
 procedure TForm1.ViewGPUPaint(Sender: TObject);

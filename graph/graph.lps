@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units Count="51">
+      <Unit0>
+        <Filename Value="graph.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="9" Y="6"/>
+        <UsageCount Value="117"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="graphmain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="3" Y="6"/>
+        <UsageCount Value="117"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="graphticks.pas"/>
+        <UnitName Value="graphTicks"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="22" Y="7"/>
+        <UsageCount Value="101"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="lines.lpr"/>
+        <UsageCount Value="12"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="linesmain.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UsageCount Value="12"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="gltext.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="69" Y="7"/>
+        <UsageCount Value="64"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="clrbar.lpr"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="22" Y="6"/>
+        <UsageCount Value="128"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="clrbarmain.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="graphmain"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="26" Y="25"/>
+        <UsageCount Value="128"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="texmain.pas"/>
+        <ComponentName Value="GLForm1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UsageCount Value="11"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="basic.lpr"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="4"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="basicmain.pas"/>
+        <ComponentName Value="GLForm1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="140"/>
+        <CursorPos X="6" Y="145"/>
+        <UsageCount Value="5"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="glcorearb.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1683"/>
+        <CursorPos X="2" Y="1696"/>
+        <UsageCount Value="52"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="gl_core_utils.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="13" Y="7"/>
+        <UsageCount Value="45"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="gl_core_matrix.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="20"/>
+        <UsageCount Value="38"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../../../lazarus/components/tachart/tadrawutils.pas"/>
+        <UnitName Value="TADrawUtils"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="185"/>
+        <CursorPos X="27" Y="194"/>
+        <UsageCount Value="1"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="../../../lazarus/lcl/graphics.pp"/>
+        <UnitName Value="Graphics"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="932"/>
+        <CursorPos X="3" Y="941"/>
+        <UsageCount Value="1"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="../../../lazarus/lcl/graphtype.pp"/>
+        <UnitName Value="GraphType"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1578"/>
+        <CursorPos X="32" Y="1601"/>
+        <UsageCount Value="2"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="glclrbar.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="66"/>
+        <CursorPos X="28" Y="82"/>
+        <UsageCount Value="6"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="glcube.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="347"/>
+        <CursorPos Y="372"/>
+        <UsageCount Value="3"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="fnt.lrs"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="2"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="glmtext.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="17" Y="8"/>
+        <UsageCount Value="2"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="../gl/glfont.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="84"/>
+        <CursorPos X="42" Y="99"/>
+        <UsageCount Value="2"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="../gl/GLTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="5"/>
+        <UsageCount Value="2"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="../../lazarus/lcl/lresources.pp"/>
+        <UnitName Value="LResources"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="5353"/>
+        <CursorPos Y="5359"/>
+        <UsageCount Value="2"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="../../lazarus/lcl/include/wincontrol.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="7539"/>
+        <CursorPos X="37" Y="7548"/>
+        <UsageCount Value="2"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="mtlclrbar.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="45" Y="21"/>
+        <UsageCount Value="3"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="mtlfont.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="288"/>
+        <CursorPos X="9" Y="289"/>
+        <UsageCount Value="3"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalTypes.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="15"/>
+        <CursorPos X="9" Y="30"/>
+        <UsageCount Value="3"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="../gl/gllines.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="163"/>
+        <CursorPos X="69" Y="179"/>
+        <UsageCount Value="3"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="../gl/gl_core_utils.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="16"/>
+        <UsageCount Value="2"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="mtllines.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="70"/>
+        <CursorPos X="65" Y="74"/>
+        <UsageCount Value="2"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="../../Metal-Framework/lazarus/package/framework/metal/MTLRenderCommandEncoder.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="27" Y="17"/>
+        <UsageCount Value="2"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalUtils.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="54"/>
+        <CursorPos X="12" Y="75"/>
+        <UsageCount Value="2"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalPipeline.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="11" Y="89"/>
+        <UsageCount Value="2"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="../gl/mtl_utils.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="5"/>
+        <UsageCount Value="2"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="../mesh/mesh.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="48" Y="10"/>
+        <UsageCount Value="2"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="../common/gl_core_utils.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="4" Y="6"/>
+        <UsageCount Value="2"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="../common/mtllines.pas"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="62"/>
+        <CursorPos X="68" Y="78"/>
+        <UsageCount Value="29"/>
+        <Loaded Value="True"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="../common/gllines.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="5"/>
+        <CursorPos X="14" Y="24"/>
+        <UsageCount Value="33"/>
+        <Loaded Value="True"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="../common/retinahelper.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="30" Y="5"/>
+        <UsageCount Value="2"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="gpugraph.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="142"/>
+        <CursorPos X="39" Y="155"/>
+        <UsageCount Value="25"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="../common/SimdUtils.pas"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="30"/>
+        <CursorPos X="12" Y="48"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="/usr/local/share/fpcsrc/rtl/inc/mathh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="80"/>
+        <CursorPos X="14" Y="98"/>
+        <UsageCount Value="3"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="../common/sdffont.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="24" Y="49"/>
+        <UsageCount Value="23"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="../common/glclrbar.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="23"/>
+        <CursorPos X="10" Y="31"/>
+        <UsageCount Value="6"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="../common/glgraph.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="89"/>
+        <CursorPos X="6" Y="120"/>
+        <UsageCount Value="35"/>
+        <Loaded Value="True"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="../common/graphticks.pas"/>
+        <UnitName Value="graphTicks"/>
+        <EditorIndex Value="5"/>
+        <CursorPos X="24" Y="5"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="../common/mtlgraph.pas"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="102"/>
+        <CursorPos X="6" Y="120"/>
+        <UsageCount Value="28"/>
+        <Loaded Value="True"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="../common/VectorMath.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="201"/>
+        <CursorPos X="5" Y="220"/>
+        <UsageCount Value="28"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="../common/glcorearb.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="14"/>
+        <CursorPos X="61" Y="26"/>
+        <UsageCount Value="12"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="../../lazarus/lcl/controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="3" Y="58"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit50>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="25" Column="12"/>
+      </Position1>
+      <Position2>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="46" Column="54" TopLine="15"/>
+      </Position2>
+      <Position3>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="156" Column="37" TopLine="126"/>
+      </Position3>
+      <Position4>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="185" Column="37" TopLine="155"/>
+      </Position4>
+      <Position5>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="304" Column="20" TopLine="280"/>
+      </Position5>
+      <Position6>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="176" Column="24" TopLine="153"/>
+      </Position6>
+      <Position7>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="193" Column="41" TopLine="184"/>
+      </Position7>
+      <Position8>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="156" Column="33" TopLine="152"/>
+      </Position8>
+      <Position9>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="166" Column="10" TopLine="146"/>
+      </Position9>
+      <Position10>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="339" Column="5" TopLine="309"/>
+      </Position10>
+      <Position11>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="371" Column="10" TopLine="341"/>
+      </Position11>
+      <Position12>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="183" Column="27" TopLine="180"/>
+      </Position12>
+      <Position13>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="26" Column="13" TopLine="7"/>
+      </Position13>
+      <Position14>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="31" Column="13" TopLine="7"/>
+      </Position14>
+      <Position15>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="32" Column="13" TopLine="7"/>
+      </Position15>
+      <Position16>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="33" Column="13" TopLine="7"/>
+      </Position16>
+      <Position17>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="41" Column="23" TopLine="10"/>
+      </Position17>
+      <Position18>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="162" Column="21" TopLine="134"/>
+      </Position18>
+      <Position19>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="163" Column="21" TopLine="135"/>
+      </Position19>
+      <Position20>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="46" Column="40" TopLine="33"/>
+      </Position20>
+      <Position21>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="50" Column="27" TopLine="33"/>
+      </Position21>
+      <Position22>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="51" Column="31" TopLine="33"/>
+      </Position22>
+      <Position23>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="52" Column="27" TopLine="33"/>
+      </Position23>
+      <Position24>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="53" Column="27" TopLine="33"/>
+      </Position24>
+      <Position25>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="54" Column="28" TopLine="33"/>
+      </Position25>
+      <Position26>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="304" Column="42" TopLine="303"/>
+      </Position26>
+      <Position27>
+        <Filename Value="../common/mtlgraph.pas"/>
+        <Caret Line="11" Column="52"/>
+      </Position27>
+      <Position28>
+        <Filename Value="../common/mtlgraph.pas"/>
+        <Caret Line="96" Column="26" TopLine="83"/>
+      </Position28>
+      <Position29>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="714" Column="38" TopLine="708"/>
+      </Position29>
+      <Position30>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="89" Column="25" TopLine="70"/>
+      </Position30>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode="default"/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

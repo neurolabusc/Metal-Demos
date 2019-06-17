@@ -91,6 +91,10 @@ object Form1: TForm1
     object ShaderMenu: TMenuItem
       Caption = 'Shader'
     end
+    object MatCapMenu: TMenuItem
+      Caption = 'MatCap'
+      Visible = False
+    end
   end
   object OpenDialog1: TOpenDialog
     left = 17

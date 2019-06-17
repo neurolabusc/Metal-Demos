@@ -27,6 +27,7 @@ begin
  polyVector2 := Vec3(v3.x - v1.x, v3.y - v1.y, v3.z - v1.z);
  //result := crossProduct(polyVector1, polyVector2);
  result :=  polyVector1.Cross(polyVector2);
+ //result := result.Normalize;
  //make sure to eventually normalize the result!
 end; // getSurfaceNormal()
 
@@ -710,7 +711,7 @@ begin
       normals[faces[i].Z] += fNorm;
   end;
   for i := 0 to (length(vertices)-1) do
-      normals[i].normalize;
+      normals[i] := normals[i].normalize;
   if length(vertexRGBA) < length(vertices) then begin
      setlength(vertexRGBA, length(vertices));
      vertexRGBA[0] := defaultColor;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectSession>
-    <Version Value="11"/>
+    <Version Value="12"/>
     <BuildModes Active="Default"/>
     <Units Count="43">
       <Unit0>
@@ -18,8 +18,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="81"/>
-        <CursorPos X="56" Y="94"/>
+        <TopLine Value="38"/>
+        <CursorPos Y="70"/>
         <UsageCount Value="26"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -315,123 +315,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="134" Column="3" TopLine="113"/>
+        <Caret Line="88" Column="20" TopLine="78"/>
       </Position1>
       <Position2>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="44" Column="18" TopLine="44"/>
+        <Caret Line="161" Column="44" TopLine="139"/>
       </Position2>
       <Position3>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="161" Column="23" TopLine="139"/>
+        <Caret Line="8"/>
       </Position3>
       <Position4>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="88" Column="20" TopLine="78"/>
+        <Caret Line="136" Column="29" TopLine="125"/>
       </Position4>
       <Position5>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="161" Column="44" TopLine="139"/>
+        <Caret Line="6" Column="2"/>
       </Position5>
       <Position6>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="8"/>
+        <Caret Line="6" Column="5"/>
       </Position6>
       <Position7>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="136" Column="29" TopLine="125"/>
+        <Caret Line="134" Column="3" TopLine="128"/>
       </Position7>
       <Position8>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="6" Column="2"/>
+        <Caret Line="147" Column="25" TopLine="143"/>
       </Position8>
       <Position9>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="6" Column="5"/>
+        <Caret Line="27" Column="30" TopLine="13"/>
       </Position9>
       <Position10>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="134" Column="3" TopLine="128"/>
+        <Caret Line="58" Column="33" TopLine="34"/>
       </Position10>
       <Position11>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="147" Column="25" TopLine="143"/>
+        <Caret Line="81" Column="21" TopLine="59"/>
       </Position11>
       <Position12>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="27" Column="30" TopLine="13"/>
+        <Caret Line="61" Column="14" TopLine="55"/>
       </Position12>
       <Position13>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="58" Column="33" TopLine="34"/>
+        <Caret Line="133" Column="32" TopLine="128"/>
       </Position13>
       <Position14>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="81" Column="21" TopLine="59"/>
+        <Caret Line="134" Column="3" TopLine="128"/>
       </Position14>
       <Position15>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="61" Column="14" TopLine="55"/>
+        <Caret Line="6" Column="3"/>
       </Position15>
       <Position16>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="133" Column="32" TopLine="128"/>
+        <Caret Line="138" Column="62" TopLine="128"/>
       </Position16>
       <Position17>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="134" Column="3" TopLine="128"/>
+        <Caret Line="6" Column="5"/>
       </Position17>
       <Position18>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="6" Column="3"/>
+        <Caret Line="70" Column="23" TopLine="64"/>
       </Position18>
       <Position19>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="138" Column="62" TopLine="128"/>
+        <Caret Line="91" Column="11" TopLine="73"/>
       </Position19>
       <Position20>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="6" Column="5"/>
+        <Caret Line="48" Column="20" TopLine="48"/>
       </Position20>
       <Position21>
-        <Filename Value="linesmain.pas"/>
-        <Caret Line="70" Column="23" TopLine="64"/>
+        <Filename Value="../common/retinahelper.pas"/>
+        <Caret Line="5" Column="20"/>
       </Position21>
       <Position22>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="91" Column="11" TopLine="73"/>
+        <Caret Line="58" Column="46" TopLine="48"/>
       </Position22>
       <Position23>
-        <Filename Value="linesmain.pas"/>
-        <Caret Line="48" Column="20" TopLine="48"/>
+        <Filename Value="../common/retinahelper.pas"/>
+        <Caret Line="8" Column="57"/>
       </Position23>
       <Position24>
-        <Filename Value="../common/retinahelper.pas"/>
-        <Caret Line="5" Column="20"/>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="91" Column="44" TopLine="83"/>
       </Position24>
       <Position25>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="58" Column="46" TopLine="48"/>
+        <Caret Line="47" Column="61" TopLine="38"/>
       </Position25>
       <Position26>
-        <Filename Value="../common/retinahelper.pas"/>
-        <Caret Line="8" Column="57"/>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="48" Column="30" TopLine="38"/>
       </Position26>
       <Position27>
-        <Filename Value="linesmain.pas"/>
-        <Caret Line="91" Column="44" TopLine="83"/>
+        <Filename Value="../common/retinahelper.pas"/>
+        <Caret Line="10" Column="19"/>
       </Position27>
       <Position28>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="47" Column="61" TopLine="38"/>
+        <Caret Line="85" Column="22" TopLine="81"/>
       </Position28>
       <Position29>
         <Filename Value="linesmain.pas"/>
-        <Caret Line="48" Column="30" TopLine="38"/>
+        <Caret Line="93" Column="43" TopLine="81"/>
       </Position29>
       <Position30>
-        <Filename Value="../common/retinahelper.pas"/>
-        <Caret Line="10" Column="19"/>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="28" Column="30" TopLine="11"/>
       </Position30>
     </JumpHistory>
     <RunParams>
