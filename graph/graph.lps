@@ -17,8 +17,7 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <CursorPos X="3" Y="6"/>
+        <CursorPos X="5" Y="6"/>
         <UsageCount Value="117"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -320,9 +319,10 @@
       </Unit44>
       <Unit45>
         <Filename Value="../common/glgraph.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="89"/>
-        <CursorPos X="6" Y="120"/>
+        <TopLine Value="94"/>
+        <CursorPos X="13" Y="126"/>
         <UsageCount Value="35"/>
         <Loaded Value="True"/>
       </Unit45>
@@ -330,7 +330,7 @@
         <Filename Value="../common/graphticks.pas"/>
         <UnitName Value="graphTicks"/>
         <EditorIndex Value="5"/>
-        <CursorPos X="24" Y="5"/>
+        <CursorPos X="11" Y="7"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit46>
@@ -367,124 +367,124 @@
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="25" Column="12"/>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="26" Column="13" TopLine="7"/>
       </Position1>
       <Position2>
-        <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="46" Column="54" TopLine="15"/>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="31" Column="13" TopLine="7"/>
       </Position2>
       <Position3>
-        <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="156" Column="37" TopLine="126"/>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="32" Column="13" TopLine="7"/>
       </Position3>
       <Position4>
-        <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="185" Column="37" TopLine="155"/>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="33" Column="13" TopLine="7"/>
       </Position4>
       <Position5>
-        <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="304" Column="20" TopLine="280"/>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="41" Column="23" TopLine="10"/>
       </Position5>
       <Position6>
-        <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="176" Column="24" TopLine="153"/>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="162" Column="21" TopLine="134"/>
       </Position6>
       <Position7>
-        <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="193" Column="41" TopLine="184"/>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="163" Column="21" TopLine="135"/>
       </Position7>
       <Position8>
         <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="156" Column="33" TopLine="152"/>
+        <Caret Line="46" Column="40" TopLine="33"/>
       </Position8>
       <Position9>
         <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="166" Column="10" TopLine="146"/>
+        <Caret Line="50" Column="27" TopLine="33"/>
       </Position9>
       <Position10>
         <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="339" Column="5" TopLine="309"/>
+        <Caret Line="51" Column="31" TopLine="33"/>
       </Position10>
       <Position11>
         <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="371" Column="10" TopLine="341"/>
+        <Caret Line="52" Column="27" TopLine="33"/>
       </Position11>
       <Position12>
-        <Filename Value="graphmain.pas"/>
-        <Caret Line="183" Column="27" TopLine="180"/>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="53" Column="27" TopLine="33"/>
       </Position12>
       <Position13>
-        <Filename Value="graphmain.pas"/>
-        <Caret Line="26" Column="13" TopLine="7"/>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="54" Column="28" TopLine="33"/>
       </Position13>
       <Position14>
-        <Filename Value="graphmain.pas"/>
-        <Caret Line="31" Column="13" TopLine="7"/>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="304" Column="42" TopLine="303"/>
       </Position14>
       <Position15>
-        <Filename Value="graphmain.pas"/>
-        <Caret Line="32" Column="13" TopLine="7"/>
+        <Filename Value="../common/mtlgraph.pas"/>
+        <Caret Line="11" Column="52"/>
       </Position15>
       <Position16>
-        <Filename Value="graphmain.pas"/>
-        <Caret Line="33" Column="13" TopLine="7"/>
+        <Filename Value="../common/mtlgraph.pas"/>
+        <Caret Line="96" Column="26" TopLine="83"/>
       </Position16>
       <Position17>
-        <Filename Value="graphmain.pas"/>
-        <Caret Line="41" Column="23" TopLine="10"/>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="714" Column="38" TopLine="708"/>
       </Position17>
       <Position18>
-        <Filename Value="graphmain.pas"/>
-        <Caret Line="162" Column="21" TopLine="134"/>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="89" Column="25" TopLine="70"/>
       </Position18>
       <Position19>
-        <Filename Value="graphmain.pas"/>
-        <Caret Line="163" Column="21" TopLine="135"/>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="120" Column="6" TopLine="89"/>
       </Position19>
       <Position20>
         <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="46" Column="40" TopLine="33"/>
+        <Caret Line="368" Column="29" TopLine="339"/>
       </Position20>
       <Position21>
         <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="50" Column="27" TopLine="33"/>
+        <Caret Line="369" Column="29" TopLine="340"/>
       </Position21>
       <Position22>
         <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="51" Column="31" TopLine="33"/>
+        <Caret Line="626" Column="23" TopLine="597"/>
       </Position22>
       <Position23>
         <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="52" Column="27" TopLine="33"/>
+        <Caret Line="651" Column="34" TopLine="637"/>
       </Position23>
       <Position24>
         <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="53" Column="27" TopLine="33"/>
+        <Caret Line="652" Column="34" TopLine="637"/>
       </Position24>
       <Position25>
         <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="54" Column="28" TopLine="33"/>
+        <Caret Line="660" Column="33" TopLine="637"/>
       </Position25>
       <Position26>
         <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="304" Column="42" TopLine="303"/>
+        <Caret Line="652" Column="36" TopLine="637"/>
       </Position26>
       <Position27>
-        <Filename Value="../common/mtlgraph.pas"/>
-        <Caret Line="11" Column="52"/>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="349" Column="3" TopLine="339"/>
       </Position27>
       <Position28>
-        <Filename Value="../common/mtlgraph.pas"/>
-        <Caret Line="96" Column="26" TopLine="83"/>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="644" Column="39" TopLine="616"/>
       </Position28>
       <Position29>
         <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="714" Column="38" TopLine="708"/>
+        <Caret Line="41" Column="38" TopLine="23"/>
       </Position29>
       <Position30>
         <Filename Value="../common/glgraph.pas"/>
-        <Caret Line="89" Column="25" TopLine="70"/>
+        <Caret Line="126" Column="13" TopLine="94"/>
       </Position30>
     </JumpHistory>
     <RunParams>

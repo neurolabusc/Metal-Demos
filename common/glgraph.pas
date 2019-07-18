@@ -5,7 +5,7 @@ unit glgraph; //OpenGL and Metal differ in only in first 2 lines
 interface
 
 uses
-  SimdUtils, Classes, SysUtils, dialogs, math, strutils, Controls, VectorMath,
+  lazfileutils, SimdUtils, Classes, SysUtils, dialogs, math, strutils, Controls, VectorMath,
 {$IFDEF METALAPI}
  MetalUtils, Metal, MetalPipeline, MetalControl, mtllines,  mtlfont;
 {$ELSE}
@@ -69,7 +69,7 @@ type
 
 implementation
 
-uses graphTicks;
+uses graphticks;
 
 function TGPUGraph.HorizontalClickFrac(X: single): single;
 var
@@ -479,6 +479,7 @@ begin
     minXData := newvals[0];
     maxXData := minXData;
     for i := 0 to (length(XData)-1) do begin
+        //XData[i] := i;
         XData[i] := newVals[i];
         if (XData[i] < minXData) then minXData := XData[i];
         if (XData[i] > maxXData) then maxXData := XData[i];
@@ -501,6 +502,7 @@ var
   cols: array of TFloat32s;
   typ: integer = kTypeUnknown;
   captions: array of capt;
+  ext, fnm: string;
 begin
      result := false;
      if not fileexists(filename) then begin
@@ -557,11 +559,15 @@ begin
              cols[c][j] := strtofloatdef(strlst[c],0);
          j := j + 1;
      end;
+     //showmessage(format('%g : %g', [ cols[0][0], cols[0][j-1] ]));
      //build graph
      if (j < 2) or (nCol < 1) then begin
        showmessage('Need at least two lines of text (without "#" comments) '+filename);
        goto 123;
      end;
+     ext := upcase(ExtractFileExt(filename));
+     fnm := upcase(ExtractFileNameOnly(filename));
+     //fnm := upcase(ExtractFileNameWithoutExt(filename));
      if (nCol = 1) then
         typ := kType1stColYData;
      if (typ = kTypeUnknown) and (length(captions) > 1) and (captions[0] = 'XData') then
@@ -570,10 +576,20 @@ begin
         typ := kType1stColYData;
      if (typ = kTypeUnknown) and (length(captions) = 0) and (nCol = 6) and (posex('rp_',extractfilename(filename)) = 1) then
         typ := kType1stColYData;
-     if (typ = kTypeUnknown) and (upcase(ExtractFileExt(filename)) = '.1D') then
+     if (typ = kTypeUnknown) and (ext = '.1D') then
         typ := kType1stColYData;
-     if (typ = kTypeUnknown) and (upcase(ExtractFileExt(filename)) = '.PAR') then
+     if (typ = kTypeUnknown) and (ext = '.PAR') then
         typ := kType1stColYData; //FSL mcflirt creates ".PAR" files, not to be confused with Philips PAR/REC
+     if (typ = kTypeUnknown) and (posex('PS_TSPLOT_ZSTAT1_EV', fnm) > 0) then //FSL
+        typ := kType1stColYData;
+     if (typ = kTypeUnknown) and (posex('PS_TSPLOT_ZSTAT1_EV', fnm) > 0) then //FSL
+        typ := kType1stColYData;
+     if (typ = kTypeUnknown) and (posex('PS_TSPLOTC_ZSTAT1_EV', fnm) > 0) then //FSL
+        typ := kType1stColYData;
+     if (typ = kTypeUnknown) and (posex('TSPLOT_ZSTAT', fnm) > 0) then //FSL
+        typ := kType1stColYData;
+     if (typ = kTypeUnknown) and (posex('TSPLOTC_ZSTAT', fnm) > 0) then //FSL
+        typ := kType1stColYData;
      if (typ = kTypeUnknown) then begin
        i := MessageDlg('Are the first column values the X axis data?', mtConfirmation,[mbYes, mbNo], 0);
        if (i = mrYes) then
@@ -594,6 +610,7 @@ begin
          if c < length(captions) then
             AddLine(cols[c], captions[c])
          else
+             //AddLine(cols[c], format('%s [%d] %d',[str, c-i, j]));
              AddLine(cols[c], format('%s [%d]',[str, c-i]));
      end;
      result := true;

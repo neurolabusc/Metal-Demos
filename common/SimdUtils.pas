@@ -44,6 +44,22 @@ type
 	    0: (v: array[0..2] of int32);
 	    1: (x, y, z: int32);
          end;
+ TVec4i = packed record
+         case integer of
+	    0: (v: array[0..3] of int32);
+	    1: (x, y, z, t: int32);
+         end;
+ TVec6i = packed record
+         case integer of
+	    0: (v: array[0..5] of int32);
+	    1: (xLo, yLo, zLo, xHi, yHi, zHi: int32);
+         end;
+ TVec6 = packed record
+         case integer of
+	    0: (v: array[0..5] of single);
+	    1: (xLo, yLo, zLo, xHi, yHi, zHi: single);
+         end;
+
   function prod(v:TVec3i): integer;
   function SetRGBA(r,g,b,a: byte): TRGBA;
   function pti(x,y,z: integer): TVec3i; //create integer vector
@@ -53,8 +69,21 @@ type
   function ScriptDir (): string;
   function ResourceFile (name: pchar; ofType: pchar): string;
   function ShaderDir (): string;
+  function Vec6 (xLo, yLo, zLo, xHi, yHi, zHi: single): TVec6;
+
 
 implementation
+
+function Vec6 (xLo, yLo, zLo, xHi, yHi, zHi: single): TVec6;
+begin
+     result.xLo := xLo;
+     result.yLo := yLo;
+     result.zLo := zLo;
+     result.xHi := xHi;
+     result.yHi := yHi;
+     result.zHi := zHi;
+
+end;
 
 {$IFDEF Darwin}
 

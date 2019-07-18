@@ -3,7 +3,7 @@ unit clrbarmain;
 {$mode objfpc}{$H+}
 {$IFDEF LCLCocoa}
  //MetalAPI supported on modern MacOS: disable for Linux, Windows and old MacOS
-  {$DEFINE METALAPI}
+  //{$DEFINE METALAPI}
   {$modeswitch objectivec1}
 {$ENDIF}
 
@@ -66,7 +66,8 @@ begin
       LUT[i].G := 0;
       LUT[i].B := 0;
   end;
-  gClrbar.SetLUT(1, LUT, -1,1);
+  //gClrbar.SetLUT(1, LUT, -1,1);
+  gClrbar.SetLUT(1, LUT, 0.0001,0.0002);
   for i := 0 to 255 do begin
       LUT[i].R := 0;
       LUT[i].G := i;
