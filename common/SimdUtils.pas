@@ -60,7 +60,7 @@ type
 	    1: (xLo, yLo, zLo, xHi, yHi, zHi: single);
          end;
 
-  function prod(v:TVec3i): integer;
+  function prod(v:TVec3i): int64;
   function SetRGBA(r,g,b,a: byte): TRGBA;
   function pti(x,y,z: integer): TVec3i; //create integer vector
   procedure SortVec3i(var lo, hi: TVec3i);
@@ -265,7 +265,7 @@ begin
      LoHi(lo.Z, hi.Z);
 end;
 
-function prod(v:TVec3i): integer;
+function prod(v:TVec3i): int64;
 begin
      result := v.x * v.y * v.z;
 end;

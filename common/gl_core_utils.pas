@@ -13,17 +13,15 @@ uses
   procedure  loadVertFrag(shaderName: string; out VertexProgram, FragmentProgram: string);
   function  initVertFrag(vert, frag: string): GLuint;
   procedure GetError(p: integer; str: string = '');  //report OpenGL Error
-  function ScreenShot(GLBox : TOpenGLControl): TBitmap;
-  procedure SaveBmp(pngName: string; GLBox : TOpenGLControl);
-  procedure ScreenToClipBoard(GLBox : TOpenGLControl);
+  function ScreenShot(GLBox : TOpenGLControl; ScreenCaptureTransparentBackground: boolean = false): TBitmap;
+  procedure SaveBmp(pngName: string; GLBox : TOpenGLControl; ScreenCaptureTransparentBackground: boolean = false);
+  procedure ScreenToClipBoard(GLBox : TOpenGLControl; ScreenCaptureTransparentBackground: boolean = false);
 var
    GLErrorStr: string = '';
 
 implementation
 
-function ScreenShot(GLBox : TOpenGLControl): TBitmap;
-const
-  ScreenCaptureTransparentBackground : boolean = false;
+function ScreenShot(GLBox : TOpenGLControl; ScreenCaptureTransparentBackground: boolean = false): TBitmap;
 var
   RawImage: TRawImage;
   p: array of byte;
@@ -89,22 +87,22 @@ begin
  //GLbox.ReleaseContext;
 end;
 
-procedure ScreenToClipBoard(GLBox : TOpenGLControl);
+procedure ScreenToClipBoard(GLBox : TOpenGLControl; ScreenCaptureTransparentBackground: boolean = false);
 var
   bmp: TBitmap;
 begin
-  bmp := ScreenShot(GLBox);
+  bmp := ScreenShot(GLBox, ScreenCaptureTransparentBackground);
   if (bmp = nil) then exit;
    Clipboard.Assign(bmp);
   bmp.Free;
 end;
 
-procedure SaveBmp(pngName: string; GLBox : TOpenGLControl);
+procedure SaveBmp(pngName: string; GLBox : TOpenGLControl; ScreenCaptureTransparentBackground: boolean = false);
 var
   bmp: TBitmap;
   PNG: TPortableNetworkGraphic;
 begin
-  bmp := ScreenShot(GLBox);
+  bmp := ScreenShot(GLBox, ScreenCaptureTransparentBackground);
   if (bmp = nil) then exit;
   PNG := TPortableNetworkGraphic.Create;
   try
