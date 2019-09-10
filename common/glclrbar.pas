@@ -1,13 +1,21 @@
-unit glclrbar;
-//openGL color bars
+unit glclrbar; //OpenGL and Metal differ in only in first 2 lines
+//{$DEFINE METALAPI}
 
 {$mode objfpc}{$H+}
+{$IFDEF METALAPI}
+{$modeswitch objectivec1}
+{$ENDIF}
 interface
 
 uses
+  {$IFDEF METALAPI}
+  MetalPipeline, MetalUtils, MetalControl, Metal, VectorMath, mtlfont,
+  {$ELSE}
   retinahelper,
-  glcorearb, gl_core_utils, glfont, SimdUtils,
-  Classes, SysUtils, Graphics, OpenGLContext, math, dialogs;
+  glcorearb, gl_core_utils, glfont, OpenGLContext,
+  {$ENDIF}
+   SimdUtils,
+  Classes, SysUtils, Graphics,  math, dialogs;
 
 type
  TLUTminmax = packed record
@@ -19,36 +27,56 @@ const
 type
   TGPUClrbar = class
   private
-         uniform_viewportSize: GLint;
-         vbo_face2d, vao_point2d, vbo_point, shaderProgram: GLuint;
          LUTs: array [1..kMaxClrBar] of TLUTminmax;
          nLUTs, scrnW, scrnH, num_vbo_face2d: integer;
-         SizeFrac : Single;
-         FontClr,BackClr: TRGBA;
+         SizeFrac , RulerPix: Single;
+         FontClr,BackClr, RulerClr: TRGBA;
          fisVisible, fisVertical, fisTopOrRight, isRedraw, isText: boolean;
-         txt: TGPUFont;
+         {$IFDEF METALAPI}
+         indexBuffer, vertexBuffer: MTLBufferProtocol;
+         mtlControl: TMetalControl;
+         pipeline: TMetalPipeline;
+         {$ELSE}
+         uniform_viewportSize: GLint;
+         vbo_face2d, vao_point2d, vbo_point, shaderProgram: GLuint;
          glControl: TOpenGLControl;
+         {$ENDIF}
+         txt: TGPUFont;
          procedure CreateClrbar;
+         procedure CreateCmRuler(ClrBarThick: integer);
          procedure ScreenSize(nLUT,Width,Height: integer);
          procedure CreateTicksText(mn,mx: single; BarLength, BarTop, BarThick, fntScale: single);
          procedure SetVertical(isV: boolean);
+         procedure SetVisible(isV: boolean);
          procedure SetTopOrRight(isTR: boolean);
          procedure SetBackColor(c: TRGBA);
+         procedure SetRulerColor(c: TRGBA);
          procedure SetFontColor(c: TRGBA);
          procedure SetSizeFrac(f: single);
+         procedure SetRulerPix(pix: single);
+         {$IFDEF METALAPI}
+         procedure CreateStrips();
+         procedure InitShader();
+         {$ENDIF}
   public
-    property isVisible : boolean read fisVisible write fisVisible;
+    property isVisible : boolean read fisVisible write SetVisible;
     property isVertical : boolean read fisVertical write SetVertical;
     property isTopOrRight : boolean read fisTopOrRight write SetTopOrRight;
     property Number: integer read nLUTs write nLUTs;
     property BackColor : TRGBA read BackClr write SetBackColor;
     property FontColor : TRGBA read FontClr write SetFontColor;
+    property RulerColor : TRGBA read RulerClr write SetRulerColor;
     property SizeFraction : single read SizeFrac write SetSizeFrac;
+    property RulerPixels : single read RulerPix write SetRulerPix;
     function PanelFraction (): single; //size of all color tables and surrounding border
     procedure Draw(nLUT: integer); overload; //must be called while TOpenGLControl is current context
     procedure Draw(); overload; //must be called while TOpenGLControl is current context
     procedure SetLUT(index: integer; LUT: TLUT; mn,mx: single; isFromZero: boolean = false);
+    {$IFDEF METALAPI}
+    constructor Create(fromView: TMetalControl);
+    {$ELSE}
     constructor Create(fromView: TOpenGLControl);
+    {$ENDIF}
     destructor Destroy; override;
   end;
 
@@ -57,13 +85,17 @@ implementation
 uses
   graphTicks;
 
-function TGPUClrbar.PanelFraction (): single;
-begin
-  result := 0.0;
-  if (not isVisible) or (nLUTs < 1) then exit; //nothing to do
-  result := sizeFrac*((nLUTs * 2)+0.5);
-end;
+const
+    kBlockSz = 8192;
 
+{$IFDEF METALAPI}
+type
+  TVtxClr = packed Record //each vertex has position and texture coordinates
+    vtx   : TVec4; //position coordinates
+    clr : TVec4; //texture coordinates
+  end;
+   TRGBAx = TVec4;
+{$ELSE}
 type
   TPoint3f = Packed Record
     x,y,z: single;
@@ -73,12 +105,42 @@ TVtxClr = Packed Record
   vtx   : TPoint3f; //vertex coordinates
   clr : TRGBA;
 end;
+TRGBAx = TRGBA;
+
+const
+//the 'flat' in GLSL code below uses nearest neighbor for colorbars: useful for atlases with discrete colors
+    kVert2D ='#version 330'
++#10'layout(location = 0) in vec3 Vert;'
++#10'layout(location = 3) in vec4 Clr;'
++#10'flat out vec4 vClr;'
++#10'uniform vec2 ViewportSize;'
++#10'void main() {'
++#10'    vec2 ptx = Vert.xy;'
++#10'    ptx -= (ViewportSize/2.0);'
++#10'    gl_Position = vec4((ptx / (ViewportSize/2)), 0.0, 1.0);'
++#10'    //gl_Position = ModelViewProjectionMatrix * vec4(Vert, 1.0);'
++#10'    vClr = Clr;'
++#10'}';
+    kFrag2D = '#version 330'
++#10'flat in vec4 vClr;'
++#10'out vec4 color;'
++#10'void main() {'
++#10'    color = vClr;'
++#10'}';
+{$ENDIF}
 
 var
-    g2Dvnc: array of TVtxClr;
-    g2Drgba : TRGBA;
-    g2DNew: boolean;
-    gnface: integer;
+g2Dvnc: array of TVtxClr;
+g2Drgba : TRGBAx;
+g2DNew: boolean;
+gnface: integer;
+
+function TGPUClrbar.PanelFraction (): single;
+begin
+  result := 0.0;
+  if (not isVisible) or (nLUTs < 1) then exit; //nothing to do
+  result := sizeFrac*((nLUTs * 2)+0.5);
+end;
 
 destructor TGPUClrbar.Destroy;
 begin
@@ -87,28 +149,6 @@ begin
   inherited;
 end;
 
-    const
-        kBlockSz = 8192;
-    //the 'flat' in GLSL code below uses nearest neighbor for colorbars: useful for atlases with discrete colors
-        kVert2D ='#version 330'
-    +#10'layout(location = 0) in vec3 Vert;'
-    +#10'layout(location = 3) in vec4 Clr;'
-    +#10'flat out vec4 vClr;'
-    +#10'uniform vec2 ViewportSize;'
-    +#10'void main() {'
-    +#10'    vec2 ptx = Vert.xy;'
-    +#10'    ptx -= (ViewportSize/2.0);'
-    +#10'    gl_Position = vec4((ptx / (ViewportSize/2)), 0.0, 1.0);'
-    +#10'    //gl_Position = ModelViewProjectionMatrix * vec4(Vert, 1.0);'
-    +#10'    vClr = Clr;'
-    +#10'}';
-        kFrag2D = '#version 330'
-    +#10'flat in vec4 vClr;'
-    +#10'out vec4 color;'
-    +#10'void main() {'
-    +#10'    color = vClr;'
-    +#10'}';
-
 procedure nglBegin();
 begin
      g2DNew := true;
@@ -116,10 +156,17 @@ end;
 
 procedure nglColor4ub (r,g,b,a: byte);
 begin
-  g2Drgba.r := round(r );
-  g2Drgba.g := round(g );
-  g2Drgba.b := round(b );
-  g2Drgba.a := round(a );
+{$IFDEF METALAPI}
+g2Drgba.r := (r/255 );
+g2Drgba.g := (g/255 );
+g2Drgba.b := (b/255 );
+g2Drgba.a := (a/255 );
+{$ELSE}
+  g2Drgba.r := r ;
+  g2Drgba.g := g ;
+  g2Drgba.b := b ;
+  g2Drgba.a := a ;
+{$ENDIF}
 end;
 
 procedure nglVertex3f(x,y,z: single);
@@ -169,10 +216,22 @@ begin
      BackClr := c;
 end;
 
+procedure TGPUClrbar.SetRulerColor(c: TRGBA);
+begin
+     if not isSame(c, RulerClr) then isRedraw := true;
+     RulerClr := c;
+end;
+
 procedure TGPUClrbar.SetFontColor(c: TRGBA);
 begin
      if not isSame(c, FontClr) then isRedraw := true;
      FontClr := c;
+end;
+
+procedure TGPUClrbar.SetRulerPix(pix: single);
+begin
+     if (pix <> RulerPix) then isRedraw := true;
+     RulerPix := pix;
 end;
 
 procedure TGPUClrbar.SetSizeFrac(f: single);
@@ -187,6 +246,12 @@ procedure TGPUClrbar.SetTopOrRight(isTR: boolean);
 begin
      if (isTR <> fisTopOrRight) then isRedraw := true;
      fisTopOrRight := isTR;
+end;
+
+procedure TGPUClrbar.SetVisible(isV: boolean);
+begin
+     if (isV <> fisVisible) then isRedraw := true;
+     fisVisible := isV;
 end;
 
 procedure TGPUClrbar.SetVertical(isV: boolean);
@@ -233,53 +298,58 @@ begin
      isRedraw := true;
 end;
 
-(*function setRGBA(r,g,b,a: byte): TRGBA;
-begin
-     result.r := r;
-     result.g := g;
-     result.b := b;
-     result.a := a;
-end; *)
-
+{$IFDEF METALAPI}
+constructor TGPUClrbar.Create(fromView: TMetalControl);
+{$ELSE}
 constructor TGPUClrbar.Create(fromView: TOpenGLControl);
 const
     kATTRIB_VERT = 0;  //vertex XYZ are positions 0,1,2
     kATTRIB_CLR = 3;   //color RGBA are positions 3,4,5,6
+{$ENDIF}
 begin
-     glControl := fromView;
-     scrnH := 0;
-     SizeFrac := 0.05;
-     FontClr := setRGBA(255, 255, 255, 255);
-     BackClr:= setRGBA(0,0,0,156);
-     fisVisible := true;
-     fisVertical := false;
-     fisTopOrRight := false;
-     isRedraw := true;
-     //Txt := TGPUFont.Create('',  isText, Ctx); //<-multi-channel channel fonts glmtext
-     Txt := TGPUFont.Create(ResourceFile('Roboto', 'png'),  isText, glControl); //<-multi-channel channel fonts glmtext
-     glControl.MakeCurrent();
-     shaderProgram :=  initVertFrag(kVert2D, kFrag2D);
-     uniform_viewportSize := glGetUniformLocation(shaderProgram, pAnsiChar('ViewportSize'));
-     //
-     num_vbo_face2d := 0;
-       vbo_point := 0;
-       vao_point2d := 0;
-       vbo_face2d := 0;
-       glGenVertexArrays(1, @vao_point2d);
-       glGenBuffers(1, @vbo_face2d);
-       glGenBuffers(1, @vbo_point);
-       glBindVertexArray(vao_point2d);
-       glBindBuffer(GL_ARRAY_BUFFER, vbo_point);
-       //Vertices
-       glVertexAttribPointer(kATTRIB_VERT, 3, GL_FLOAT, GL_FALSE, sizeof(TVtxClr), PChar(0));
-       glEnableVertexAttribArray(kATTRIB_VERT);
-       //Color
-       glVertexAttribPointer(kATTRIB_CLR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TVtxClr), PChar( sizeof(TPoint3f)));
-       glEnableVertexAttribArray(kATTRIB_CLR);
-       glBindBuffer(GL_ARRAY_BUFFER, 0);
-       glBindVertexArray(0);
-     glFinish;
-     glControl.ReleaseContext;
+  {$IFDEF METALAPI}
+  mtlControl := fromView;
+  {$ELSE}
+  glControl := fromView;
+  {$ENDIF}
+  scrnH := 0;
+  SizeFrac := 0.05;
+  FontClr := setRGBA(255, 255, 255, 255);
+  BackClr := setRGBA(0,0,0,156);
+  RulerClr := setRGBA(0,255,0,255);
+  RulerPix := 0.0;
+  fisVisible := true;
+  fisVertical := false;
+  fisTopOrRight := false;
+  isRedraw := true;
+  Txt := TGPUFont.Create(ResourceFile('Roboto', 'png'),  isText, fromView); //<-multi-channel channel fonts glmtext
+  {$IFDEF METALAPI}
+
+  {$ELSE}
+  glControl.MakeCurrent();
+  shaderProgram :=  initVertFrag(kVert2D, kFrag2D);
+  uniform_viewportSize := glGetUniformLocation(shaderProgram, pAnsiChar('ViewportSize'));
+  //
+  num_vbo_face2d := 0;
+  vbo_point := 0;
+  vao_point2d := 0;
+  vbo_face2d := 0;
+  glGenVertexArrays(1, @vao_point2d);
+  glGenBuffers(1, @vbo_face2d);
+  glGenBuffers(1, @vbo_point);
+  glBindVertexArray(vao_point2d);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo_point);
+  //Vertices
+  glVertexAttribPointer(kATTRIB_VERT, 3, GL_FLOAT, GL_FALSE, sizeof(TVtxClr), PChar(0));
+  glEnableVertexAttribArray(kATTRIB_VERT);
+  //Color
+  glVertexAttribPointer(kATTRIB_CLR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TVtxClr), PChar( sizeof(TPoint3f)));
+  glEnableVertexAttribArray(kATTRIB_CLR);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray(0);
+  glFinish;
+  glControl.ReleaseContext;
+  {$ENDIF}
 end;
 
 FUNCTION specialsingle (var s:single): boolean;
@@ -299,9 +369,8 @@ procedure TGPUClrbar.CreateTicksText(mn,mx: single; BarLength, BarTop, BarThick,
 var
   lStep,lRange, t, MarkerSzX,MarkerSzY, lPosX, lPosY, StWid: double;
   isInvert: boolean;
-  //tic, ticAlt: TTicks;
   ticDecimals: integer;
-  ticMin, ticStep: double;
+  ticStep: double;
   St: string;
 begin
   if (mx = mn) or (BarThick = 0) or (BarLength = 0) then exit;
@@ -356,28 +425,127 @@ begin
   until lStep > (mx+(ticStep*0.01));
 end; //CreateTicksText()
 
+procedure Line(L,T,R,B: single);
+begin
+  nglBegin();
+  nglVertex2fr(L,T );
+  nglVertex2fr(L,B);
+  nglVertex2fr(R,T);
+  nglVertex2fr(R,B);
+  nglEnd;
+end;
+
+procedure TGPUClrbar.CreateCmRuler(ClrBarThick: integer);
+const
+    kMargin = 0.0075; //border
+    kSmallTick = 0.0075;
+    kLineThick = 0.00375;
+var
+   smallTick, bigTick, lineThick: single;
+   L,B, tickStep, tickP, tickH: single;
+   scrnMn, margin, i: integer;
+begin
+     if (RulerPix < 20) or (RulerClr.a = 0) then exit;
+     if (not fisVertical) and (RulerPix > scrnW) then exit;
+     if (fisVertical) and (RulerPix > scrnH) then exit;
+     scrnMn := min(scrnW, scrnH);
+     margin := round(scrnMn * kMargin);
+     if ClrBarThick > 0 then margin := 0;
+     //ruler thickness
+     lineThick :=  round(scrnMn * kLineThick);
+     lineThick := max(lineThick,1);
+     smallTick := round(scrnMn * kSmallTick);
+     smallTick := max(smallTick,1);
+     tickStep := RulerPix / 10;
+     bigTick := smallTick * 2;
+     nglColor4ub (RulerClr.r, RulerClr.g, RulerClr.b,RulerClr.a);
+     if (fisVertical) and ( fisTopOrRight) then begin
+        //right
+        L := scrnW-margin-ClrBarThick;
+        B :=  round((scrnH/2) - (RulerPix/2));
+        Line(L,B ,L-LineThick,B+RulerPix+LineThick);
+        for i := 0 to 10 do begin
+           tickP := i * tickStep;
+           tickH := smallTick;
+           if (i = 0) or (i = 5) or (i = 10) then
+              tickH := bigTick;
+           Line(L-lineThick,B+tickP ,L-lineThick-tickH, B+tickP+lineThick );
+        end;
+     end;
+     if (fisVertical) and (not fisTopOrRight) then begin
+        //left
+        L := margin+ClrBarThick;
+        B :=  round((scrnH/2) - (RulerPix/2));
+        Line(L,B ,L+LineThick,B+RulerPix+LineThick);
+        for i := 0 to 10 do begin
+           tickP := i * tickStep;
+           tickH := smallTick;
+           if (i = 0) or (i = 5) or (i = 10) then
+              tickH := bigTick;
+           Line(L+lineThick,B+tickP ,L+lineThick+tickH, B+tickP+lineThick );
+        end;
+     end;
+     if (not fisVertical) and (not fisTopOrRight) then begin
+       //bottom
+       L :=  round((scrnW/2) - (RulerPix/2));
+       B := margin+ClrBarThick;
+       Line(L,B+lineThick ,L+RulerPix+LineThick,B);
+       for i := 0 to 10 do begin
+           tickP := i * tickStep;
+           tickH := smallTick;
+           if (i = 0) or (i = 5) or (i = 10) then
+              tickH := bigTick;
+           Line(L+tickP,B+lineThick ,L+tickP+lineThick,B+lineThick+tickH);
+       end;
+     end;
+     if (not fisVertical) and ( fisTopOrRight) then begin
+       //top
+       L :=  round((scrnW/2) - (RulerPix/2));
+       B := scrnH - margin-ClrBarThick;
+       Line(L,B-lineThick ,L+RulerPix+LineThick,B);
+       for i := 0 to 10 do begin
+           tickP := i * tickStep;
+           tickH := smallTick;
+           if (i = 0) or (i = 5) or (i = 10) then
+              tickH := bigTick;
+           Line(L+tickP,B-lineThick ,L+tickP+lineThick,B-lineThick-tickH);
+       end;
+     end;
+end;
+
 procedure TGPUClrbar.CreateClrbar;
 type
   TInts = array of integer;
+label
+  123;
 var
   faces: TInts;
   BGThick, BarLength,BarThick, i,b,  t,tn: integer;
   frac, pos, fntScale: single;
 begin
-     if nLUTs < 1 then exit; //nothing to do
+     if (nLUTs < 1) and (RulerClr.a = 0) then begin
+       isRedraw := false;
+       exit; //nothing to do
+     end;
+     BGThick := 0;
+     txt.ClearText;
+     setlength(g2Dvnc, 0);
+     gnface := 0;
+
+     if (nLUTs < 1) then goto 123;
+     if (not fisVisible) then goto 123;
      if scrnW < scrnH then
         BarThick := round(scrnW * sizeFrac)
      else
          BarThick := round(scrnH * sizeFrac);
-     if BarThick < 1 then exit;
+     if BarThick < 1 then goto 123;
      if not fisVertical then
         BarLength := ScrnW - BarThick - BarThick
      else
          BarLength := ScrnH - BarThick - BarThick;
      if BarLength < 1 then exit;
      BGThick := round(BarThick*((nLUTs * 2)+0.5));
-     if isText then
-           txt.ClearText;
+     //if isText then
      if fisTopOrRight then begin
         if not fisVertical then
               t := scrnH-BGThick
@@ -390,8 +558,6 @@ begin
         fntScale := (BarThick*0.6)/txt.BaseHeight;
         Txt.TextColor(FontClr.R,FontClr.G,FontClr.B);//black
      end;
-     gnface := 0;
-     setlength(g2Dvnc, 0);
      nglColor4ub (BackClr.r, BackClr.g, BackClr.b,BackClr.a);
      nglBegin();
      //background
@@ -453,6 +619,16 @@ begin
          CreateTicksText(LUTs[b].mn,LUTs[b].mx, BarLength, tn, BarThick, fntScale);
      end;
      //copy data to GPU
+     123:
+     CreateCmRuler(BGThick);
+     if Length(g2Dvnc) < 1 then begin
+       isRedraw := false;
+       exit;
+     end;
+     {$IFDEF METALAPI}
+     vertexBuffer := mtlControl.renderView.device.newBufferWithBytes_length_options(@g2Dvnc[0], gnface*SizeOf(TVtxClr), MTLResourceStorageModeShared);
+     CreateStrips();
+     {$ELSE}
      glBindBuffer(GL_ARRAY_BUFFER, vbo_point);
      glBufferData(GL_ARRAY_BUFFER, Length(g2Dvnc)*SizeOf(TVtxClr), @g2Dvnc[0], GL_STATIC_DRAW);
      glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -468,17 +644,83 @@ begin
        num_vbo_face2d := gnface;
        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
      end;
-
+     {$ENDIF}
      setlength(g2Dvnc,0);
      isRedraw := false;
 end; // CreateClrbar()
 
+{$IFDEF METALAPI}
+procedure TGPUClrbar.CreateStrips();
+type
+  TInts = array of uint16; //if uint32 then MTLIndexTypeUInt32
+var
+  i: integer;
+  faces: TInts;
+begin
+  if gnface < 1 then exit;
+  setlength(faces,gnface);
+  for i := 0 to (gnface-1) do
+      faces[i] := i;
+  indexBuffer := mtlControl.renderView.device.newBufferWithBytes_length_options(@faces[0], sizeof(uint16) * Length(faces), MTLResourceStorageModeShared);
+  setlength(faces, 0 );
+  setlength(g2Dvnc,0);
+end;
+
+procedure TGPUClrbar.InitShader;
+var
+ options: TMetalPipelineOptions;
+ fnm: string;
+begin
+	if pipeline <> nil then exit;
+	options := TMetalPipelineOptions.Default;
+        fnm := ResourceDir + pathdelim + 'colorbar.metal';
+        if not fileexists(fnm) then
+           fnm := ShaderDir + pathdelim +  '_Colorbar.metal';
+        options.libraryName := fnm;
+        if not fileexists(options.libraryName) then begin
+		writeln('Unable to find ' + fnm);
+	end;
+        options.pipelineDescriptor := MTLCreatePipelineDescriptor;
+        options.pipelineDescriptor.colorAttachmentAtIndex(0).setBlendingEnabled(true);
+        options.pipelineDescriptor.colorAttachmentAtIndex(0).setRgbBlendOperation(MTLBlendOperationAdd);
+        options.pipelineDescriptor.colorAttachmentAtIndex(0).setAlphaBlendOperation(MTLBlendOperationAdd);
+        options.pipelineDescriptor.colorAttachmentAtIndex(0).setSourceRGBBlendFactor(MTLBlendFactorSourceAlpha);
+        options.pipelineDescriptor.colorAttachmentAtIndex(0).setSourceAlphaBlendFactor(MTLBlendFactorSourceAlpha);
+        options.pipelineDescriptor.colorAttachmentAtIndex(0).setDestinationRGBBlendFactor(MTLBlendFactorOneMinusSourceAlpha);
+        options.pipelineDescriptor.colorAttachmentAtIndex(0).setDestinationAlphaBlendFactor(MTLBlendFactorOneMinusSourceAlpha);
+	pipeline := MTLCreatePipeline(options);
+end;
+{$ENDIF}
+
 procedure TGPUClrbar.Draw(nLUT: integer); overload;
+{$IFDEF METALAPI}
+type
+  TVertUniforms = record //Uniforms for vertex shader
+  viewportSize: TVec2;
+end;
+var
+   vertUniforms: TVertUniforms;
+{$ENDIF}
 var
    Width,Height: integer;
 begin
-  if nLUT < 1 then exit;
-  if not fisVisible then exit;
+  if (nLUT < 1) and (RulerClr.a = 0) then exit;
+  if (not fisVisible) and (RulerClr.a = 0)  then exit;
+  {$IFDEF METALAPI}
+  InitShader;
+  MTLSetCullMode(MTLCullModeNone);
+  MTLSetShader(pipeline);
+  Width := mtlControl.ClientWidth;
+  Height := mtlControl.ClientHeight;
+  ScreenSize(nLUT, Width,Height);
+  if isRedraw then
+   CreateClrbar();
+  if gnface < 1 then exit;
+  vertUniforms.viewportSize := V2(Width, Height);
+  MTLSetVertexBytes(@vertUniforms, sizeof(vertUniforms), 1);
+  MTLSetVertexBuffer(vertexBuffer, 0, 0);
+  MTLDrawIndexed (MTLPrimitiveTypeTriangleStrip, gnface, MTLIndexTypeUInt16, indexBuffer, 0); //MTLIndexTypeUInt32
+  {$ELSE}
   Width := glControl.ClientWidth;
   Height := glControl.ClientHeight;
   ScreenSize(nLUT, Width,Height);
@@ -496,6 +738,7 @@ begin
   glDrawElements(GL_TRIANGLE_STRIP, gnface, GL_UNSIGNED_INT, nil);
   glBindVertexArray(0);
   glUseProgram(0);
+  {$ENDIF}
   if isText then
      Txt.DrawText();
 end;// Draw()

@@ -6,7 +6,7 @@ interface
 {$ENDIF}
 uses
   {$IFDEF Darwin} CocoaAll, MacOSAll, {$ENDIF}
-  sysutils, dialogs;
+  sysutils, dialogs, VectorMath;
 
 
 const
@@ -61,7 +61,8 @@ type
          end;
 
   function prod(v:TVec3i): int64;
-  function SetRGBA(r,g,b,a: byte): TRGBA;
+  function SetRGBA(r,g,b,a: byte): TRGBA; overload;
+  function SetRGBA(v:TVec4): TRGBA; overload;
   function pti(x,y,z: integer): TVec3i; //create integer vector
   procedure SortVec3i(var lo, hi: TVec3i);
   function  loadShaderPrefs(shaderName: string): TShaderPrefs;
@@ -277,12 +278,20 @@ begin
   result.Z := z;
 end; // pti()
 
-function SetRGBA(r,g,b,a: byte): TRGBA;
+function SetRGBA(r,g,b,a: byte): TRGBA; overload;
 begin
      result.r := r;
      result.g := g;
      result.b := b;
      result.a := a;
+end;
+
+function SetRGBA(v:TVec4): TRGBA; overload;
+begin
+     result.r := round(v.r *255);
+     result.g := round(v.g *255);
+     result.b := round(v.b *255);
+     result.a := round(v.a *255);
 end;
 
 end.

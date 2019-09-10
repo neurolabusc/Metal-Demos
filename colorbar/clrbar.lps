@@ -3,13 +3,13 @@
   <ProjectSession>
     <Version Value="12"/>
     <BuildModes Active="MacOS"/>
-    <Units Count="39">
+    <Units Count="40">
       <Unit0>
         <Filename Value="clrbar.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="22" Y="6"/>
-        <UsageCount Value="136"/>
+        <UsageCount Value="140"/>
       </Unit0>
       <Unit1>
         <Filename Value="clrbarmain.pas"/>
@@ -17,9 +17,9 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <TopLine Value="51"/>
-        <CursorPos X="39" Y="70"/>
-        <UsageCount Value="136"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="5" Y="6"/>
+        <UsageCount Value="140"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -261,155 +261,161 @@
       <Unit35>
         <Filename Value="../common/mtlclrbar.pas"/>
         <EditorIndex Value="1"/>
-        <CursorPos Y="8"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="86"/>
+        <CursorPos X="6" Y="110"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit35>
       <Unit36>
         <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalUtils.pas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="16" Y="6"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit36>
       <Unit37>
         <Filename Value="../common/graphticks.pas"/>
         <UnitName Value="graphTicks"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="30"/>
-        <CursorPos X="17" Y="45"/>
-        <UsageCount Value="10"/>
+        <CursorPos X="66" Y="38"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit37>
       <Unit38>
         <Filename Value="../common/glclrbar.pas"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="392"/>
-        <CursorPos X="50" Y="421"/>
-        <UsageCount Value="10"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="92"/>
+        <CursorPos X="6" Y="110"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit38>
+      <Unit39>
+        <Filename Value="../common/retinahelper.pas"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit39>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="clrbarmain.pas"/>
-        <Caret Line="11" Column="33"/>
+        <Filename Value="../common/glclrbar.pas"/>
+        <Caret Line="9" Column="105" TopLine="7"/>
       </Position1>
       <Position2>
-        <Filename Value="clrbarmain.pas"/>
-        <Caret Line="31" Column="30" TopLine="7"/>
+        <Filename Value="../common/glclrbar.pas"/>
+        <Caret Line="33" Column="32" TopLine="7"/>
       </Position2>
       <Position3>
-        <Filename Value="clrbarmain.pas"/>
-        <Caret Line="88" Column="5" TopLine="81"/>
+        <Filename Value="../common/glclrbar.pas"/>
+        <Caret Line="438" Column="48" TopLine="414"/>
       </Position3>
       <Position4>
-        <Filename Value="clrbarmain.pas"/>
-        <Caret Line="29" Column="24" TopLine="14"/>
+        <Filename Value="../common/glclrbar.pas"/>
+        <Caret Line="4" Column="58"/>
       </Position4>
       <Position5>
-        <Filename Value="clrbarmain.pas"/>
-        <Caret Line="88" Column="34" TopLine="65"/>
+        <Filename Value="../common/mtlclrbar.pas"/>
+        <Caret Line="8"/>
       </Position5>
       <Position6>
-        <Filename Value="clrbarmain.pas"/>
-        <Caret Line="133" Column="15" TopLine="123"/>
+        <Filename Value="../common/mtlclrbar.pas"/>
+        <Caret Line="16" Column="15"/>
       </Position6>
       <Position7>
-        <Filename Value="clrbarmain.pas"/>
-        <Caret Line="44" Column="45" TopLine="20"/>
+        <Filename Value="../common/mtlclrbar.pas"/>
+        <Caret Line="165" Column="10" TopLine="140"/>
       </Position7>
       <Position8>
         <Filename Value="../common/mtlclrbar.pas"/>
+        <Caret Line="10" Column="19" TopLine="2"/>
       </Position8>
       <Position9>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="103" Column="135" TopLine="73"/>
+        <Caret Line="43" Column="24" TopLine="13"/>
       </Position9>
       <Position10>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="255" Column="37"/>
+        <Caret Line="125" Column="13" TopLine="91"/>
       </Position10>
       <Position11>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="307" Column="26" TopLine="293"/>
+        <Caret Line="129" TopLine="111"/>
       </Position11>
       <Position12>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="361" Column="3" TopLine="344"/>
+        <Caret Line="95" Column="2" TopLine="88"/>
       </Position12>
       <Position13>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="62" Column="14" TopLine="43"/>
+        <Caret Line="129" TopLine="82"/>
       </Position13>
       <Position14>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="405" Column="34" TopLine="387"/>
+        <Caret Line="141" TopLine="127"/>
       </Position14>
       <Position15>
-        <Filename Value="../common/graphticks.pas"/>
-        <Caret Line="117" Column="5" TopLine="91"/>
+        <Filename Value="../common/mtlclrbar.pas"/>
+        <Caret Line="340" Column="77" TopLine="308"/>
       </Position15>
       <Position16>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="424" Column="51" TopLine="389"/>
+        <Caret Line="14" Column="96" TopLine="4"/>
       </Position16>
       <Position17>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="431" Column="26" TopLine="413"/>
+        <Caret Line="667" Column="28" TopLine="638"/>
       </Position17>
       <Position18>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="432" Column="26" TopLine="413"/>
+        <Caret Line="63" Column="24" TopLine="46"/>
       </Position18>
       <Position19>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="431" Column="26" TopLine="413"/>
+        <Caret Line="691" Column="9" TopLine="666"/>
       </Position19>
       <Position20>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="334" Column="3" TopLine="333"/>
+        <Caret Line="38" Column="35" TopLine="6"/>
       </Position20>
       <Position21>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="424" Column="47" TopLine="406"/>
+        <Caret Line="732" Column="11" TopLine="702"/>
       </Position21>
       <Position22>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="321" Column="9" TopLine="314"/>
+        <Caret Line="382" Column="36" TopLine="378"/>
       </Position22>
       <Position23>
         <Filename Value="../common/mtlclrbar.pas"/>
-        <Caret Line="324" Column="18" TopLine="314"/>
+        <Caret Line="518" Column="20" TopLine="501"/>
       </Position23>
       <Position24>
-        <Filename Value="../common/glclrbar.pas"/>
-        <Caret Line="365" Column="27" TopLine="350"/>
+        <Filename Value="../common/mtlclrbar.pas"/>
+        <Caret Line="32" Column="29" TopLine="14"/>
       </Position24>
       <Position25>
-        <Filename Value="../common/glclrbar.pas"/>
-        <Caret Line="418" Column="39" TopLine="400"/>
+        <Filename Value="../common/mtlclrbar.pas"/>
+        <Caret Line="56" Column="31" TopLine="26"/>
       </Position25>
       <Position26>
-        <Filename Value="../common/glclrbar.pas"/>
-        <Caret Line="365" Column="24" TopLine="353"/>
+        <Filename Value="../common/mtlclrbar.pas"/>
+        <Caret Line="70" Column="66" TopLine="41"/>
       </Position26>
       <Position27>
-        <Filename Value="../common/glclrbar.pas"/>
-        <Caret Line="444" Column="47" TopLine="426"/>
+        <Filename Value="../common/mtlclrbar.pas"/>
+        <Caret Line="230" Column="33" TopLine="200"/>
       </Position27>
       <Position28>
-        <Filename Value="../common/glclrbar.pas"/>
-        <Caret Line="4" Column="48"/>
+        <Filename Value="../common/mtlclrbar.pas"/>
+        <Caret Line="232" Column="25" TopLine="202"/>
       </Position28>
       <Position29>
-        <Filename Value="../common/glclrbar.pas"/>
-        <Caret Line="421" Column="50" TopLine="392"/>
+        <Filename Value="../common/mtlclrbar.pas"/>
+        <Caret Line="233" Column="14" TopLine="203"/>
       </Position29>
       <Position30>
         <Filename Value="clrbarmain.pas"/>
-        <Caret Line="108" Column="25" TopLine="96"/>
+        <Caret Line="6" Column="5"/>
       </Position30>
     </JumpHistory>
     <RunParams>

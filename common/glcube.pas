@@ -1,48 +1,111 @@
-unit glcube;
-//openGL cube
+unit glcube; //OpenGL and Metal differ in only in first 2 lines
+//{$DEFINE METALAPI}
+
 
 {$mode objfpc}{$H+}
+{$IFDEF METALAPI}
+{$modeswitch objectivec1}
+{$ENDIF}
 
 interface
 
 uses
-  SimdUtils, VectorMath, glcorearb, gl_core_utils,
-  Classes, SysUtils, Graphics, OpenGLContext, math, dialogs;
+  {$IFDEF METALAPI}
+  MetalPipeline, MetalUtils, MetalControl, Metal,
+  {$ELSE}
+  glcorearb, gl_core_utils, OpenGLContext,
+  {$ENDIF}
+  SimdUtils, VectorMath,
+  Classes, SysUtils, Graphics,  math, dialogs;
 
 type
   TGPUCube = class
   private
+    {$IFDEF METALAPI}
+    vertexBuffer: MTLBufferProtocol;
+    shaderPipeline: TMetalPipeline;
+    mtlControl: TMetalControl;
+    {$ELSE}
     uniform_mtx: GLint;
     vbo_point,vao_point2d, shaderProgram: GLuint;
+    {$ENDIF}
     fAzimuth, fElevation,SizeFrac : Single;
-    scrnW, scrnH: integer;
-    isRedraw, isTopLeft: boolean;
+    scrnW, scrnH, nVtx: integer;
+    isText, isRedraw, isTopLeft: boolean;
     procedure SetIsTopLeft(f: boolean);
+    procedure SetIsText(f: boolean);
     procedure SetSize(f: single);
     procedure SetAzimuth(f: single);
     procedure SetElevation(f: single);
     procedure  ScreenSize(Width,Height: integer);
     procedure CreateCube(sz: single);
+    {$IFDEF METALAPI}
+    procedure SetPipeline;
+    {$ENDIF}
   public
+    property Text : boolean read isText write SetIsText;
     property TopLeft : boolean read isTopLeft write SetIsTopLeft;
     property Azimuth : single read fAzimuth write SetAzimuth;
     property Elevation : single read fElevation write fElevation;
     property Size : single read SizeFrac write SetSize;
     procedure Draw(Width,Height: integer); //must be called while TOpenGLControl is current context
+    {$IFDEF METALAPI}
+    constructor Create(Ctx: TMetalControl);
+    {$ELSE}
     constructor Create(Ctx: TOpenGLControl);
+    {$ENDIF}
   end;
 
 implementation
 
 type
-
-
+{$IFDEF METALAPI}
+TVertUniforms = record //Uniforms for vertex shader
+  modelViewProjectionMatrix: TMat4;
+end;
+TVtxClr = record
+  vtx: TVec3;
+  padding: single; // align each vertex attribute on 16 byte boundries
+  clr: TVec4;
+end;
+TRGBAx = TVec4;
+{$ELSE}
 TVtxClr = Packed Record
   vtx   : TVec3; //vertex coordinates
   clr : TRGBA;
 end;
+TRGBAx = TRGBA;
+{$ENDIF}
+
 TVtxClrRA = array of TVtxClr;
 
+{$IFDEF METALAPI}
+procedure TGPUCube.SetPipeline();
+var
+ options: TMetalPipelineOptions;
+ shaderName: string;
+begin
+     if (shaderPipeline <> nil) then exit; //already set
+     options := TMetalPipelineOptions.Default;
+     shaderName := ResourceFolderPath + pathdelim + 'cube.metal';
+     if not fileexists(shaderName) then
+        shaderName := ShaderDir + pathdelim +  '_Cube.metal';
+     options.libraryName := shaderName;
+     if not fileexists(shaderName) then begin
+       writeln('Unable to find ' + shaderName);
+     end;
+     options.pipelineDescriptor := MTLCreatePipelineDescriptor;
+     options.pipelineDescriptor.colorAttachmentAtIndex(0).setBlendingEnabled(true);
+     options.pipelineDescriptor.colorAttachmentAtIndex(0).setRgbBlendOperation(MTLBlendOperationAdd);
+     options.pipelineDescriptor.colorAttachmentAtIndex(0).setAlphaBlendOperation(MTLBlendOperationAdd);
+     options.pipelineDescriptor.colorAttachmentAtIndex(0).setSourceRGBBlendFactor(MTLBlendFactorSourceAlpha);
+     options.pipelineDescriptor.colorAttachmentAtIndex(0).setSourceAlphaBlendFactor(MTLBlendFactorSourceAlpha);
+     options.pipelineDescriptor.colorAttachmentAtIndex(0).setDestinationRGBBlendFactor(MTLBlendFactorOneMinusSourceAlpha);
+     options.pipelineDescriptor.colorAttachmentAtIndex(0).setDestinationAlphaBlendFactor(MTLBlendFactorOneMinusSourceAlpha);
+     shaderPipeline := MTLCreatePipeline(options);
+     MTLSetDepthStencil(shaderPipeline, MTLCompareFunctionLess, true);
+end;
+{$ELSE}
 const
 kVert2D ='#version 330'
   +#10'layout(location = 0) in vec3 Vert;'
@@ -59,11 +122,56 @@ kFrag2D = '#version 330'
   +#10'void main() {'
   +#10'    color = vClr;'
   +#10'}';
+{$ENDIF}
+
+{$DEFINE CUBETEXT}
+function setMat (a,b,c,d, e,f,g,h, i,j,k,l: single): TMat4;
+begin
+     result.m[0,0] := a;
+     result.m[0,1] := b;
+     result.m[0,2] := c;
+     result.m[0,3] := d;
+
+     result.m[1,0] := e;
+     result.m[1,1] := f;
+     result.m[1,2] := g;
+     result.m[1,3] := h;
+
+     result.m[2,0] := i;
+     result.m[2,1] := j;
+     result.m[2,2] := k;
+     result.m[2,3] := l;
+
+     result.m[3,0] := 0;
+     result.m[3,1] := 0;
+     result.m[3,2] := 0;
+     result.m[3,3] := 1;
+end;
+
+{$IFDEF METALAPI}
+function SetRGBA(r,g,b,a: byte): TRGBAx; overload;
+begin
+     result.r := r/255;
+     result.g := g/255;
+     result.b := b/255;
+     result.a := a/255;
+
+end;
+{$ENDIF}
 
 procedure MakeCube(sz: single; var vtxClrs: TVtxClrRA); //draw a cube of size sz
+const
+{$IFDEF METALAPI}
+ kTiny = 0.005;
+{$ELSE}
+ kTiny = 0.00;
+{$ENDIF}
 var
   nface: integer;
-  clr : TRGBA;
+  clr : TRGBAx;
+{$IFDEF CUBETEXT}
+  rot : TMat4;
+{$ENDIF}
 procedure vertex3f(x,y,z: single; rep: boolean = false);
 begin
  vtxClrs[nface].vtx.X := x;
@@ -75,51 +183,218 @@ begin
  vtxClrs[nface] := vtxClrs[nface-1];
  nface := nface + 1;
 end;
+{$IFDEF CUBETEXT}
+procedure vertex2f(x,y: single; rep: boolean = false);
+var
+  v: TVec4;
+begin
+     v.x := x;
+     v.y := y;
+     v.z := 0;
+     v.w := 1;
+     v *= rot;
+     vertex3f(v.x, v.y, v.z, rep);
+end;
+
+procedure drawL();
+begin
+  setlength(vtxClrs, length(vtxClrs)+ 12);
+  vertex2f(0.275, 0.1, true);
+  vertex2f(0.275, 0.9);
+  vertex2f(0.375, 0.1);
+  vertex2f(0.375, 0.9, true);
+
+  vertex2f(0.375,0.1, true);
+  vertex2f(0.375,0.2);
+  vertex2f(0.725,0.1);
+  vertex2f(0.725,0.2, true);
+end;
+
+procedure drawR();
+begin
+  setlength(vtxClrs, length(vtxClrs)+ 30);
+  vertex2f(0.275, 0.1, true);
+  vertex2f(0.275, 0.9);
+  vertex2f(0.375, 0.1);
+  vertex2f(0.375, 0.9, true);
+
+  vertex2f(0.375, 0.8, true);
+  vertex2f(0.375, 0.9);
+  vertex2f(0.725, 0.8);
+  vertex2f(0.625, 0.9, true);
+
+  vertex2f(0.625, 0.55, true);
+  vertex2f(0.625, 0.8);
+  vertex2f(0.725, 0.55);
+  vertex2f(0.725, 0.8, true);
+
+  vertex2f(0.375, 0.45, true);
+  vertex2f(0.375, 0.55);
+  vertex2f(0.625, 0.45);
+  vertex2f(0.725, 0.55, true);
+
+  vertex2f(0.625, 0.1, true);
+  vertex2f(0.525, 0.45);
+  vertex2f(0.725, 0.1);
+  vertex2f(0.625, 0.45, true);
+
+end;
+
+procedure drawP();
+begin
+  setlength(vtxClrs, length(vtxClrs)+ 24);
+  vertex2f(0.275, 0.1, true);
+  vertex2f(0.275, 0.9);
+  vertex2f(0.375, 0.1);
+  vertex2f(0.375, 0.9, true);
+
+  vertex2f(0.375, 0.8, true);
+  vertex2f(0.375, 0.9);
+  vertex2f(0.725, 0.8);
+  vertex2f(0.625, 0.9, true);
+
+  vertex2f(0.625, 0.55, true);
+  vertex2f(0.625, 0.8);
+  vertex2f(0.725, 0.55);
+  vertex2f(0.725, 0.8, true);
+
+  vertex2f(0.375, 0.45, true);
+  vertex2f(0.375, 0.55);
+  vertex2f(0.625, 0.45);
+  vertex2f(0.725, 0.55, true);
+
+end;
+
+procedure drawS();
+begin
+  setlength(vtxClrs, length(vtxClrs)+ 42);
+  vertex2f(0.275, 0.2, true);
+  vertex2f(0.275, 0.3);
+  vertex2f(0.375, 0.1);
+  vertex2f(0.375, 0.3, true);
+
+  vertex2f(0.375, 0.1, true);
+  vertex2f(0.375, 0.2);
+  vertex2f(0.625, 0.1);
+  vertex2f(0.725, 0.2, true);
+
+  vertex2f(0.625, 0.1, true);
+  vertex2f(0.625, 0.55);
+  vertex2f(0.725, 0.2);
+  vertex2f(0.725, 0.45, true);
+
+  vertex2f(0.375, 0.45, true);
+  vertex2f(0.275, 0.55);
+  vertex2f(0.625, 0.45);
+  vertex2f(0.625, 0.55, true);
+
+  vertex2f(0.275, 0.55, true);
+  vertex2f(0.275, 0.8);
+  vertex2f(0.375, 0.55);
+  vertex2f(0.375, 0.9, true);
+
+  vertex2f(0.375, 0.8, true);
+  vertex2f(0.375, 0.9);
+  vertex2f(0.725, 0.8);
+  vertex2f(0.625, 0.9, true);
+
+  vertex2f(0.625, 0.7, true);
+  vertex2f(0.625, 0.8);
+  vertex2f(0.725, 0.7);
+  vertex2f(0.725, 0.8, true);
+end;
+
+procedure drawA();
+begin
+ setlength(vtxClrs, length(vtxClrs)+ 18);
+ vertex2f(0.275,0.1, true);
+ vertex2f(0.475,0.9);
+ vertex2f(0.375,0.1);
+ vertex2f(0.575,0.9, true);
+
+ vertex2f(0.625,0.1, true);
+ vertex2f(0.475,0.9);
+ vertex2f(0.725,0.1);
+ vertex2f(0.575,0.9, true);
+
+ vertex2f(0.4375,0.35, true);
+ vertex2f(0.4625,0.45);
+ vertex2f(0.6625,0.35);
+ vertex2f(0.6375,0.45, true);
+end;
+
+procedure drawI();
+begin
+  setlength(vtxClrs, length(vtxClrs)+ 6);
+  vertex2f(0.45,0.1, true);
+  vertex2f(0.45,0.9);
+  vertex2f(0.55,0.1);
+  vertex2f(0.55,0.9, true);
+end;
+{$ENDIF}
 begin
   setlength(vtxClrs, 36);
   nface := 0;
-  //bottom
+  //bottom - dark
   clr := setRGBA(52, 52, 52, 255);
   vertex3f(-sz, -sz, -sz, true);
   vertex3f(-sz, sz, -sz);
   vertex3f(sz, -sz, -sz);
   vertex3f(sz, sz, -sz, true);
-  //top
+  //top - bright
   clr := setRGBA(204,204,204,255);
   vertex3f(-sz, -sz, sz, true);
   vertex3f(sz, -sz, sz);
   vertex3f(-sz, sz, sz);
   vertex3f(sz, sz, sz, true);
-  //front
-  clr := setRGBA(0,0,128,255);
+  //front - blue
+  clr := setRGBA(0,0,152,255);
   vertex3f(-sz, sz, -sz, true);
   vertex3f(-sz, sz, sz);
   vertex3f(sz, sz, -sz);
   vertex3f(sz, sz, sz, true);
-  //back
-  clr := setRGBA(77,0,77,255);
+  //back -purple
+  clr := setRGBA(88,0,88,255);
   vertex3f(-sz, -sz, -sz, true);
   vertex3f(sz, -sz, -sz);
   vertex3f(-sz, -sz, sz);
   vertex3f(sz, -sz, sz, true);
-  //left
-  clr := setRGBA(153,0,0,255);
+  //left - red
+  clr := setRGBA(164,0,0,255);
   vertex3f(-sz, -sz, -sz, true);
   vertex3f(-sz, -sz, sz);
   vertex3f(-sz, sz, -sz);
   vertex3f(-sz, sz, sz, true);
-  //right
-  clr := setRGBA(0,153,0,255);
+  //right - green
+  clr := setRGBA(0,128,0,255);
   vertex3f(sz, -sz, -sz, true);
   vertex3f(sz, sz, -sz);
   vertex3f(sz, -sz, sz);
   vertex3f(sz, sz, sz, true);
+  {$IFDEF CUBETEXT}
+  rot := TMat4.Identity;
+  clr := setRGBA(0,0,0,255);
+  rot := setMat(sz*2,0,0,-sz, 0,0,0,sz+kTiny, 0,sz*2,0,-sz);
+  drawP();
+  rot := setMat(-sz*2,0,0,sz, 0,0,0,-sz-kTiny, 0,sz*2,0,-sz);
+  drawA();
+  rot := setMat(sz*2,0,0,-sz, 0,-sz*2,0,sz, 0,0,0,sz+kTiny);
+  drawS();
+  rot := setMat(sz*2,0,0,-sz, 0,sz*2,0,-sz, 0,0,0,-sz-kTiny);
+  drawI();
+  rot := setMat(0,0,0,-sz-kTiny, sz*2,0,0,-sz, 0,sz*2,0,-sz);
+  drawL();
+  rot := setMat(0,0,0,sz+kTiny, -sz*2,0,0,sz, 0,sz*2,0,-sz);
+  drawR();
+  {$ENDIF}
 end; //MakeCube()
 
 procedure  TGPUCube.CreateCube(sz: single);
+{$IFNDEF METALAPI}
 const
     kATTRIB_VERT = 0;  //vertex XYZ are positions 0,1,2
     kATTRIB_CLR = 3;   //color RGBA are positions 3,4,5,6
+{$ENDIF}
 var
   nface: integer;
   vtxClrs: TVtxClrRA;
@@ -130,6 +405,9 @@ begin
   MakeCube(sz, vtxClrs);
   nface := Length(vtxClrs); //each face has 3 vertices
   if nface < 1 then exit;
+  {$IFDEF METALAPI}
+   vertexBuffer := mtlControl.renderView.device.newBufferWithBytes_length_options(@vtxClrs[0], nface*sizeof(TVtxClr), MTLResourceStorageModeShared);
+  {$ELSE}
   if vao_point2d <> 0 then
      glDeleteVertexArrays(1,@vao_point2d);
   glGenVertexArrays(1, @vao_point2d);
@@ -149,6 +427,8 @@ begin
   glEnableVertexAttribArray(kATTRIB_CLR);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
+  {$ENDIF}
+  nVtx := length(vtxClrs);
   setlength(vtxClrs,0);
 end;
 
@@ -162,6 +442,12 @@ procedure TGPUCube.SetElevation(f: single);
 begin
   if (f <> fElevation) then isRedraw := true;
   fElevation := f;
+end;
+
+procedure TGPUCube.SetIsText(f: boolean);
+begin
+     if (f <> isText) then isRedraw := true;
+     isText := f;
 end;
 
 procedure TGPUCube.SetIsTopLeft(f: boolean);
@@ -186,7 +472,11 @@ begin
      isRedraw := true;
 end;
 
+{$IFDEF METALAPI}
+constructor  TGPUCube.Create(Ctx: TMetalControl);
+{$ELSE}
 constructor  TGPUCube.Create(Ctx: TOpenGLControl);
+{$ENDIF}
 begin
      scrnH := 0;
      SizeFrac := 0.02;
@@ -194,6 +484,12 @@ begin
      fAzimuth := 30;
      fElevation := -15;
      isTopLeft := false;
+     isText := true;
+     {$IFDEF METALAPI}
+     mtlControl := Ctx;
+     vertexBuffer := nil;
+     shaderPipeline := nil;
+     {$ELSE}
      vao_point2d := 0;
      vbo_point := 0;
      Ctx.MakeCurrent();
@@ -201,33 +497,65 @@ begin
      uniform_mtx := glGetUniformLocation(shaderProgram, pAnsiChar('ModelViewProjectionMatrix'));
      glFinish;
      Ctx.ReleaseContext;
+     {$ENDIF}
 end;
 
 procedure  TGPUCube.Draw(Width,Height: integer);
 var
   sz: single;
-  modelViewProjectionMatrix, projectionMatrix, modelMatrix: TMat4;
+  {$IFDEF METALAPI}
+  vertUniforms: TVertUniforms;
+  {$ELSE}
+  modelViewProjectionMatrix,
+  {$ENDIF}
+  projectionMatrix, modelMatrix: TMat4;
 begin
   ScreenSize(Width,Height);
   sz := min(ScrnW,ScrnH) * SizeFrac;
   if sz < 5 then exit;
+  {$IFDEF METALAPI}
+  setPipeline;
+  MTLSetShader(shaderPipeline);
+  {$ENDIF}
   CreateCube(sz);
   modelMatrix := TMat4.Identity;
+  {$IFDEF METALAPI}
+  modelMatrix.m[2,2] := -1;
+  projectionMatrix := TMat4.Ortho (0, ScrnW,0, ScrnH,-10*sz,10*sz);
+  {$ELSE}
   projectionMatrix := TMat4.OrthoGL (0, ScrnW,0, ScrnH,-10*sz,10*sz);
+  {$ENDIF}
   projectionMatrix *= TMat4.Translate(0,0,sz*8);
   projectionMatrix *= TMat4.Translate(1.8*sz,1.8*sz,0);
+  {$IFDEF METALAPI}
+  projectionMatrix *= TMat4.RotateX(DegToRad(90-fElevation));
+  {$ELSE}
   projectionMatrix *= TMat4.RotateX(-DegToRad(90-fElevation));
+  {$ENDIF}
   projectionMatrix *= TMat4.RotateZ(-DegToRad(fAzimuth));
+  {$IFDEF METALAPI}
+  vertUniforms.modelViewProjectionMatrix := ( projectionMatrix * modelMatrix);
+  MTLSetVertexBuffer(vertexBuffer, 0, 0);
+  MTLSetVertexBytes(@vertUniforms, sizeof(vertUniforms), 1);
+  if isText then
+     MTLDraw(MTLPrimitiveTypeTriangleStrip, 0, nVtx)
+  else
+      MTLDraw(MTLPrimitiveTypeTriangleStrip, 0, 36);
+  {$ELSE}
   modelViewProjectionMatrix := ( projectionMatrix * modelMatrix);
   glEnable(GL_CULL_FACE);
   glUseProgram(shaderProgram);
   glUniformMatrix4fv(uniform_mtx, 1, GL_FALSE, @modelViewProjectionMatrix);
   glBindBuffer(GL_ARRAY_BUFFER, vbo_point);
   glBindVertexArray(vao_point2d);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 36);
+  if isText then
+     glDrawArrays(GL_TRIANGLE_STRIP, 0, nVtx)
+  else
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 36);
   glBindVertexArray(0);
   glDisable(GL_CULL_FACE);
   glUseProgram(0);
+  {$ENDIF}
 end;
 
 end.
