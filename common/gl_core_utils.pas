@@ -8,9 +8,9 @@ interface
 uses
   //{$IFDEF Darwin} CocoaAll, MacOSAll, {$ENDIF}
   {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
-  Dialogs, clipbrd,
+  Dialogs, clipbrd, strutils,
   glcorearb, SysUtils, OpenGLContext, Graphics, lcltype, LCLIntf, GraphType;
-  procedure  loadVertFrag(shaderName: string; out VertexProgram, FragmentProgram: string);
+  procedure  loadVertFrag(shaderName: string; out VertexProgram, FragmentProgram: string; fragHeader: string = '');
   function  initVertFrag(vert, frag: string): GLuint;
   procedure GetError(p: integer; str: string = '');  //report OpenGL Error
   function ScreenShot(GLBox : TOpenGLControl; ScreenCaptureTransparentBackground: boolean = false): TBitmap;
@@ -114,7 +114,7 @@ begin
   bmp.Free;
 end;
 
-procedure  loadVertFrag(shaderName: string; out VertexProgram, FragmentProgram: string);
+procedure  loadVertFrag(shaderName: string; out VertexProgram, FragmentProgram: string; fragHeader: string = '');
 const
   //kCR = chr (13)+chr(10); //UNIX end of line
   //kCR = chr(10); //UNIX end of line
@@ -145,15 +145,17 @@ begin
    ReadLn(F, S);
    if S = '//pref' then
      mode := kpref
-   else if S = '//frag' then
-     mode := kfrag
-   else if S = '//vert' then
+   else if S = '//frag' then begin
+     mode := kfrag;
+     FragmentProgram := fragHeader;
+   end else if S = '//vert' then
      mode := kvert
    else if mode = kpref then begin
      //mode := kpref
-   end else if mode = kfrag then
+   end else if mode = kfrag then begin
+     if PosEx('#version', S) > 0 then continue;
      FragmentProgram := FragmentProgram + S+#13#10 //kCR
-   else if mode = kvert then
+   end else if mode = kvert then
      VertexProgram := VertexProgram + S+#13#10;
  end;//EOF
  CloseFile(F);

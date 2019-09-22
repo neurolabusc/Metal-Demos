@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CONFIG>
-  <Compiler Value="/usr/local/bin/fpc" Date="1538326665"/>
-  <Params Value=" -MObjFPC -Scghi -O1 -gw2 -godwarfsets -gl -k-framework -kOpenGL -k-dylib_file -k/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib -k-framework -kCocoa -l -vewnhibq -Fi/Users/chris/src/Metal-Demos/cube/lib/x86_64-darwin -Fu/Users/chris/src/Metal-Demos/common -Fu/Users/chris/src/lazarus/components/opengl/lib/x86_64-darwin/cocoa -Fu/Users/chris/src/lazarus/lcl/units/x86_64-darwin/cocoa -Fu/Users/chris/src/lazarus/lcl/units/x86_64-darwin -Fu/Users/chris/src/lazarus/components/lazutils/lib/x86_64-darwin -Fu/Users/chris/src/lazarus/packager/units/x86_64-darwin -Fu/Users/chris/src/Metal-Demos/cube/ -FU/Users/chris/src/Metal-Demos/cube/lib/x86_64-darwin/ -FE/Users/chris/src/Metal-Demos/cube/ -o/Users/chris/src/Metal-Demos/cube/cube -dLCL -dLCLcocoa cube.lpr"/>
-</CONFIG>

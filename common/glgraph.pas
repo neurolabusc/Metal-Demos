@@ -53,7 +53,7 @@ type
     procedure GrayColorScheme();
     procedure LightColorScheme();
     function HorizontalClickFrac(X: single): single;
-    procedure AddLine(newVals: TFloat32s; newCaption: string; isOverwrite: boolean = false);
+    procedure AddLine(newVals: TFloat32s; newCaption: string; isOverwrite: boolean = false; isOverwriteProtect: boolean = false);
     procedure AddXData(newVals: TFloat32s); //e.g. [0 4 8 12] suggests data evenly spaced one sample every 4 seconds
     function AsText(isSaveXData: boolean = false): TStringList;
     function LoadText(filename: string): boolean;
@@ -436,7 +436,7 @@ begin
      isRedraw := true;
 end;
 
-procedure TGPUGraph.AddLine(newVals: TFloat32s; newCaption: string; isOverwrite: boolean = false);
+procedure TGPUGraph.AddLine(newVals: TFloat32s; newCaption: string; isOverwrite: boolean = false; isOverwriteProtect: boolean = false);
 var
   l, n, i: integer;
   sum: double;
@@ -450,6 +450,8 @@ begin
         numLines := numLines + 1
      else
          l := l - 1;
+     if (isOverwriteProtect) then
+       numLinesNoOverwrite := numLinesNoOverwrite + 1;
      setlength(Lines, numLines);
      setlength(Lines[l].vals, n);
      Lines[l].min :=  newVals[0];
