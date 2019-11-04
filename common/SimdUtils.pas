@@ -1,13 +1,14 @@
 unit SimdUtils;
+{$mode objfpc}
+{$H+}
 interface
 {$IFDEF Darwin}
-  //{$mode objfpc}
+  //
   {$modeswitch objectivec1}
 {$ENDIF}
 uses
   {$IFDEF Darwin} CocoaAll, MacOSAll, {$ENDIF}
-  sysutils, dialogs, VectorMath;
-
+  sysutils, VectorMath; //dialogs,
 
 const
   kMaxUniform = 12;//for Metal: divisible by 4
@@ -109,6 +110,19 @@ end;
 function ResourceDir (): string;
 begin
      result := extractfilepath(paramstr(0))+'Resources';
+     {$IFDEF LINUX}
+     if  DirectoryExists(result) then exit;
+     //https://wiki.freepascal.org/Multiplatform_Programming_Guide#Unix.2FLinux
+     //  /usr/local/share/app_name or /opt/app_name.
+     result := '/usr/local/share/'+ExtractFileName(paramstr(0))+pathdelim;
+     writeln('>>>'+result);
+     if  DirectoryExists(result) then exit;
+     result := '/opt/'+ExtractFileName(paramstr(0))+pathdelim;
+     if  DirectoryExists(result) then exit;
+     result := FpGetEnv('MRICROGL_DIR')+pathdelim;
+     if  DirectoryExists(result) then exit;
+     result := extractfilepath(paramstr(0))+'Resources';
+     {$ENDIF}
 end;
 
 function ResourceFile (name: pchar; ofType: pchar): string;

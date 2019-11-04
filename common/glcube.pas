@@ -336,7 +336,7 @@ begin
   setlength(vtxClrs, 36);
   nface := 0;
   //bottom - dark
-  clr := setRGBA(52, 52, 52, 255);
+  clr := setRGBA(72, 72, 72, 255);
   vertex3f(-sz, -sz, -sz, true);
   vertex3f(-sz, sz, -sz);
   vertex3f(sz, -sz, -sz);
@@ -348,13 +348,13 @@ begin
   vertex3f(-sz, sz, sz);
   vertex3f(sz, sz, sz, true);
   //front - blue
-  clr := setRGBA(0,0,152,255);
+  clr := setRGBA(0,0,188,255);
   vertex3f(-sz, sz, -sz, true);
   vertex3f(-sz, sz, sz);
   vertex3f(sz, sz, -sz);
   vertex3f(sz, sz, sz, true);
   //back -purple
-  clr := setRGBA(88,0,88,255);
+  clr := setRGBA(108,0,108,255);
   vertex3f(-sz, -sz, -sz, true);
   vertex3f(sz, -sz, -sz);
   vertex3f(-sz, -sz, sz);

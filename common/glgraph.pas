@@ -44,7 +44,7 @@ type
         Style: integer;
         HorizontalSelection: integer;
         TextColor,BackColor,GridColor, MinorLineColor: TRGBA;
-        isRedraw, isMarker, isMinorLines: boolean;
+         isRedraw, isMarker, isMinorLines: boolean;
     procedure ClearLines();
     procedure CloneLine();
     procedure DarkColorScheme();
@@ -56,7 +56,8 @@ type
     procedure AddLine(newVals: TFloat32s; newCaption: string; isOverwrite: boolean = false; isOverwriteProtect: boolean = false);
     procedure AddXData(newVals: TFloat32s); //e.g. [0 4 8 12] suggests data evenly spaced one sample every 4 seconds
     function AsText(isSaveXData: boolean = false): TStringList;
-    function LoadText(filename: string): boolean;
+    function LoadText(filename: string; isKeepOld: boolean = false): boolean;
+    function PointsPerLine: integer;
     {$IFDEF METALAPI}
     constructor Create(fromView: TMetalControl);
     procedure Paint(fromView: TMetalControl);
@@ -70,6 +71,12 @@ type
 implementation
 
 uses graphticks;
+
+function TGPUGraph.PointsPerLine: integer;
+begin
+     if (Lines = nil) then exit(0);
+     exit(length(Lines[0].vals));
+end;
 
 function TGPUGraph.HorizontalClickFrac(X: single): single;
 var
@@ -87,7 +94,7 @@ var
     jScale, minWH, border, gap, gL,gT,gB,gR, vFrac: single;
     i, j, ptsPerLine: integer;
     markerWid, gridLineWid, lineWid: single; //vertical line space
-    maxTextWid, ticMin, ticPos, ticStep: double;
+    maxTextWid, ticMin, ticPos, ticStep, minorStep: double;
     ticDecimals: integer;
     translucent : TRGBA;
     gMin, gMax, gRange, hFrac, pxX, fntScale,fntHeight, StWid: single;
@@ -158,11 +165,28 @@ begin
      if (isMinorLines) then begin
         gpuLines.LineWidth:= gridLineWid * 0.5;
         gpuLines.LineColor := MinorLineColor;//setRGBA(0,0,0,255);
-        ticPos := ticMin + (0.5 * ticStep);
-        while (ticPos <= xMax) do begin
-            pxX := gL + (gR-gL)*(ticPos / xMax);
-            gpuLines.AddLine(pxX, gT+lineWid, pxX, gB-lineWid);
-            ticPos := ticPos + ticStep;
+        if (ticStep = 3) or (ticStep = 5) or (ticStep = 7) or (ticStep = 9) then begin
+           //rationale if ticStep is 3, minor ticks should be at 1 and 2 not 1.5
+           //might add toleratance, e.g. 3.0001 ~= 3
+          minorStep := 1/ticStep;
+          ticPos := ticMin + (minorStep * ticStep);
+          i := 1;
+          while (ticPos <= xMax) do begin
+              pxX := gL + (gR-gL)*(ticPos / xMax);
+              if (i mod round(ticStep)) <> 0 then
+                 gpuLines.AddLine(pxX, gT+lineWid, pxX, gB-lineWid);
+              i := i + 1;
+              ticPos := ticPos + (minorStep * ticStep);
+          end;
+
+
+        end else begin
+          ticPos := ticMin + (0.5 * ticStep);
+          while (ticPos <= xMax) do begin
+              pxX := gL + (gR-gL)*(ticPos / xMax);
+              gpuLines.AddLine(pxX, gT+lineWid, pxX, gB-lineWid);
+              ticPos := ticPos + ticStep;
+          end;
         end;
      end;
      gpuLines.LineColor := GridColor;//setRGBA(0,0,0,255);
@@ -488,7 +512,7 @@ begin
     end;
 end;
 
-function TGPUGraph.LoadText(filename: string): boolean;
+function TGPUGraph.LoadText(filename: string; isKeepOld: boolean = false): boolean;
 label
   123;
 const
@@ -500,8 +524,9 @@ type
 var
   str: string;
   strs, strlst : TStringList;
-  nCol, nLinesIn, i, j, k, c: integer;
+  nCol, nLinesIn, i, nRow, k, c: integer;
   cols: array of TFloat32s;
+  flts: TFloat32s;
   typ: integer = kTypeUnknown;
   captions: array of capt;
   ext, fnm: string;
@@ -518,12 +543,12 @@ begin
      nCol := 0;
      strs.LoadFromFile(filename);
      nLinesIn := strs.Count; //may include comments'#'
-     if nLinesIn < 2 then begin
-        showmessage('Does not have at least two lines of text: '+filename);
+     if nLinesIn < 1 then begin
+        showmessage('Does not have at least one lines of text: '+filename);
        goto 123;
      end;
      //read input lines
-     j := 0;
+     nRow := 0;
      for i := 0 to (nLinesIn -1) do begin
          str := strs.Strings[i];
          if PosEx('#Col',str) = 1 then begin
@@ -558,18 +583,31 @@ begin
            goto 123;
          end;
          for c := 0 to (nCol - 1) do
-             cols[c][j] := strtofloatdef(strlst[c],0);
-         j := j + 1;
+             cols[c][nRow] := strtofloatdef(strlst[c],0);
+         nRow := nRow + 1;
      end;
      //showmessage(format('%g : %g', [ cols[0][0], cols[0][j-1] ]));
-     //build graph
-     if (j < 2) or (nCol < 1) then begin
-       showmessage('Need at least two lines of text (without "#" comments) '+filename);
-       goto 123;
-     end;
      ext := upcase(ExtractFileExt(filename));
      fnm := upcase(ExtractFileNameOnly(filename));
      //fnm := upcase(ExtractFileNameWithoutExt(filename));
+     if (nRow = 1) and (nCol > 1) then begin //transpose
+        setlength(flts, nCol);
+        for i := 0 to (nCol-1) do begin
+            flts[i] := cols[i][0];
+            setlength(cols[i],0);
+        end;
+        setlength(cols, 1);
+        setlength(cols[0], length(flts));
+        for i := 0 to (nCol-1) do
+            cols[0][i] := flts[i];
+        flts := nil;
+        nRow := nCol;
+        nCol := 1;
+     end;
+     if (nRow < 2) or (nCol < 1) then begin
+        showmessage(format('Found %d rows and %d columns. Need at least two lines of text (without "#" comments) %s',[nRow, nCol, filename]));
+        goto 123;
+     end;
      if (nCol = 1) then
         typ := kType1stColYData;
      if (typ = kTypeUnknown) and (length(captions) > 1) and (captions[0] = 'XData') then
@@ -599,20 +637,30 @@ begin
        else
            typ := kType1stColYData;
      end;
-     ClearLines();
+     //build graph
+     if (isKeepOld) and (numLines > 0) and (nRow <> length(Lines[0].vals)) then begin
+        isKeepOld := false;
+        {$IFDEF UNIX}
+        writeln('Unable to keep old graph: number of rows differs');
+        {$ENDIF}
+
+     end;
+     if (isKeepOld) then
+         //
+     else
+         ClearLines();
      str := extractfilename(filename);
      i := 0;
      if (typ = kType1stColXData) then begin
-        setlength(cols[i],j);
+        setlength(cols[i],nRow);
         AddXData(cols[i]);
         i := 1;
      end;
      for c := i to (nCol - 1) do begin
-         setlength(cols[c],j);
+         setlength(cols[c],nRow);
          if c < length(captions) then
             AddLine(cols[c], captions[c])
          else
-             //AddLine(cols[c], format('%s [%d] %d',[str, c-i, j]));
              AddLine(cols[c], format('%s [%d]',[str, c-i]));
      end;
      result := true;

@@ -365,7 +365,7 @@ BEGIN
       RESULT := false;
 END;
 
-procedure TGPUClrbar.CreateTicksText(mn,mx: single; BarLength, BarTop, BarThick, fntScale: single);
+procedure TGPUClrbar.CreateTicksText( mn,mx: single; BarLength, BarTop, BarThick, fntScale: single);
 var
   lStep,lRange, t, MarkerSzX,MarkerSzY, lPosX, lPosY, StWid: double;
   isInvert: boolean;
