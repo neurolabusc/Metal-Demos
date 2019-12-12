@@ -18,7 +18,7 @@ type
         fDistance: single;
         fLightPos: TVec4;
         glControl: TOpenGLControl;
-        rayDirLoc,intensityVolLoc, gradientVolLoc,mvpLoc, imvLoc, lightPositionLoc,
+        rayDirLoc,intensityVolLoc, gradientVolLoc,mvpLoc, lightPositionLoc, //imvLoc
         sliceSizeLoc, stepSizeLoc, loopsLoc : GLint;
         {$IFDEF GPUGRADIENTS}programSobel, programBlur: GLuint;  {$ENDIF}
         gradientTexture3D, intensityTexture3D, vao, programRaycast, vboBox3D: GLuint;
@@ -280,7 +280,7 @@ begin
   if VertexProgram = '' then VertexProgram := kVert;
   if FragmentProgram = '' then FragmentProgram := kFrag;
   programRaycast :=  initVertFrag(VertexProgram, FragmentProgram);
-  imvLoc := glGetUniformLocation(programRaycast, pAnsiChar('ModelViewMatrixInverse'));
+  //imvLoc := glGetUniformLocation(programRaycast, pAnsiChar('ModelViewMatrixInverse'));
   mvpLoc := glGetUniformLocation(programRaycast, pAnsiChar('ModelViewProjectionMatrix'));
   rayDirLoc := glGetUniformLocation(programRaycast, pAnsiChar('rayDir'));
   sliceSizeLoc := glGetUniformLocation(programRaycast, pAnsiChar('sliceSize'));
@@ -457,7 +457,8 @@ end;
 
 procedure TGPUVolume.Paint(var vol: TNIfTI);
 var
-  modelViewProjectionMatrixInverse, modelViewProjectionMatrix, projectionMatrix, modelMatrix: TMat4;
+  //modelViewProjectionMatrixInverse,
+  modelViewProjectionMatrix, projectionMatrix, modelMatrix: TMat4;
   modelLightPos, v, rayDir: TVec4;
   whratio, scale: single;
 begin
@@ -470,7 +471,8 @@ begin
   if (intensityTexture3D = 0) then
     exit;
   glUseProgram(programRaycast);
-  glBindFramebuffer(GL_FRAMEBUFFER, 0); //draw to screen
+  //the next line does not work with GTK3, see https://stackoverflow.com/questions/47613181/opengl-strange-framebuffer-behavior-with-gtk-gl-area
+  //glBindFramebuffer(GL_FRAMEBUFFER, 0); //draw to screen
   glActiveTexture(GL_TEXTURE2);
   glBindTexture(GL_TEXTURE_3D, intensityTexture3D);
   glUniform1i(intensityVolLoc, 2);
@@ -504,9 +506,9 @@ begin
   rayDir.w := 0;
   rayDir := rayDir.Normalize;
   addFuzz(rayDir);
-  modelViewProjectionMatrixInverse := modelViewProjectionMatrix.Inverse;
+  //modelViewProjectionMatrixInverse := modelViewProjectionMatrix.Inverse;
   glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, @modelViewProjectionMatrix);
-  glUniformMatrix4fv(imvLoc, 1, GL_FALSE, @modelViewProjectionMatrixInverse);
+  //glUniformMatrix4fv(imvLoc, 1, GL_FALSE, @modelViewProjectionMatrixInverse);
   glUniform3f(rayDirLoc,rayDir.x,rayDir.y,rayDir.z);
   glViewport(0, 0, glControl.ClientWidth, glControl.ClientHeight); //required for form resize
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);

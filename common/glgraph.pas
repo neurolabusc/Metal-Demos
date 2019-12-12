@@ -460,9 +460,21 @@ begin
      isRedraw := true;
 end;
 
+FUNCTION specialsingle (var s:single): boolean;
+//returns true if s is Infinity, NAN or Indeterminate
+CONST kSpecialExponent = 255 shl 23;
+VAR Overlay: LongInt ABSOLUTE s;
+BEGIN
+ IF ((Overlay AND kSpecialExponent) = kSpecialExponent) THEN
+   RESULT := true
+ ELSE
+   RESULT := false;
+END; //specialsingle()
+
 procedure TGPUGraph.AddLine(newVals: TFloat32s; newCaption: string; isOverwrite: boolean = false; isOverwriteProtect: boolean = false);
 var
   l, n, i: integer;
+  v: single;
   sum: double;
 begin
      n := length(newVals);
@@ -478,16 +490,22 @@ begin
        numLinesNoOverwrite := numLinesNoOverwrite + 1;
      setlength(Lines, numLines);
      setlength(Lines[l].vals, n);
-     Lines[l].min :=  newVals[0];
-     Lines[l].max :=  newVals[0];
+     v := newVals[0];
+     if specialsingle(v) then
+        v := 0;  //e.g. Inf+
+     Lines[l].min :=  v;
+     Lines[l].max :=  v;
      sum := 0;
      for i := 0 to (n-1) do begin
-         Lines[l].vals[i] := newVals[i];
-         if (newVals[i] > Lines[l].max) then
-            Lines[l].max := newVals[i];
-         if (newVals[i] < Lines[l].min) then
-            Lines[l].min := newVals[i];
-         sum := sum + newVals[i];
+         v := newVals[i];
+         if specialsingle(v) then
+            v := 0;  //e.g. Inf+
+         Lines[l].vals[i] := v;
+         if (v > Lines[l].max) then
+            Lines[l].max := v;
+         if (v < Lines[l].min) then
+            Lines[l].min := v;
+         sum := sum + v;
      end;
      Lines[l].mean := sum / n;
      Lines[l].caption := newCaption;

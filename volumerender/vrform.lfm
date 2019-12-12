@@ -9,8 +9,8 @@ object Form1: TForm1
   Position = poScreenCenter
   LCLVersion = '2.1.0.0'
   object MainMenu: TMainMenu
-    left = 8
-    top = 136
+    left = 17
+    top = 72
     object AppleMenu: TMenuItem
       Caption = ''
       object AboutMenu: TMenuItem
@@ -50,7 +50,7 @@ object Form1: TForm1
   end
   object OpenDialog1: TOpenDialog
     left = 17
-    top = 73
+    top = 16
   end
   object ColorDialog1: TColorDialog
     Color = clBlack
@@ -76,12 +76,12 @@ object Form1: TForm1
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 117
-    top = 48
+    left = 17
+    top = 128
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.png'
-    left = 99
-    top = 115
+    left = 17
+    top = 184
   end
 end

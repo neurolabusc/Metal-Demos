@@ -113,6 +113,7 @@ kVert2D ='#version 330'
   +#10'out vec4 vClr;'
   +#10'uniform mat4 ModelViewProjectionMatrix;'
   +#10'void main() {'
+  +#10'    //vClr = vec4(Vert.rgb, 1.0);'
   +#10'    gl_Position = ModelViewProjectionMatrix * vec4(Vert, 1.0);'
   +#10'    vClr = Clr;'
   +#10'}';

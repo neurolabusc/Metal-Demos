@@ -8,6 +8,7 @@ interface
 {$ENDIF}
 uses
   {$IFDEF Darwin} CocoaAll, MacOSAll, {$ENDIF}
+  {$IFDEF Linux} BaseUnix, {$ENDIF}
   sysutils, VectorMath; //dialogs,
 
 const

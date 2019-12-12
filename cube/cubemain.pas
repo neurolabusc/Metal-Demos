@@ -182,6 +182,7 @@ begin
   glViewPort(0,0,ViewGPU1.ClientWidth, ViewGPU1.ClientHeight);
   glClearColor(0.3, 0.5, 0.8, 1.0); //Set blue background
   glClear(GL_COLOR_BUFFER_BIT);
+  glDisable(GL_DEPTH_TEST);
   gCube.Draw(ViewGPU1.ClientWidth, ViewGPU1.ClientHeight);
   ViewGPU1.SwapBuffers;
   if GLErrorStr <> '' then begin
