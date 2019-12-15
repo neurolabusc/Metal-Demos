@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectSession>
-    <Version Value="11"/>
+    <Version Value="12"/>
     <BuildModes Active="Default"/>
     <Units Count="13">
       <Unit0>
@@ -18,7 +18,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
-        <IsVisibleTab Value="True"/>
+        <TopLine Value="28"/>
         <CursorPos X="2" Y="5"/>
         <UsageCount Value="63"/>
         <Loaded Value="True"/>
@@ -27,8 +27,10 @@
       <Unit2>
         <Filename Value="glunit.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <CursorPos X="30" Y="105"/>
+        <TopLine Value="98"/>
+        <CursorPos X="28" Y="122"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit2>

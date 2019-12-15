@@ -119,6 +119,7 @@ begin
   LoadBufferData(false);
   glClearColor(0.0, 0.0, 0.7, 1.0); //Set blue background
   glClear(GL_COLOR_BUFFER_BIT);
+  glDisable(GL_DEPTH_TEST);
   glUseProgram(gShader.shaderProgram);
   glUniform2f(gShader.uniform_viewportSize, self.Width, self.Height);
   glBindVertexArray(gShader.vao_point);

@@ -471,6 +471,7 @@ begin
   if (intensityTexture3D = 0) then
     exit;
   glUseProgram(programRaycast);
+  glDisable(GL_DEPTH_TEST);
   //the next line does not work with GTK3, see https://stackoverflow.com/questions/47613181/opengl-strange-framebuffer-behavior-with-gtk-gl-area
   //glBindFramebuffer(GL_FRAMEBUFFER, 0); //draw to screen
   glActiveTexture(GL_TEXTURE2);

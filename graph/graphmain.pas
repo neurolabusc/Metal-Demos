@@ -151,7 +151,6 @@ begin
   strs.SaveToFile(saveDlg.Filename);
   strs.Free;
   saveDlg.Free;
-
 end;
 
 procedure TForm1.ColorSchemeWClick(Sender: TObject);
@@ -229,7 +228,7 @@ begin
   gGraph.AddLine(newVals, '0.5');
   newVals := nil;
   ViewGPU1.Invalidate;
-  gGraph.LoadText('/Users/chris/brik/afni/Right.1D');
+  //gGraph.LoadText('/Users/chris/brik/afni/Right.1D');
 end;
 
 procedure TForm1.ScaleMenu(Sender: TObject);

@@ -165,6 +165,7 @@ begin
     gLines.Draw();
   MTLEndFrame;
   {$ELSE}
+  glDisable(GL_DEPTH_TEST);
   glViewPort(0,0,ViewGPU1.ClientWidth, ViewGPU1.ClientHeight);
   glClearColor(0.3, 0.5, 0.8, 1.0); //Set blue background
   glClear(GL_COLOR_BUFFER_BIT);

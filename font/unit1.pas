@@ -200,6 +200,7 @@ begin
    gText.DrawText();
  MTLEndFrame;
   {$ELSE}
+  glDisable(GL_DEPTH_TEST);
   glViewPort(0,0,ViewGPU1.ClientWidth, ViewGPU1.ClientHeight);
   glClearColor(gClearColor.r, gClearColor.g, gClearColor.b, 1.0); //Set blue background
   glClear(GL_COLOR_BUFFER_BIT);
