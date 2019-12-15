@@ -730,6 +730,7 @@ begin
   if gnface < 1 then exit;
   //glViewport(0, 0, Width, Height); //required for form resize
   glControl.SetViewport();
+  glDisable(GL_DEPTH_TEST);
   glEnable (GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glUniform2f(uniform_viewportSize, Width, Height);

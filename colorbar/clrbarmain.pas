@@ -3,7 +3,7 @@ unit clrbarmain;
 {$mode objfpc}{$H+}
 {$IFDEF LCLCocoa}
  //MetalAPI supported on modern MacOS: disable for Linux, Windows and old MacOS
-  //{$DEFINE METALAPI}
+  {$DEFINE METALAPI}
   {$modeswitch objectivec1}
 {$ENDIF}
 
@@ -96,6 +96,7 @@ begin
   ViewGPU1 :=  TOpenGLControl.Create(Form1);
   ViewGPU1.OpenGLMajorVersion:= 3;
   ViewGPU1.OpenGLMinorVersion:= 3;
+  ViewGPU1.DepthBits := 0;
   {$ENDIF}
   ViewGPU1.Parent := Form1;
   ViewGPU1.Align:= alClient;

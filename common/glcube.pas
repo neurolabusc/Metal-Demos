@@ -545,6 +545,7 @@ begin
   {$ELSE}
   modelViewProjectionMatrix := ( projectionMatrix * modelMatrix);
   glEnable(GL_CULL_FACE);
+  glDisable(GL_DEPTH_TEST);
   glUseProgram(shaderProgram);
   glUniformMatrix4fv(uniform_mtx, 1, GL_FALSE, @modelViewProjectionMatrix);
   glBindBuffer(GL_ARRAY_BUFFER, vbo_point);
