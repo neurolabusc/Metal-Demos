@@ -24,7 +24,6 @@ type
 			function Dot (constref vec: TVec2): TScalar; inline;
 			function Cross (constref vec:TVec2): TVec2; inline;
 			function Negate: TVec2; inline;
-
 			procedure Show;
 			function Str: string;
 		

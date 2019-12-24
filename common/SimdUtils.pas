@@ -160,6 +160,7 @@ var
   lLen,lP,lN: integer;
 begin
   result.Name := '';
+  DefaultFormatSettings.DecimalSeparator := '.'; //20191216 https://www.nitrc.org/forum/message.php?msg_id=28228
   result.Hint := '';
   result.Widget := kError;
   lLen := length(lS);
