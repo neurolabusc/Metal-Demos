@@ -1,5 +1,6 @@
 unit glclrbar; //OpenGL and Metal differ in only in first 2 lines
-//{$DEFINE METALAPI}
+//{$DEFINE METALAPI} //set in ProjectOptions/CompilerOptions/CustomOptions
+
 
 {$mode objfpc}{$H+}
 {$IFDEF METALAPI}

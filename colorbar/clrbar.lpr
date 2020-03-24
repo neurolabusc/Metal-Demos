@@ -13,6 +13,7 @@ uses
 
 begin
   RequireDerivedFormResource:=True;
+  Application.Title:='clrbar';
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);
   Application.Run;

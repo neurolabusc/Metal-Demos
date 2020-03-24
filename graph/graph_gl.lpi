@@ -7,9 +7,10 @@
         <CompatibilityMode Value="True"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="cube"/>
+      <Title Value="graph"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
     </General>
     <BuildModes Count="2">
       <Item1 Name="Default" Default="True"/>
@@ -20,7 +21,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="cube"/>
+            <Filename Value="graph"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -57,24 +58,21 @@
         <Mode0 Name="default"/>
       </Modes>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="lazmetalcontrol"/>
+        <PackageName Value="LazOpenGLContext"/>
       </Item1>
       <Item2>
-        <PackageName Value="LazOpenGLContext"/>
-      </Item2>
-      <Item3>
         <PackageName Value="LCL"/>
-      </Item3>
+      </Item2>
     </RequiredPackages>
     <Units Count="2">
       <Unit0>
-        <Filename Value="cube.lpr"/>
+        <Filename Value="graph.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="cubemain.pas"/>
+        <Filename Value="graphmain.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
@@ -85,7 +83,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="cube"/>
+      <Filename Value="graph"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -102,9 +100,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CustomOptions Value="-dMETALAPI"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

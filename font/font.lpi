@@ -27,7 +27,6 @@
     </PublishOptions>
     <RunParams>
       <FormatVersion Value="2"/>
-      <Modes Count="0"/>
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
@@ -69,12 +68,18 @@
       <TargetCPU Value="x86_64"/>
     </CodeGeneration>
     <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf2Set"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
         </Win32>
       </Options>
     </Linking>
+    <Other>
+      <CustomOptions Value="-dMETALAPI"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

@@ -1,5 +1,5 @@
 unit glgraph; //OpenGL and Metal differ in only in first 2 lines
-//{$DEFINE METALAPI}
+//{$DEFINE METALAPI} //<- set by ProjectOptions/CompilerOptions/CustomOptions
 
 {$mode objfpc}{$H+}
 interface

@@ -2,7 +2,7 @@ unit Unit1;
 
 {$IFDEF LCLCocoa}
  //MetalAPI supported on modern MacOS: disable for Linux, Windows and old MacOS
- {$DEFINE METALAPI}
+ //{$DEFINE METALAPI} //set in ProjectOptions/CompilerOptions/CustomOptions
 {$ENDIF}
 {$IFDEF LCLCarbon}
 MacOS must use Cocoa, regardless of whether OpenGL Core or Metal is used.

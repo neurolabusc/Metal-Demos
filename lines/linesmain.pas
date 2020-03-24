@@ -3,7 +3,7 @@ unit linesmain;
 {$mode objfpc}{$H+}
 {$IFDEF LCLCocoa}
  //MetalAPI supported on modern MacOS: disable for Linux, Windows and old MacOS
-  {$DEFINE METALAPI}
+ //{$DEFINE METALAPI} //set in ProjectOptions/CompilerOptions/CustomOptions
   {$modeswitch objectivec1}
 {$ENDIF}
 {$IFDEF LCLCarbon}

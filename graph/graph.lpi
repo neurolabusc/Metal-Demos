@@ -103,6 +103,9 @@
         </Win32>
       </Options>
     </Linking>
+    <Other>
+      <CustomOptions Value="-dMETALAPI"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

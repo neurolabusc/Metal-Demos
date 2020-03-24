@@ -3,7 +3,7 @@ unit clrbarmain;
 {$mode objfpc}{$H+}
 {$IFDEF LCLCocoa}
  //MetalAPI supported on modern MacOS: disable for Linux, Windows and old MacOS
-  {$DEFINE METALAPI}
+ //{$DEFINE METALAPI} //set in ProjectOptions/CompilerOptions/CustomOptions
   {$modeswitch objectivec1}
 {$ENDIF}
 
@@ -102,7 +102,10 @@ begin
   ViewGPU1.Align:= alClient;
   ViewGPU1.OnMouseDown := @ViewGPU1MouseDown;
   ViewGPU1.OnPaint := @ViewGPU1Paint;
-  {$IFDEF METALAPI}ViewGPU1.renderView.setSampleCount(4);{$ENDIF}
+  {$IFDEF METALAPI}
+  ViewGPU1.renderView.setSampleCount(4);
+  ViewGPU1.Invalidate;
+  {$ENDIF}
   {$IFNDEF METALAPI}
   ViewGPU1.MakeCurrent(false);
   if (not  Load_GL_version_3_3_CORE) then begin

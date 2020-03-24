@@ -2,7 +2,7 @@ unit meshForm;
 
 {$IFDEF LCLCocoa}
  //MetalAPI supported on modern MacOS: disable for Linux, Windows and old MacOS
-  //{$DEFINE METALAPI}
+ //{$DEFINE METALAPI} //set in ProjectOptions/CompilerOptions/CustomOptions
 {$ENDIF}
 {$IFDEF Darwin}
 {$modeswitch objectivec1}
@@ -283,14 +283,6 @@ begin
   ViewGPU1.Invalidate;
 end;
 
-(*procedure TForm1.ViewGPUPrepare(Sender: TObject);
-begin
-    //Mesh1.Prepare();
-    {$IFDEF METALAPI}
-    ViewGPU1.SetPreferredFrameRate(0);
-    ViewGPU1.OnResize := @FormResize;
-    {$ENDIF}
-end;*)
 procedure TForm1.MatCapMenuClick(Sender: TObject);
 {$IFDEF MATCAP}
 var

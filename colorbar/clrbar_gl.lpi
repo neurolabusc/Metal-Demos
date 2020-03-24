@@ -7,29 +7,27 @@
         <CompatibilityMode Value="True"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="cube"/>
+      <Title Value="clrbar"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
     </General>
     <BuildModes Count="2">
       <Item1 Name="Default" Default="True"/>
       <Item2 Name="MacOS">
-        <MacroValues Count="1">
-          <Macro1 Name="LCLWidgetType" Value="cocoa"/>
-        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="cube"/>
+            <Filename Value="clrbar"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../gl"/>
+            <OtherUnitFiles Value="../common"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <DebugInfoType Value="dsDwarf2Set"/>
               <UseLineInfoUnit Value="False"/>
               <StripSymbols Value="True"/>
             </Debugging>
@@ -45,7 +43,7 @@
         </CompilerOptions>
       </Item2>
       <SharedMatrixOptions Count="1">
-        <Item1 ID="476266401624" Modes="MacOS" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
+        <Item1 ID="476266401624" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
@@ -57,24 +55,21 @@
         <Mode0 Name="default"/>
       </Modes>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="lazmetalcontrol"/>
+        <PackageName Value="LazOpenGLContext"/>
       </Item1>
       <Item2>
-        <PackageName Value="LazOpenGLContext"/>
-      </Item2>
-      <Item3>
         <PackageName Value="LCL"/>
-      </Item3>
+      </Item2>
     </RequiredPackages>
     <Units Count="2">
       <Unit0>
-        <Filename Value="cube.lpr"/>
+        <Filename Value="clrbar.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="cubemain.pas"/>
+        <Filename Value="clrbarmain.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
@@ -85,7 +80,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="cube"/>
+      <Filename Value="clrbar"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -102,9 +97,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CustomOptions Value="-dMETALAPI"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

@@ -4,11 +4,12 @@ Metal is an Apple framework that allows supports high performance graphics. Thes
 
 ## Installation
 
- - You will need to have the latest version of [Lazarus](https://www.lazarus-ide.org/) installed on a MacOS computer (or better yet, have the latest [Lazarus SVN](http://wiki.lazarus.freepascal.org/Getting_Lazarus)).
- - You will need to download [the Alchemist Guild Lazarus Metal Package by Ryan Joseph](https://github.com/genericptr/Metal-Framework).
- - From Lazarus, choose Package/OpenPackageFile and select lazmetalcontrol.lpk - install this into Lazarus.
- - You should now be able to open and compile the projects provided here.
- - To use Metal you will need MacOS 10.12 (Sierra) or later and a Mac computer that [supports Metal](https://support.apple.com/kb/SP765?locale=en_US) - typically Macs from 2012 and later.
+ - You will need to have the latest version of [Lazarus 2.0.6](https://www.lazarus-ide.org/) installed on a MacOS computer (or better yet, have the latest [Lazarus SVN](http://wiki.lazarus.freepascal.org/Getting_Lazarus)).
+ - MacOS users who want to compile the Metal Projects:
+   *   You will need to download [the Alchemist Guild Lazarus Metal Package by Ryan Joseph](https://github.com/genericptr/Metal-Framework).
+   *  From the Lazarus graphical interface, choose Package/OpenPackageFile and select lazmetalcontrol.lpk and install this package.
+   *  To use Metal you will need MacOS 10.12 (Sierra) or later and a Mac computer that [supports Metal](https://support.apple.com/kb/SP765?locale=en_US) - typically Macs from 2012 and later.
+ - You should now be able to open and compile the projects provided here (the projects that end '_gl.lpi' will create OpenGL executables).
 
 ## Compiling for OpenGL
 
@@ -29,10 +30,10 @@ Each of these projects can be compiled to use Apple's Metal Framework. However, 
 
 With the exception of the basic project, each of these projects can compile to use the OpenGL or Metal framework. To compile for OpenGL, comment out the line '{$DEFINE METALPI}.
 
-- [A basic hello triangle example](basic/)
-- [Display a 2D bitmap as a texture](texture/)
-- [A simple parallel compute project that converts a color image to grayscale](compute)
-- [Display high quality fonts](font/)
-- [A simple OBJ/PLY mesh viewer](mesh/)
-- [A variation of the mesh viewer that adds ambient occlusion](occlusion/)
-- [Volume render NIfTI (MRI/CT) format images](volumerender/)
+- [A basic hello triangle example](basic/) (Metal only)
+- [Display a 2D bitmap as a texture](texture/) (Metal or OpenGL)
+- [A simple parallel compute project that converts a color image to grayscale](compute) (Metal only)
+- [Display high quality fonts](font/) (Metal or OpenGL) 
+- [A simple OBJ/PLY mesh viewer](mesh/) (Metal or OpenGL)
+- [A variation of the mesh viewer that adds ambient occlusion](occlusion/) (Metal only)
+- [Volume render NIfTI (MRI/CT) format images](volumerender/) (Metal or OpenGL)

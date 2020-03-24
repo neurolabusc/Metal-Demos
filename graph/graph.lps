@@ -322,8 +322,7 @@
         <Filename Value="../common/glgraph.pas"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="298"/>
-        <CursorPos X="3" Y="324"/>
+        <CursorPos X="90" Y="19"/>
         <UsageCount Value="36"/>
         <Loaded Value="True"/>
       </Unit45>
@@ -490,7 +489,7 @@
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
-      <Modes Count="0" ActiveMode="default"/>
+      <Modes ActiveMode="default"/>
     </RunParams>
   </ProjectSession>
 </CONFIG>

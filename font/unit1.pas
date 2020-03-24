@@ -3,7 +3,7 @@ unit Unit1;
 {$mode objfpc}{$H+}
 {$IFDEF LCLCocoa}
  //MetalAPI supported on modern MacOS: disable for Linux, Windows and old MacOS
- {$DEFINE METALAPI}
+ //{$DEFINE METALAPI} //set in ProjectOptions/CompilerOptions/CustomOptions
 {$modeswitch objectivec1}
 {$ENDIF}
 {$IFDEF LCLCarbon}
@@ -48,7 +48,7 @@ implementation
 {$R *.lfm}
 
 {$IFDEF METALAPI}
-uses MetalPipeline, MetalUtils, MetalControl, Metal, VectorMath, mtlfont, {$IFDEF myTextures}mtltexture,{$ENDIF} SimdUtils;
+uses MetalPipeline, MetalControl, Metal, VectorMath, mtlfont, {$IFDEF myTextures}mtltexture,{$ENDIF} SimdUtils;
 {$ELSE}
 uses glcorearb, OpenGLContext, gl_core_utils, VectorMath, glfont,{$IFDEF myTextures}gltexture,{$ENDIF} SimdUtils;
 {$ENDIF}
