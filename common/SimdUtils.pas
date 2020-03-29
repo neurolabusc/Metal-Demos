@@ -8,7 +8,7 @@ interface
 {$ENDIF}
 uses
   {$IFDEF Darwin} CocoaAll, MacOSAll, {$ENDIF}
-  {$IFDEF Linux} BaseUnix, {$ENDIF}
+  {$IFDEF Linux} Classes, BaseUnix, {$ENDIF}
   sysutils, VectorMath; //dialogs,
 
 const
@@ -108,24 +108,69 @@ begin
 	result := url.relativePath.UTF8String;
 end;
 {$ELSE}
-function ResourceDir (): string;
-begin
-     result := extractfilepath(paramstr(0))+'Resources';
-     {$IFDEF LINUX}
-     if  DirectoryExists(result) then exit;
-     //https://wiki.freepascal.org/Multiplatform_Programming_Guide#Unix.2FLinux
-     //  /usr/local/share/app_name or /opt/app_name.
-     result := '/usr/local/share/'+ExtractFileName(paramstr(0))+pathdelim;
-     writeln('>>>'+result);
-     if  DirectoryExists(result) then exit;
-     result := '/opt/'+ExtractFileName(paramstr(0))+pathdelim;
-     if  DirectoryExists(result) then exit;
-     result := FpGetEnv('MRICROGL_DIR')+pathdelim;
-     if  DirectoryExists(result) then exit;
-     result := extractfilepath(paramstr(0))+'Resources';
-     {$ENDIF}
-end;
+ {$IFDEF LINUX}
+ var
+   gResourceDir : string = '';
 
+  function ResourceDir (): string;
+  label
+    111, 222, 333;
+  var
+     pths, nms, exts: TStringList;
+     p,n,x: integer;
+     verbose: boolean = false;
+     str: string;
+  begin
+    if (length(gResourceDir) > 0) then
+      exit(gResourceDir);
+    result := extractfilepath(paramstr(0))+'Resources';
+    if  DirectoryExists(result) then goto 333;
+    str := FpGetEnv('MRICROGL_DIR');
+    if (length(str) > 0) then begin
+       result := str;
+       if  DirectoryExists(result) then goto 333;
+    end;
+    pths := TStringList.Create;
+    pths.Add('/opt/');
+    pths.Add('/usr/local/');
+    pths.Add('/usr/local/share/');
+    nms := TStringList.Create;
+    if (CompareText('MRIcroGL', paramstr(0)) <> 0) then
+       nms.Add(ExtractFileName(paramstr(0)));
+    nms.Add('MRIcroGL');
+    exts := TStringList.Create;
+    exts.Add('/Resources');
+    exts.Add('');
+    111:
+    for p := 0 to pths.Count -1 do
+        for n := 0 to nms.Count -1 do
+            for x := 0 to exts.Count -1 do begin
+              result := pths[p]+nms[n]+exts[x];
+              if  DirectoryExists(result) then
+                  goto 222;
+              if (verbose) then
+                 writeln('  '+result)
+            end;
+    if not verbose then begin
+      //report errors for second pass
+      writeln('Unable to find Resources folder:');
+      verbose := true;
+      goto 111;
+    end;
+    222:
+    exts.Free;
+    nms.Free;
+    pths.Free;
+    333:
+    gResourceDir := result;
+  end;
+
+ {$ELSE} //Windows
+ function ResourceDir (): string;
+ begin
+     result := extractfilepath(paramstr(0))+'Resources';
+ end;
+ {$ENDIF}
 function ResourceFile (name: pchar; ofType: pchar): string;
 begin
      result := ResourceDir + pathdelim + name +'.'+ ofType;
