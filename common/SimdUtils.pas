@@ -134,7 +134,7 @@ end;
     pths.Add('/opt/');
     pths.Add('/usr/local/');
     pths.Add('/usr/local/share/');
-    pths.Add('/usr/share');
+    pths.Add('/usr/share/');
     nms := TStringList.Create;
     if (CompareText('MRIcroGL', paramstr(0)) <> 0) then
        nms.Add(ExtractFileName(paramstr(0)));
