@@ -5,7 +5,9 @@ unit mtlvolume;
 interface
 
 {$DEFINE GPUGRADIENTS} //Computing volume gradients on the GPU is much faster than using the CPU
+{$DEFINE MATCAP}
 uses
+    {$IFDEF MATCAP} intfgraphics, graphtype, Graphics,  {$ENDIF}
     VectorMath, MetalPipeline, MetalUtils, MetalControl, Metal,
     SysUtils, Math, loadNifti, SimdUtils;
 const
@@ -21,6 +23,7 @@ type
         pipeline: TMetalPipeline;
         mtlControl: TMetalControl;
         volTex, gradTex: MTLTextureProtocol;
+        {$IFDEF MATCAP} matCapTex: MTLTextureProtocol;{$ENDIF}
         procedure Prepare();
         procedure LoadCube(var fromView: TMetalControl);
         procedure LoadTexture(var vol: TNIfTI; fromView: TMetalControl);
@@ -33,6 +36,7 @@ type
         procedure Paint(var vol: TNIfTI);
         procedure SetShader(shaderName: string);
         procedure SaveBmp(filename: string);
+        {$IFDEF MATCAP} function SetMatCap(fnm: string): boolean; {$ENDIF}
   end;
 
 implementation
@@ -51,7 +55,156 @@ type
     stepSize, sliceSize, x0, x1: TScalar;
     rayDir: TVec4;
     lightPos: TVec4;
+    normalMatrix: TMat4;
   end;
+
+{$IFDEF MATCAP}
+
+procedure FlipVertical (var px: TPicture);
+var
+  p: array of byte;
+  i, half, b: integer;
+  LoPtr, HiPtr: PInteger;
+begin
+    if px.Height < 3 then exit;
+    half := (px.Height div 2);
+    b := px.Bitmap.RawImage.Description.BytesPerLine;
+    LoPtr := PInteger(px.Bitmap.RawImage.Data);
+    HiPtr := PInteger(px.Bitmap.RawImage.Data+ ((px.Height -1) * b));
+    setlength(p, b);
+    for i := 1 to half do begin
+          System.Move(LoPtr^,p[0],b); //(src, dst,sz)
+          System.Move(HiPtr^,LoPtr^,b); //(src, dst,sz)
+          System.Move(p[0],HiPtr^,b); //(src, dst,sz)
+          Inc(PByte(LoPtr), b );
+          Dec(PByte(HiPtr), b);
+    end;
+end; //FlipVertical()
+
+procedure CreateBmp(var px: TPicture);
+Type
+  TRGBquad = PACKED RECORD
+     rgbBlue,rgbGreen,rgbRed,rgbAlpha: byte;
+    end;
+  TQuadRA = array [1..1] of TRGBQuad;
+  RGBQuadp = ^TQuadRA;
+function rgb2quad(R,G,B: Byte): TRGBquad;
+begin
+  result.rgbRed:= (R);
+  result.rgbGreen:= (G);
+  result.rgbBlue:= (B);
+  result.rgbAlpha:= 0;
+end;
+const
+  x = 256;
+  y = 256;
+var
+  i, j, k: integer;
+  lBuff: RGBQuadp;
+  Ptr: pointer;
+  AImage: TLazIntfImage;
+  lRawImage: TRawImage;
+begin
+  GetMem(lBuff, x*y* sizeof(TRGBQuad));
+  k := 1;
+  for j := 1 to y do
+      for i :=  1 to x do begin
+          //lBuff^[k] := rgb2quad(256-i,i-1,256-j);
+          lBuff^[k] := rgb2quad(256-j,256-j,256-j);
+          k := k + 1;
+      end;
+  lRawImage.Init;
+  //lRawImage.Description.Init_BPP32_B8G8R8A8_BIO_TTB(0,0);
+  lRawImage.Description.Init_BPP32_R8G8B8A8_BIO_TTB(x,y);
+  lRawImage.CreateData(true);
+  AImage := TLazIntfImage.Create(x,y);
+  AImage.SetRawImage(lRawImage);
+  AImage.BeginUpdate;
+  i := 1;
+  for j := 0 to (y-1) do begin
+    ptr := AImage.GetDataLineStart(j);
+    Move(lBuff^[i], Ptr^, x * sizeof(TRGBQuad));
+    inc(i, x);
+  end;
+  AImage.EndUpdate;
+  px.Bitmap.LoadFromIntfImage(AImage);
+  FreeMem(lBuff);
+end;
+
+
+function TGPUVolume.SetMatCap(fnm: string): boolean;
+var
+  px: TPicture;
+  bmpHt, bmpWid: integer;
+  isPng : boolean;
+  pngTexDesc: MTLTextureDescriptor;
+  pngRegion: MTLRegion;
+  AImage: TLazIntfImage;
+  lRawImage: TRawImage;
+  //ifnm, MatCapDir: string;
+begin
+  result := false;
+  if (not fileexists(fnm)) and (fnm <> '') then begin
+       //MatCapDir := ExtractFilePath(ShaderDir)+ 'matcap';
+       fnm := ExtractFilePath(ShaderDir)+ 'matcap'+pathdelim+fnm+'.jpg';
+  end;
+  //if (fnm <> '') and (not fileexists(fnm)) then begin
+  px := TPicture.Create;
+  if not fileexists(fnm) then begin
+     if fnm <> '' then
+        writeln('Unable to find MatCap "'+fnm+'"');
+     CreateBmp(px)
+  end else begin
+    isPng := upcase(ExtractFileExt(fnm)) = '.PNG';
+    try
+      if isPng then
+          px.LoadFromFile(fnm)
+      else begin
+        lRawImage.Init;
+        //lRawImage.Description.Init_BPP32_B8G8R8A8_BIO_TTB(0,0);
+        lRawImage.Description.Init_BPP32_R8G8B8A8_BIO_TTB(0,0);
+        lRawImage.CreateData(false);
+        AImage := TLazIntfImage.Create(0,0);
+        try
+          AImage.SetRawImage(lRawImage);
+          AImage.LoadFromFile(fnm);
+          px.Bitmap.LoadFromIntfImage(AImage);
+        finally
+          AImage.Free;
+        end;
+      end;
+    except
+      px.Bitmap.Width:=0;
+    end;
+  end;
+  if (px.Bitmap.PixelFormat <> pf32bit ) or (px.Bitmap.Width < 1) or (px.Bitmap.Height < 1) then begin
+     writeln('Error loading 32-bit MatCap '+fnm);
+     exit;
+  end;
+  FlipVertical(px);
+  bmpHt := px.Bitmap.Height;
+  bmpWid := px.Bitmap.Width;
+  if px.Bitmap.PixelFormat <> pf32bit then
+     exit; //distance stored in ALPHA field
+  pngTexDesc := MTLTextureDescriptor.alloc.init.autorelease;
+  pngTexDesc.setTextureType(MTLTextureType2D);
+  if isPng then
+     pngTexDesc.setPixelFormat(MTLPixelFormatBGRA8Unorm)
+  else
+      pngTexDesc.setPixelFormat(MTLPixelFormatRGBA8Unorm);
+  //pngTexDesc.setPixelFormat(MTLPixelFormatBGRA8Unorm);
+  pngTexDesc.setWidth(bmpWid);
+  pngTexDesc.setHeight(bmpHt);
+  pngTexDesc.setDepth(1);
+  if (matCapTex <> nil) then matCapTex.release;
+  matCapTex := mtlControl.renderView.device.newTextureWithDescriptor(pngTexDesc);
+  Fatal(matCapTex = nil, format('mtlfont: newTextureWithDescriptor failed %dx%d', [bmpHt, bmpWid]));
+  pngRegion := MTLRegionMake3D(0, 0, 0, bmpWid, bmpHt, 1);
+  matCapTex.replaceRegion_mipmapLevel_withBytes_bytesPerRow(pngRegion, 0, PInteger(px.Bitmap.RawImage.Data), bmpWid*4);
+  px.Free;
+  result := true;
+end;
+{$ENDIF}
 
 procedure TGPUVolume.SaveBmp(filename: string);
 begin
@@ -90,6 +243,10 @@ begin
 end;
 
 constructor TGPUVolume.Create(fromView: TMetalControl);
+{$IFDEF MATCAP}
+var
+   fnm: string;
+{$ENDIF}
 begin
   mtlControl := fromView;
   fDistance := kDefaultDistance;
@@ -102,6 +259,12 @@ begin
   //fClearColor.b := 255;
   vertexBuffer := nil;
   pipeline := nil;
+  {$IFDEF MATCAP}
+  matCapTex  := nil;
+  fnm := ResourceFolderPath+pathdelim+'matcap'+pathdelim+'RedPlastic.jpg'; //.png or .jpg
+  if not SetMatCap(fnm) then
+     writeln('Unable to load MatCap '+fnm);
+  {$ENDIF}
 end;
 
 function VertVertex(x, y, z: TScalar): TVertVertex;
@@ -246,6 +409,7 @@ begin
   modelMatrix *= TMat4.Translate(-vol.Scale.X/2, -vol.Scale.Y/2, -vol.Scale.Z/2);
   modelLightPos := (modelMatrix.Transpose * fLightPos);
   modelMatrix *= TMat4.Scale(vol.Scale.X, vol.Scale.Y, vol.Scale.Z); //for volumes that are rectangular not square
+  fragUniforms.normalMatrix := modelMatrix.Inverse.Transpose;
   if fDistance = 0 then
           scale := 1
   else
@@ -270,6 +434,9 @@ begin
     MTLSetVertexBytes(@vertUniforms, sizeof(vertUniforms), 1);
     MTLSetFragmentTexture(volTex, 0);
     MTLSetFragmentTexture(gradTex, 1);
+    {$IFDEF MATCAP}
+    MTLSetFragmentTexture(matcapTex, 2);
+    {$ENDIF}
     MTLSetVertexBuffer(vertexBuffer, 0, 0);
     MTLSetFragmentBytes(@fragUniforms, sizeof(fragUniforms), 1);
     MTLSetCullMode(MTLCullModeFront);

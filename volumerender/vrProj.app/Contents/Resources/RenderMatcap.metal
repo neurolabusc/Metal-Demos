@@ -2,7 +2,7 @@
 //#define FRONTFACE
 //#define BACKFACE
 //#define GRADIENT
-#define NO_LIGHT
+//#define NO_LIGHT
 
 using namespace metal;
 
@@ -55,9 +55,11 @@ float3 GetBackPosition (float3 startPosition, float3 rayDir) {
 fragment float4 fragmentShader(VertexOut  in [[stage_in]],
                texture3d<float> volTexture [[ texture(0) ]],
                texture3d<float> gradTexture [[ texture(1) ]],
+			   texture2d<float> matCapTexture [[ texture(2) ]],
                const device FragUniforms* fragUniforms    	[[ buffer(1) ]]
                ) {
 	constexpr sampler textureSampler (mag_filter::linear,min_filter::linear);
+	constexpr sampler matCapSampler (mag_filter::linear,min_filter::linear);
     float3 start = in.color.rgb;
     #ifdef FRONTFACE
     	return float4(start,1);//<- show front face
@@ -68,6 +70,9 @@ fragment float4 fragmentShader(VertexOut  in [[stage_in]],
 	#endif
 	float sliceSize = fragUniforms->sliceSiz;//for opacity correction
 	float stepSize = fragUniforms->stepSiz;//sampling rate
+	//float4x4 nm = fragUniforms->normMatrix;
+	//float3x3 normalMatrix = float3x3(nm[0].xyz, nm[1].xyz, nm[2].xyz);
+	float3x3 normalMatrix = float3x3(fragUniforms->normMatrix[0].xyz, fragUniforms->normMatrix[1].xyz, fragUniforms->normMatrix[2].xyz);
 	float3 dir = backPosition - start;
 	float len = length(dir);
 	dir = normalize(dir);
@@ -108,8 +113,21 @@ fragment float4 fragmentShader(VertexOut  in [[stage_in]],
 			float lightNormDot = dot(gradSample.rgb, lightPosition);
 			float3 a = colorSample.rgb * ambient;
 			float3 d = max(lightNormDot, 0.0) * colorSample.rgb * diffuse;
+			float3 n = normalize(normalMatrix * gradSample.rgb);
+			d.rg = n.xy * 0.5 + 0.5;
+			//vec3 d = n * 0.5 + 0.5;
+			//vec3 d = texture(matcap2D, n.xy * 0.5 + 0.5).rgb;
+			d.rg = n.xy * 0.5 + 0.5;
+			//d.r = 0.0;
+			//d.g = 0.0;
+			d.b = 0.0;
+			//float3 d = texture(matcap2D, n.xy * 0.5 + 0.5).rgb;
+			//vec3 n = normalize(NormalMatrix * gradSample.rgb);
+			//d = (matCapTexture.sample(matCapSampler, n.xy * 0.5 + 0.5)).rgb;
+			d = (matCapTexture.sample(matCapSampler, n.xy * 0.5 + 0.5)).rgb;
+			//float3 d =  matCapTexture.sample(matCapSampler, in.color.xy);
 			float s =   specular * pow(max(dot(reflect(lightPosition, gradSample.rgb), dir), 0.0), shininess);
-			colorSample.rgb = a + d + s;
+			colorSample.rgb = d;//a + d + s;
 			colorSample.rgb *= colorSample.a;
 			colAcc= (1.0 - colAcc.a) * colorSample + colAcc;
 		}

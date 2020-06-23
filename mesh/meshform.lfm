@@ -29,6 +29,13 @@ object Form1: TForm1
         OnClick = SaveMenuClick
       end
     end
+    object EditMenu: TMenuItem
+      Caption = 'Edit'
+      object CopyMenu: TMenuItem
+        Caption = 'Copy'
+        OnClick = CopyMenuClick
+      end
+    end
     object ViewMenu: TMenuItem
       Caption = 'View'
       object MeshColorMenu: TMenuItem
@@ -92,7 +99,7 @@ object Form1: TForm1
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.png'
-    left = 42
-    top = 48
+    left = 72
+    top = 56
   end
 end

@@ -27,6 +27,7 @@ struct FragUniforms {
 	float x1;
 	float4 rayDir;
 	float4 lightPos;
+	float4x4 normMatrix;
 };
 
 vertex VertexOut vertexShader(  unsigned int vertexID               [[ vertex_id ]],

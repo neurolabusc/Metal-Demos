@@ -3,11 +3,11 @@
   <ProjectSession>
     <Version Value="12"/>
     <BuildModes Active="Default"/>
-    <Units Count="36">
+    <Units Count="40">
       <Unit0>
         <Filename Value="vrProj.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="135"/>
+        <UsageCount Value="144"/>
       </Unit0>
       <Unit1>
         <Filename Value="vrform.pas"/>
@@ -16,9 +16,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="vrForm"/>
-        <IsVisibleTab Value="True"/>
-        <CursorPos X="16" Y="289"/>
-        <UsageCount Value="135"/>
+        <TopLine Value="94"/>
+        <CursorPos X="31" Y="69"/>
+        <UsageCount Value="144"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -28,7 +28,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="199"/>
+        <UsageCount Value="198"/>
       </Unit2>
       <Unit3>
         <Filename Value="meshform.pas"/>
@@ -38,28 +38,28 @@
         <UnitName Value="meshForm"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="54" Y="75"/>
-        <UsageCount Value="199"/>
+        <UsageCount Value="198"/>
       </Unit3>
       <Unit4>
         <Filename Value="../Metal-Framework/lazarus/package/utils/MetalUtils.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="65"/>
         <CursorPos X="10" Y="72"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit4>
       <Unit5>
         <Filename Value="SIMDTypes.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="50"/>
         <CursorPos Y="66"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit5>
       <Unit6>
         <Filename Value="GLTypes.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="130"/>
         <CursorPos X="24" Y="130"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit6>
       <Unit7>
         <Filename Value="../Metal-Framework/lazarus/package/metalcontrol.pas"/>
@@ -67,97 +67,98 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="140"/>
         <CursorPos X="17" Y="160"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit7>
       <Unit8>
         <Filename Value="../metal1/unit1.pas"/>
         <UnitName Value="Unit1"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit8>
       <Unit9>
         <Filename Value="../Metal-Framework/lazarus/package/utils/MetalTypes.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="42"/>
         <CursorPos X="93" Y="52"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit9>
       <Unit10>
         <Filename Value="loadNifti.pas"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="453"/>
         <CursorPos X="29" Y="489"/>
-        <UsageCount Value="89"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="88"/>
       </Unit10>
       <Unit11>
         <Filename Value="mesh.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="20"/>
         <CursorPos X="11" Y="33"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="39"/>
       </Unit11>
       <Unit12>
         <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalPipeline.pas"/>
-        <EditorIndex Value="9"/>
-        <TopLine Value="89"/>
-        <CursorPos X="11" Y="89"/>
-        <UsageCount Value="70"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="722"/>
+        <CursorPos X="17" Y="740"/>
+        <UsageCount Value="69"/>
         <Loaded Value="True"/>
       </Unit12>
       <Unit13>
         <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalUtils.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="73"/>
-        <CursorPos X="20" Y="82"/>
-        <UsageCount Value="43"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="16"/>
+        <CursorPos Y="39"/>
+        <UsageCount Value="44"/>
+        <Loaded Value="True"/>
       </Unit13>
       <Unit14>
         <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalTypes.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="909"/>
         <CursorPos Y="935"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="34"/>
       </Unit14>
       <Unit15>
         <Filename Value="meshmetal.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="47"/>
         <CursorPos Y="60"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="22"/>
       </Unit15>
       <Unit16>
         <Filename Value="meshgl.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="87"/>
         <CursorPos X="19" Y="102"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="15"/>
       </Unit16>
       <Unit17>
         <Filename Value="../gl/gl_core_utils.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="3" Y="112"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="34"/>
       </Unit17>
       <Unit18>
         <Filename Value="../gl/glcorearb.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2741"/>
         <CursorPos X="17" Y="2756"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="21"/>
       </Unit18>
       <Unit19>
         <Filename Value="../gl/GLTypes.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="8"/>
         <CursorPos X="50" Y="11"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="13"/>
       </Unit19>
       <Unit20>
         <Filename Value="gl_core_matrix.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="13" Y="14"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit20>
       <Unit21>
         <Filename Value="../../lazarus/components/lazutils/laztracer.pas"/>
@@ -165,230 +166,254 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="36"/>
         <CursorPos X="19" Y="43"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit21>
       <Unit22>
         <Filename Value="mtlvolume.pas"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="78"/>
-        <CursorPos X="3" Y="100"/>
-        <UsageCount Value="82"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="257"/>
+        <CursorPos X="22" Y="264"/>
+        <UsageCount Value="87"/>
         <Loaded Value="True"/>
       </Unit22>
       <Unit23>
         <Filename Value="glmesh.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="18" Y="6"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit23>
       <Unit24>
         <Filename Value="glvolume.pas"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="24"/>
         <CursorPos X="22" Y="27"/>
-        <UsageCount Value="46"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="45"/>
       </Unit24>
       <Unit25>
         <Filename Value="../gl/glvolume.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="14"/>
         <CursorPos Y="39"/>
-        <UsageCount Value="34"/>
+        <UsageCount Value="33"/>
       </Unit25>
       <Unit26>
         <Filename Value="../../Metal-Framework/lazarus/package/framework/metal/MTLTypes.inc"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="3" Y="16"/>
-        <UsageCount Value="32"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="31"/>
       </Unit26>
       <Unit27>
         <Filename Value="../../Metal-Framework/lazarus/package/framework/metal/MTLTexture.inc"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="32"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="30"/>
         <CursorPos X="3" Y="75"/>
-        <UsageCount Value="40"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="39"/>
       </Unit27>
       <Unit28>
         <Filename Value="../gl/gllines.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="73"/>
         <CursorPos Y="73"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="2"/>
       </Unit28>
       <Unit29>
         <Filename Value="../gl/SimdUtils.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="17" Y="14"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="13"/>
       </Unit29>
       <Unit30>
         <Filename Value="/usr/local/share/fpcsrc/rtl/inc/systemh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="309"/>
         <CursorPos X="25" Y="319"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit30>
       <Unit31>
         <Filename Value="nifti_hdr.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="869"/>
         <CursorPos X="35" Y="14"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit31>
       <Unit32>
         <Filename Value="nifti_types.pas"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="20"/>
         <CursorPos X="10" Y="46"/>
-        <UsageCount Value="40"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="39"/>
       </Unit32>
       <Unit33>
         <Filename Value="../common/gl_core_utils.pas"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="2"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="17" Y="152"/>
-        <UsageCount Value="33"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="32"/>
       </Unit33>
       <Unit34>
         <Filename Value="../common/glcorearb.pas"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="2261"/>
         <CursorPos X="11" Y="2278"/>
-        <UsageCount Value="30"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="29"/>
       </Unit34>
       <Unit35>
         <Filename Value="../../MRIcroGL12/colorTable.pas"/>
-        <EditorIndex Value="3"/>
-        <UsageCount Value="30"/>
-        <Loaded Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="29"/>
       </Unit35>
+      <Unit36>
+        <Filename Value="../common/VectorMath.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="223"/>
+        <CursorPos X="14" Y="135"/>
+        <UsageCount Value="12"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="../../Metal-Framework/lazarus/package/framework/metal/MTLPixelFormat.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="34" Y="11"/>
+        <UsageCount Value="11"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="../../lazarus/lcl/graphics.pp"/>
+        <UnitName Value="Graphics"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="44" Y="8"/>
+        <UsageCount Value="11"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="../../lazarus/components/lazutils/graphtype.pp"/>
+        <UnitName Value="GraphType"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="135"/>
+        <CursorPos X="45" Y="135"/>
+        <UsageCount Value="10"/>
+      </Unit39>
     </Units>
     <Build>
       <CleanOutputFileMask Value="*.ppu;*.ppl;*.o;*.or"/>
     </Build>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="vrform.pas"/>
-        <Caret Line="173" TopLine="154"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="90" Column="40" TopLine="85"/>
       </Position1>
       <Position2>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="332" Column="20" TopLine="297"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="115" Column="5" TopLine="107"/>
       </Position2>
       <Position3>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="77" Column="30" TopLine="54"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="113" Column="16" TopLine="99"/>
       </Position3>
       <Position4>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="95" Column="31" TopLine="67"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="84" Column="9" TopLine="69"/>
       </Position4>
       <Position5>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="198" Column="26" TopLine="170"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="116" Column="6" TopLine="100"/>
       </Position5>
       <Position6>
-        <Filename Value="vrform.pas"/>
-        <Caret Line="254" Column="27" TopLine="237"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="123" Column="12" TopLine="111"/>
       </Position6>
       <Position7>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="198" Column="28" TopLine="181"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="84" Column="10" TopLine="69"/>
       </Position7>
       <Position8>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="209" Column="21" TopLine="181"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="112" Column="21" TopLine="84"/>
       </Position8>
       <Position9>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="68" Column="37" TopLine="51"/>
+        <Filename Value="vrform.pas"/>
+        <Caret Line="172" Column="139" TopLine="43"/>
       </Position9>
       <Position10>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="71" Column="42" TopLine="51"/>
+        <Filename Value="vrform.pas"/>
+        <Caret Line="167" Column="16" TopLine="163"/>
       </Position10>
       <Position11>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="95" Column="31" TopLine="67"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="38" Column="26" TopLine="24"/>
       </Position11>
       <Position12>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="209" Column="26" TopLine="187"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="206" Column="27" TopLine="200"/>
       </Position12>
       <Position13>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="68" Column="29" TopLine="51"/>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalPipeline.pas"/>
+        <Caret Line="106" Column="32" TopLine="89"/>
       </Position13>
       <Position14>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="77" Column="24" TopLine="51"/>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalPipeline.pas"/>
+        <Caret Line="107" Column="32" TopLine="89"/>
       </Position14>
       <Position15>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="95" Column="25" TopLine="67"/>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalPipeline.pas"/>
+        <Caret Line="686" Column="23" TopLine="661"/>
       </Position15>
       <Position16>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="198" Column="20" TopLine="170"/>
+        <Filename Value="vrform.pas"/>
+        <Caret Line="167" Column="16" TopLine="160"/>
       </Position16>
       <Position17>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="209" Column="13" TopLine="181"/>
+        <Filename Value="vrform.pas"/>
+        <Caret Line="168" Column="16" TopLine="161"/>
       </Position17>
       <Position18>
         <Filename Value="vrform.pas"/>
-        <Caret Line="241" Column="37" TopLine="237"/>
+        <Caret Line="175" Column="16" TopLine="168"/>
       </Position18>
       <Position19>
         <Filename Value="vrform.pas"/>
-        <Caret Line="174" Column="25" TopLine="160"/>
+        <Caret Line="144" Column="6" TopLine="142"/>
       </Position19>
       <Position20>
         <Filename Value="vrform.pas"/>
-        <Caret Line="224" Column="20" TopLine="207"/>
+        <Caret Line="174" TopLine="171"/>
       </Position20>
       <Position21>
         <Filename Value="vrform.pas"/>
-        <Caret Line="225" Column="8" TopLine="207"/>
+        <Caret Line="312" Column="12" TopLine="288"/>
       </Position21>
       <Position22>
-        <Filename Value="vrform.pas"/>
-        <Caret Line="258" Column="89" TopLine="238"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="36" Column="24" TopLine="23"/>
       </Position22>
       <Position23>
-        <Filename Value="vrform.pas"/>
-        <Caret Line="262" Column="25" TopLine="245"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="209" TopLine="175"/>
       </Position23>
       <Position24>
         <Filename Value="vrform.pas"/>
-        <Caret Line="274" Column="44" TopLine="259"/>
+        <Caret Line="13" Column="113"/>
       </Position24>
       <Position25>
         <Filename Value="vrform.pas"/>
-        <Caret Line="289" Column="16" TopLine="271"/>
+        <Caret Line="35" Column="23" TopLine="22"/>
       </Position25>
       <Position26>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="38" Column="30" TopLine="22"/>
+        <Filename Value="vrform.pas"/>
+        <Caret Line="38" Column="9" TopLine="26"/>
       </Position26>
       <Position27>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="279" Column="15" TopLine="265"/>
+        <Filename Value="vrform.pas"/>
+        <Caret Line="44" Column="83" TopLine="37"/>
       </Position27>
       <Position28>
-        <Filename Value="../common/gl_core_utils.pas"/>
-        <Caret Line="13" Column="26"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="207" Column="9" TopLine="203"/>
       </Position28>
       <Position29>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="21" Column="85" TopLine="7"/>
+        <Filename Value="mtlvolume.pas"/>
+        <Caret Line="264" Column="22" TopLine="257"/>
       </Position29>
+      <Position30>
+        <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalUtils.pas"/>
+        <Caret Line="21" Column="28" TopLine="8"/>
+      </Position30>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>

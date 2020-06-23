@@ -13,6 +13,7 @@ uses
 
 begin
   RequireDerivedFormResource:=True;
+  Application.Title:='vrProj';
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);

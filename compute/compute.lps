@@ -40,7 +40,7 @@
         <Filename Value="mtlcompute.pas"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="42" Y="10"/>
+        <CursorPos X="18" Y="7"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit4>
@@ -182,7 +182,7 @@
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
-      <Modes Count="0" ActiveMode=""/>
+      <Modes ActiveMode=""/>
     </RunParams>
   </ProjectSession>
 </CONFIG>

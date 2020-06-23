@@ -14,7 +14,7 @@ MacOS must use Cocoa, regardless of whether OpenGL Core or Metal is used.
 interface
 
 uses
-  {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
+  {$IFDEF LCLCocoa}{$IFNDEF METALAPI}retinahelper,{$ENDIF}{$ENDIF}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, Types, fileutil;
 
 type
@@ -27,6 +27,8 @@ type
     FileMenu: TMenuItem;
     FlipMenu: TMenuItem;
     MatCapMenu: TMenuItem;
+    EditMenu: TMenuItem;
+    CopyMenu: TMenuItem;
     SaveDialog1: TSaveDialog;
     SaveMenu: TMenuItem;
     PerspectiveMenu: TMenuItem;
@@ -38,6 +40,7 @@ type
     ViewMenu: TMenuItem;
     BackColorMenu: TMenuItem;
     OpenMenu: TMenuItem;
+    procedure CopyMenuClick(Sender: TObject);
     procedure FlipMenuClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -96,6 +99,15 @@ begin
  LoadMesh();
 end;
 
+procedure TForm1.CopyMenuClick(Sender: TObject);
+begin
+ {$IFDEF METALAPI}
+ Mesh1.SaveBmp('');
+ {$ELSE}
+ showmessage('Not functional');
+ {$ENDIF}
+end;
+
 procedure TForm1.FormResize(Sender: TObject);
 begin
   {$IFDEF METALAPI}
@@ -127,8 +139,8 @@ end;
 
 procedure TForm1.SaveMenuClick(Sender: TObject);
 begin
- {$IFDEF METALAPI}
  if not SaveDialog1.execute then exit;
+ {$IFDEF METALAPI}
  Mesh1.SaveBmp(SaveDialog1.Filename);
  {$ELSE}
  SaveBmp(SaveDialog1.Filename, ViewGPU1);

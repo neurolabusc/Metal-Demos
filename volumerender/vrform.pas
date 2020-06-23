@@ -24,6 +24,8 @@ type
     MainMenu: TMainMenu;
     FileMenu: TMenuItem;
     ContrastMenu: TMenuItem;
+    EditMenu: TMenuItem;
+    CopyMenu: TMenuItem;
     NewInstanceMenu: TMenuItem;
     SaveDialog1: TSaveDialog;
     SaveMenu: TMenuItem;
@@ -37,6 +39,7 @@ type
     procedure AboutMenuClick(Sender: TObject);
     procedure BackColorMenuClick(Sender: TObject);
     procedure ContrastMenuClick(Sender: TObject);
+    procedure CopyMenuClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure NewInstanceMenuClick(Sender: TObject);
     procedure SaveMenuClick(Sender: TObject);
@@ -134,6 +137,15 @@ begin
   if not isOK then exit;
   niftiVol.SetDisplayMinMax(mn, mx);
   ViewGPU1.Invalidate;
+end;
+
+procedure TForm1.CopyMenuClick(Sender: TObject);
+begin
+ {$IFDEF METALAPI}
+ Vol1.SaveBmp('');
+ {$ELSE}
+ Showmessage('Not implemented');
+ {$ENDIF}
 end;
 
 procedure TForm1.NewInstanceMenuClick(Sender: TObject);

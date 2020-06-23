@@ -1,11 +1,11 @@
 unit mtlgraph; //OpenGL and Metal differ in only in first 2 lines
-{$DEFINE METALAPI}
+{$DEFINE METALAPI} //<- set by ProjectOptions/CompilerOptions/CustomOptions
 
 {$mode objfpc}{$H+}
 interface
 
 uses
-  SimdUtils, Classes, SysUtils, dialogs, math, strutils, Controls, VectorMath,
+  lazfileutils, SimdUtils, Classes, SysUtils, dialogs, math, strutils, Controls, VectorMath,
 {$IFDEF METALAPI}
  MetalUtils, Metal, MetalPipeline, MetalControl, mtllines,  mtlfont;
 {$ELSE}
@@ -44,7 +44,7 @@ type
         Style: integer;
         HorizontalSelection: integer;
         TextColor,BackColor,GridColor, MinorLineColor: TRGBA;
-        isRedraw, isMarker, isMinorLines: boolean;
+         isRedraw, isMarker, isMinorLines: boolean;
     procedure ClearLines();
     procedure CloneLine();
     procedure DarkColorScheme();
@@ -53,10 +53,12 @@ type
     procedure GrayColorScheme();
     procedure LightColorScheme();
     function HorizontalClickFrac(X: single): single;
-    procedure AddLine(newVals: TFloat32s; newCaption: string; isOverwrite: boolean = false);
+    procedure AddLine(newVals: TFloat32s; newCaption: string; isOverwrite: boolean = false; isOverwriteProtect: boolean = false);
     procedure AddXData(newVals: TFloat32s); //e.g. [0 4 8 12] suggests data evenly spaced one sample every 4 seconds
     function AsText(isSaveXData: boolean = false): TStringList;
-    function LoadText(filename: string): boolean;
+    function LoadText(filename: string; isKeepOld: boolean = false): boolean;
+    function PointsPerLine: integer;
+    procedure SaveBmp(filename: string);
     {$IFDEF METALAPI}
     constructor Create(fromView: TMetalControl);
     procedure Paint(fromView: TMetalControl);
@@ -69,7 +71,18 @@ type
 
 implementation
 
-uses graphTicks;
+uses graphticks;
+
+procedure TGPUGraph.SaveBmp(filename: string);
+begin
+     MTLWriteTextureToFile(pChar(filename));
+end;
+
+function TGPUGraph.PointsPerLine: integer;
+begin
+     if (Lines = nil) then exit(0);
+     exit(length(Lines[0].vals));
+end;
 
 function TGPUGraph.HorizontalClickFrac(X: single): single;
 var
@@ -87,7 +100,7 @@ var
     jScale, minWH, border, gap, gL,gT,gB,gR, vFrac: single;
     i, j, ptsPerLine: integer;
     markerWid, gridLineWid, lineWid: single; //vertical line space
-    maxTextWid, ticMin, ticPos, ticStep: double;
+    maxTextWid, ticMin, ticPos, ticStep, minorStep: double;
     ticDecimals: integer;
     translucent : TRGBA;
     gMin, gMax, gRange, hFrac, pxX, fntScale,fntHeight, StWid: single;
@@ -158,11 +171,26 @@ begin
      if (isMinorLines) then begin
         gpuLines.LineWidth:= gridLineWid * 0.5;
         gpuLines.LineColor := MinorLineColor;//setRGBA(0,0,0,255);
-        ticPos := ticMin + (0.5 * ticStep);
-        while (ticPos <= xMax) do begin
-            pxX := gL + (gR-gL)*(ticPos / xMax);
-            gpuLines.AddLine(pxX, gT+lineWid, pxX, gB-lineWid);
-            ticPos := ticPos + ticStep;
+        if (ticStep = 3) or (ticStep = 5) or (ticStep = 7) or (ticStep = 9) then begin
+           //rationale if ticStep is 3, minor ticks should be at 1 and 2 not 1.5
+           //might add toleratance, e.g. 3.0001 ~= 3
+          minorStep := 1/ticStep;
+          ticPos := ticMin + (minorStep * ticStep);
+          i := 1;
+          while (ticPos <= xMax) do begin
+              pxX := gL + (gR-gL)*(ticPos / xMax);
+              if (i mod round(ticStep)) <> 0 then
+                 gpuLines.AddLine(pxX, gT+lineWid, pxX, gB-lineWid);
+              i := i + 1;
+              ticPos := ticPos + (minorStep * ticStep);
+          end;
+        end else begin
+          ticPos := ticMin + (0.5 * ticStep);
+          while (ticPos <= xMax) do begin
+              pxX := gL + (gR-gL)*(ticPos / xMax);
+              gpuLines.AddLine(pxX, gT+lineWid, pxX, gB-lineWid);
+              ticPos := ticPos + ticStep;
+          end;
         end;
      end;
      gpuLines.LineColor := GridColor;//setRGBA(0,0,0,255);
@@ -409,13 +437,6 @@ begin
         result.B := round(result.B * 0.75);
      end else if (255 = result.G) then
          result.G := 222;
-
-     (*if i > 5 then begin
-        result.R := random(255);
-        result.G := random(255);
-        result.B := random(255);
-
-     end;*)
 end;
 
 procedure TGPUGraph.CloneLine();
@@ -437,9 +458,21 @@ begin
      isRedraw := true;
 end;
 
-procedure TGPUGraph.AddLine(newVals: TFloat32s; newCaption: string; isOverwrite: boolean = false);
+FUNCTION specialsingle (var s:single): boolean;
+//returns true if s is Infinity, NAN or Indeterminate
+CONST kSpecialExponent = 255 shl 23;
+VAR Overlay: LongInt ABSOLUTE s;
+BEGIN
+ IF ((Overlay AND kSpecialExponent) = kSpecialExponent) THEN
+   RESULT := true
+ ELSE
+   RESULT := false;
+END; //specialsingle()
+
+procedure TGPUGraph.AddLine(newVals: TFloat32s; newCaption: string; isOverwrite: boolean = false; isOverwriteProtect: boolean = false);
 var
   l, n, i: integer;
+  v: single;
   sum: double;
 begin
      n := length(newVals);
@@ -451,18 +484,26 @@ begin
         numLines := numLines + 1
      else
          l := l - 1;
+     if (isOverwriteProtect) then
+       numLinesNoOverwrite := numLinesNoOverwrite + 1;
      setlength(Lines, numLines);
      setlength(Lines[l].vals, n);
-     Lines[l].min :=  newVals[0];
-     Lines[l].max :=  newVals[0];
+     v := newVals[0];
+     if specialsingle(v) then
+        v := 0;  //e.g. Inf+
+     Lines[l].min :=  v;
+     Lines[l].max :=  v;
      sum := 0;
      for i := 0 to (n-1) do begin
-         Lines[l].vals[i] := newVals[i];
-         if (newVals[i] > Lines[l].max) then
-            Lines[l].max := newVals[i];
-         if (newVals[i] < Lines[l].min) then
-            Lines[l].min := newVals[i];
-         sum := sum + newVals[i];
+         v := newVals[i];
+         if specialsingle(v) then
+            v := 0;  //e.g. Inf+
+         Lines[l].vals[i] := v;
+         if (v > Lines[l].max) then
+            Lines[l].max := v;
+         if (v < Lines[l].min) then
+            Lines[l].min := v;
+         sum := sum + v;
      end;
      Lines[l].mean := sum / n;
      Lines[l].caption := newCaption;
@@ -480,13 +521,14 @@ begin
     minXData := newvals[0];
     maxXData := minXData;
     for i := 0 to (length(XData)-1) do begin
+        //XData[i] := i;
         XData[i] := newVals[i];
         if (XData[i] < minXData) then minXData := XData[i];
         if (XData[i] > maxXData) then maxXData := XData[i];
     end;
 end;
 
-function TGPUGraph.LoadText(filename: string): boolean;
+function TGPUGraph.LoadText(filename: string; isKeepOld: boolean = false): boolean;
 label
   123;
 const
@@ -498,10 +540,12 @@ type
 var
   str: string;
   strs, strlst : TStringList;
-  nCol, nLinesIn, i, j, k, c: integer;
+  nCol, nLinesIn, i, nRow, k, c: integer;
   cols: array of TFloat32s;
+  flts: TFloat32s;
   typ: integer = kTypeUnknown;
   captions: array of capt;
+  ext, fnm: string;
 begin
      result := false;
      if not fileexists(filename) then begin
@@ -515,12 +559,12 @@ begin
      nCol := 0;
      strs.LoadFromFile(filename);
      nLinesIn := strs.Count; //may include comments'#'
-     if nLinesIn < 2 then begin
-        showmessage('Does not have at least two lines of text: '+filename);
+     if nLinesIn < 1 then begin
+        showmessage('Does not have at least one lines of text: '+filename);
        goto 123;
      end;
      //read input lines
-     j := 0;
+     nRow := 0;
      for i := 0 to (nLinesIn -1) do begin
          str := strs.Strings[i];
          if PosEx('#Col',str) = 1 then begin
@@ -555,13 +599,30 @@ begin
            goto 123;
          end;
          for c := 0 to (nCol - 1) do
-             cols[c][j] := strtofloatdef(strlst[c],0);
-         j := j + 1;
+             cols[c][nRow] := strtofloatdef(strlst[c],0);
+         nRow := nRow + 1;
      end;
-     //build graph
-     if (j < 2) or (nCol < 1) then begin
-       showmessage('Need at least two lines of text (without "#" comments) '+filename);
-       goto 123;
+     //showmessage(format('%g : %g', [ cols[0][0], cols[0][j-1] ]));
+     ext := upcase(ExtractFileExt(filename));
+     fnm := upcase(ExtractFileNameOnly(filename));
+     //fnm := upcase(ExtractFileNameWithoutExt(filename));
+     if (nRow = 1) and (nCol > 1) then begin //transpose
+        setlength(flts, nCol);
+        for i := 0 to (nCol-1) do begin
+            flts[i] := cols[i][0];
+            setlength(cols[i],0);
+        end;
+        setlength(cols, 1);
+        setlength(cols[0], length(flts));
+        for i := 0 to (nCol-1) do
+            cols[0][i] := flts[i];
+        flts := nil;
+        nRow := nCol;
+        nCol := 1;
+     end;
+     if (nRow < 2) or (nCol < 1) then begin
+        showmessage(format('Found %d rows and %d columns. Need at least two lines of text (without "#" comments) %s',[nRow, nCol, filename]));
+        goto 123;
      end;
      if (nCol = 1) then
         typ := kType1stColYData;
@@ -571,10 +632,20 @@ begin
         typ := kType1stColYData;
      if (typ = kTypeUnknown) and (length(captions) = 0) and (nCol = 6) and (posex('rp_',extractfilename(filename)) = 1) then
         typ := kType1stColYData;
-     if (typ = kTypeUnknown) and (upcase(ExtractFileExt(filename)) = '.1D') then
+     if (typ = kTypeUnknown) and (ext = '.1D') then
         typ := kType1stColYData;
-     if (typ = kTypeUnknown) and (upcase(ExtractFileExt(filename)) = '.PAR') then
+     if (typ = kTypeUnknown) and (ext = '.PAR') then
         typ := kType1stColYData; //FSL mcflirt creates ".PAR" files, not to be confused with Philips PAR/REC
+     if (typ = kTypeUnknown) and (posex('PS_TSPLOT_ZSTAT1_EV', fnm) > 0) then //FSL
+        typ := kType1stColYData;
+     if (typ = kTypeUnknown) and (posex('PS_TSPLOT_ZSTAT1_EV', fnm) > 0) then //FSL
+        typ := kType1stColYData;
+     if (typ = kTypeUnknown) and (posex('PS_TSPLOTC_ZSTAT1_EV', fnm) > 0) then //FSL
+        typ := kType1stColYData;
+     if (typ = kTypeUnknown) and (posex('TSPLOT_ZSTAT', fnm) > 0) then //FSL
+        typ := kType1stColYData;
+     if (typ = kTypeUnknown) and (posex('TSPLOTC_ZSTAT', fnm) > 0) then //FSL
+        typ := kType1stColYData;
      if (typ = kTypeUnknown) then begin
        i := MessageDlg('Are the first column values the X axis data?', mtConfirmation,[mbYes, mbNo], 0);
        if (i = mrYes) then
@@ -582,16 +653,26 @@ begin
        else
            typ := kType1stColYData;
      end;
-     ClearLines();
+     //build graph
+     if (isKeepOld) and (numLines > 0) and (nRow <> length(Lines[0].vals)) then begin
+        isKeepOld := false;
+        {$IFDEF UNIX}
+        writeln('Unable to keep old graph: number of rows differs');
+        {$ENDIF}
+     end;
+     if (isKeepOld) then
+         //
+     else
+         ClearLines();
      str := extractfilename(filename);
      i := 0;
      if (typ = kType1stColXData) then begin
-        setlength(cols[i],j);
+        setlength(cols[i],nRow);
         AddXData(cols[i]);
         i := 1;
      end;
      for c := i to (nCol - 1) do begin
-         setlength(cols[c],j);
+         setlength(cols[c],nRow);
          if c < length(captions) then
             AddLine(cols[c], captions[c])
          else
@@ -742,4 +823,5 @@ begin
 end;
 
 end.
+
 

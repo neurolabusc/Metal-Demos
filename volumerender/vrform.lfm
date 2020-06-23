@@ -33,6 +33,13 @@ object Form1: TForm1
         OnClick = NewInstanceMenuClick
       end
     end
+    object EditMenu: TMenuItem
+      Caption = 'Edit'
+      object CopyMenu: TMenuItem
+        Caption = 'Copy'
+        OnClick = CopyMenuClick
+      end
+    end
     object ViewMenu: TMenuItem
       Caption = 'View'
       object BackColorMenu: TMenuItem

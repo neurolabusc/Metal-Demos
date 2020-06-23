@@ -30,6 +30,10 @@ object Form1: TForm1
         Caption = 'Copy text'
         OnClick = CopyMenuClick
       end
+      object CopyBmpMenu: TMenuItem
+        Caption = 'Copy bitmap'
+        OnClick = CopyBmpMenuClick
+      end
     end
     object MenuItem1: TMenuItem
       Caption = 'View'

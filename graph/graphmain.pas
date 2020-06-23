@@ -3,7 +3,7 @@ unit graphmain;
 {$mode objfpc}{$H+}
 {$IFDEF LCLCocoa}
  //MetalAPI supported on modern MacOS: disable for Linux, Windows and old MacOS
- //{$DEFINE METALAPI} //set in ProjectOptions/CompilerOptions/CustomOptions
+ {$DEFINE METALAPI} //set in ProjectOptions/CompilerOptions/CustomOptions
   {$modeswitch objectivec1}
 {$ENDIF}
 {$IFDEF LCLCarbon}
@@ -25,6 +25,7 @@ type
     CopyMenu: TMenuItem;
     ColorSchemeG: TMenuItem;
     ColorSchemeDarkB: TMenuItem;
+    CopyBmpMenu: TMenuItem;
     NodeMarkerMenu: TMenuItem;
     SaveMenu: TMenuItem;
     OpenMenu: TMenuItem;
@@ -40,6 +41,7 @@ type
     ModeMenu: TMenuItem;
     SaveDialog1: TSaveDialog;
     procedure ColorSchemeWClick(Sender: TObject);
+    procedure CopyBmpMenuClick(Sender: TObject);
     procedure CopyMenuClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure NodeMarkerMenuClick(Sender: TObject);
@@ -164,6 +166,15 @@ begin
   end;
   gGraph.isRedraw := true;
   ViewGPU1.Invalidate;
+end;
+
+procedure TForm1.CopyBmpMenuClick(Sender: TObject);
+begin
+  {$IFDEF METALAPI}
+   gGraph.SaveBmp(SaveDialog1.Filename);
+  {$ELSE}
+  showmessage('Not implemented');
+  {$ENDIF}
 end;
 
 procedure TForm1.CopyMenuClick(Sender: TObject);

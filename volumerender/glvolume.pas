@@ -1,13 +1,17 @@
 unit glvolume;
 {$mode objfpc}
+{$IFDEF Darwin}{$modeswitch objectivec1}{$ENDIF}
 {$H+}
 interface
-
-uses
- SimdUtils, glcorearb, gl_core_utils, VectorMath, Classes, SysUtils, Graphics,
-    math, OpenGLContext, dialogs, loadNifti;
 {$DEFINE STRIP} //we can define cube as either a triangle or triangle strip - no implications on performance
 {$DEFINE GPUGRADIENTS} //Computing volume gradients on the GPU is much faster than using the CPU
+{$DEFINE MATCAP}
+uses
+ {$IFDEF Darwin} CocoaAll, MacOSAll, {$ENDIF}
+ {$IFDEF MATCAP}GraphType, FPImage, IntfGraphics, LCLType,{$ENDIF}
+ SimdUtils, glcorearb, gl_core_utils, VectorMath, Classes, SysUtils, Graphics,
+    math, OpenGLContext, dialogs, loadNifti;
+
 const
  kDefaultDistance = 2.25;
  kMaxDistance = 40;
@@ -22,6 +26,10 @@ type
         sliceSizeLoc, stepSizeLoc, loopsLoc : GLint;
         {$IFDEF GPUGRADIENTS}programSobel, programBlur: GLuint;  {$ENDIF}
         gradientTexture3D, intensityTexture3D, vao, programRaycast, vboBox3D: GLuint;
+        {$IFDEF MATCAP}
+        matcap2D: GLuint;
+        matcapLoc, normLoc: GLint;
+        {$ENDIF}
         procedure LoadCube();
         {$IFDEF GPUGRADIENTS}procedure CreateGradientVolumeGPU(Xsz,Ysz,Zsz: integer);{$ENDIF}
         function LoadTexture(var vol: TNIfTI): boolean;
@@ -34,11 +42,116 @@ type
         constructor Create(fromView: TOpenGLControl);
         procedure Paint(var vol: TNIfTI);
         procedure SetShader(shaderName: string);
+        {$IFDEF MATCAP}procedure SetMatCap(lFilename: string);{$ENDIF}
   end;
 
 implementation
 
-uses vrForm;
+//uses vrForm;
+
+{$IFDEF MATCAP}
+procedure printf (lS: AnsiString);
+begin
+{$IFNDEF WINDOWS} writeln(lS); {$ENDIF}
+end;
+
+{$IFDEF WINDOWS}
+procedure FlipVertical (var px: TPicture);
+var
+  p: array of byte;
+  i, half, b: integer;
+  LoPtr, HiPtr: PInteger;
+begin
+    if px.Height < 3 then exit;
+    half := (px.Height div 2);
+    b := px.Bitmap.RawImage.Description.BytesPerLine;
+    LoPtr := PInteger(px.Bitmap.RawImage.Data);
+    HiPtr := PInteger(px.Bitmap.RawImage.Data+ ((px.Height -1) * b));
+    setlength(p, b);
+    for i := 1 to half do begin
+          System.Move(LoPtr^,p[0],b); //(src, dst,sz)
+          System.Move(HiPtr^,LoPtr^,b); //(src, dst,sz)
+          System.Move(p[0],HiPtr^,b); //(src, dst,sz)
+          Inc(PByte(LoPtr), b );
+          Dec(PByte(HiPtr), b);
+    end;
+end; //FlipVertical()
+{$ENDIF}
+
+function LoadMatCap(fnm: string; var texID: GLuint): boolean;
+var
+  px: TPicture;
+  ifnm, MatCapDir: string;
+  {$IFNDEF WINDOWS}
+  AImage: TLazIntfImage;
+  lRawImage: TRawImage;
+  {$ENDIF}
+begin
+  result := false;
+  if not fileexists(fnm) then begin
+     ifnm := fnm;
+     MatCapDir := ExtractFilePath(ShaderDir)+ 'matcap';
+     fnm := MatCapDir+pathdelim+fnm+'.jpg';
+     if not fileexists(fnm) then begin
+        printf(format('LoadTex: unable to find "%s" or "%s"',[ifnm, fnm]));
+        exit;
+     end;
+  end;
+  px := TPicture.Create;
+    try
+       {$IFDEF Windows}
+       px.LoadFromFile(fnm);
+       FlipVertical(px);
+       {$ELSE}
+       //ensure order is GL_RGBA8 - it is with many PNG files, but not JPEG
+       lRawImage.Init;
+       lRawImage.Description.Init_BPP32_R8G8B8A8_BIO_TTB(0,0);
+       lRawImage.Description.LineOrder := riloBottomToTop; // openGL uses cartesian coordinates
+       lRawImage.CreateData(false);
+       AImage := TLazIntfImage.Create(0,0);
+       try
+         AImage.SetRawImage(lRawImage);
+         AImage.LoadFromFile(fnm);
+         px.Bitmap.LoadFromIntfImage(AImage);
+       finally
+         AImage.Free;
+       end;
+       {$ENDIF}
+    except
+      px.Bitmap.Width:=-1;
+    end;
+  if ((px.Bitmap.PixelFormat <> pf24bit ) and  (px.Bitmap.PixelFormat <> pf32bit )) or (px.Bitmap.Width < 1) or (px.Bitmap.Height < 1) then begin
+     printf(format('LoadTex: unsupported pixel format bpp (%d) or size (%dx%d)',[PIXELFORMAT_BPP[px.Bitmap.PixelFormat], px.Bitmap.Width, px.Bitmap.Height]));
+     exit;
+  end;
+  px.Bitmap.Height;
+  px.Bitmap.Width;
+  if texID <> 0 then
+     glDeleteTextures(1,@texID);
+  glGenTextures(1, @texID);
+  glBindTexture(GL_TEXTURE_2D,  texID);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+  //glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, px.Width, px.Height, 0, GL_BGRA, GL_UNSIGNED_BYTE, PInteger(px.Bitmap.RawImage.Data));
+  {$IFDEF WINDOWS}
+  glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, px.Width, px.Height, 0, GL_BGRA, GL_UNSIGNED_BYTE, PInteger(px.Bitmap.RawImage.Data));
+  {$ELSE}
+  glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, px.Width, px.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, PInteger(px.Bitmap.RawImage.Data));
+  {$ENDIF}
+  px.Free;
+  result := true;
+end;
+
+procedure TGPUVolume.SetMatCap(lFilename: string);
+begin
+  glControl.MakeCurrent();
+  LoadMatCap(lFilename, matcap2D);
+  glControl.ReleaseContext;
+end;
+{$ENDIF}
+
 
 {$IFDEF GPUGRADIENTS}
 function bindBlankGL(Xsz,Ysz,Zsz: integer): GLuint;
@@ -283,6 +396,11 @@ begin
   //imvLoc := glGetUniformLocation(programRaycast, pAnsiChar('ModelViewMatrixInverse'));
   mvpLoc := glGetUniformLocation(programRaycast, pAnsiChar('ModelViewProjectionMatrix'));
   rayDirLoc := glGetUniformLocation(programRaycast, pAnsiChar('rayDir'));
+  {$IFDEF MATCAP}
+  matcapLoc := glGetUniformLocation(programRaycast, pAnsiChar('matcap2D'));
+  normLoc := glGetUniformLocation(programRaycast, pAnsiChar('NormalMatrix'));
+  //printf(format('%d %s--->matcap @ %d = %d', [normLoc, shaderName, matcapLoc, matcap2D]));
+  {$ENDIF}
   sliceSizeLoc := glGetUniformLocation(programRaycast, pAnsiChar('sliceSize'));
   stepSizeLoc := glGetUniformLocation(programRaycast, pAnsiChar('stepSize'));
   loopsLoc := glGetUniformLocation(programRaycast, pAnsiChar('loops'));
@@ -319,6 +437,9 @@ begin
   RaycastQuality1to10 := 6;
   fLightPos := Vec4(0,0.707,0.707, 0.0);
   vao:= 0;
+  {$IFDEF MATCEP}
+  matcap2D := 0;
+  {$ENDIF}
   programBlur := 0;
 end;
 
@@ -457,11 +578,22 @@ end;
 
 procedure TGPUVolume.Paint(var vol: TNIfTI);
 var
-  //modelViewProjectionMatrixInverse,
+  {$IFDEF MATCAP}
+  normalMatrix: TMat4;
+  nMtx: array [0..8] of single;
+  fnm: string;
+  {$ENDIF}
   modelViewProjectionMatrix, projectionMatrix, modelMatrix: TMat4;
   modelLightPos, v, rayDir: TVec4;
   whratio, scale: single;
 begin
+  {$IFDEF MATCAP}
+  if (matcap2D = 0) and (matcapLoc >= 0) then begin
+    fnm := ResourceDir+pathdelim+'matcap'+pathdelim+'RedPlastic.jpg'; //.png or .jpg
+    SetMatCap(fnm);
+  end;
+  {$ENDIF}
+
   if programBlur = 0 then
     Prepare();
   if vao = 0 then // only once
@@ -483,6 +615,33 @@ begin
   glUniform1f(stepSizeLoc, ComputeStepSize(RayCastQuality1to10, slices)) ;
   glUniform1f(sliceSizeLoc, 1/slices);
   glUniform1i(loopsLoc,round(slices*2.2));
+  {$IFDEF MATCAP}
+  //printf(format('>>matcapLoc %d matcap %d',[matcapLoc, matcap2D]));
+  if (matcapLoc >= 0) and (matcap2D > 0) then begin
+    modelMatrix := TMat4.Identity;
+    modelMatrix *= TMat4.Translate(0, 0, -fDistance);
+    modelMatrix *= TMat4.RotateX(-DegToRad(90-fElevation));
+    modelMatrix *= TMat4.RotateZ(DegToRad(fAzimuth));
+    modelMatrix *= TMat4.Translate(-vol.Scale.X/2, -vol.Scale.Y/2, -vol.Scale.Z/2);
+    modelLightPos := (modelMatrix.Transpose * fLightPos);
+    modelMatrix *= TMat4.Scale(vol.Scale.X, vol.Scale.Y, vol.Scale.Z); //for volumes that are rectangular not square
+
+    glActiveTexture(GL_TEXTURE6);
+    glBindTexture(GL_TEXTURE_2D, matcap2D);
+    glUniform1i(matcapLoc, 6);
+    normalMatrix := modelMatrix.Inverse.Transpose;
+    nMtx[0] := normalMatrix.m[0,0];
+    nMtx[1] := normalMatrix.m[0,1];
+    nMtx[2] := normalMatrix.m[0,2];
+    nMtx[3] := normalMatrix.m[1,0];
+    nMtx[4] := normalMatrix.m[1,1];
+    nMtx[5] := normalMatrix.m[1,2];
+    nMtx[6] := normalMatrix.m[2,0];
+    nMtx[7] := normalMatrix.m[2,1];
+    nMtx[8] := normalMatrix.m[2,2];
+    glUniformMatrix3fv(normLoc, 1, GL_FALSE, @nMtx);
+  end;
+  {$ENDIF}
   //glUniform3f(clearColorLoc, fClearColor.r/255, fClearColor.g/255, fClearColor.b/255);
   modelMatrix := TMat4.Identity;
   modelMatrix *= TMat4.Translate(0, 0, -fDistance);

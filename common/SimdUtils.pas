@@ -242,7 +242,7 @@ begin
               end;
             end;
           3: begin
-            if (result.Widget = kBool) {or (result.Widget = kSet)} then begin
+            if (result.Widget = kBool) or (result.Widget = kSet) then begin
               result.bool := upcase (lV[1]) = 'T';
             end else
               result.min := strtofloatdef(lV,0);
@@ -299,7 +299,7 @@ begin
      //mode := kpref
       //writeln('>>>>>>>>>>'+S);
       U := StrToUniform(S);
-     if (U.Widget = kFloat)then begin
+     if (U.Widget = kFloat) or (U.Widget = kSet) then begin
         if (result.nUniform < kMaxUniform) then begin
           inc(result.nUniform);
           result.Uniform[result.nUniform] := U;

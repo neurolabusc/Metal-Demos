@@ -8,6 +8,7 @@ unit mtlmesh;
 interface
 
 uses
+    classes,
     {$IFDEF CUBE} mtlcube, {$ENDIF}
     {$IFDEF MATCAP} Graphics, GraphType, FPImage, IntfGraphics, LCLType, strutils,{$ENDIF}
     VectorMath, MetalPipeline, MetalUtils, MetalControl, Metal,mesh,
@@ -331,6 +332,7 @@ begin
      Prepare();
   if vertexBuffer = nil then
      OpenMesh(fMeshName, false);
+  //writeln('draw');
   w := trunc(mtlControl.renderView.drawableSize.width);
   h := trunc(mtlControl.renderView.drawableSize.height);
   if (w = 0) or (h = 0) then exit; //avoid divide by zero

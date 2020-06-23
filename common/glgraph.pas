@@ -72,6 +72,7 @@ implementation
 
 uses graphticks;
 
+
 function TGPUGraph.PointsPerLine: integer;
 begin
      if (Lines = nil) then exit(0);
