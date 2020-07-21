@@ -25,6 +25,5 @@ void main() {
 	vec2 uv = n.xy * 0.5 + 0.5;
 	vec3 mClr = texture(MatCap,uv.xy).rgb;
 	vec3 clr = mClr * vClr.rgb;
-
 	color = vec4(clr, 1.0);
 }

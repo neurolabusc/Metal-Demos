@@ -39,10 +39,11 @@ type
     procedure SetElevation(f: single);
     procedure  ScreenSize(Width,Height: integer);
     procedure CreateCube(sz: single);
+
+  public
     {$IFDEF METALAPI}
     procedure SetPipeline;
     {$ENDIF}
-  public
     property Text : boolean read isText write SetIsText;
     property TopLeft : boolean read isTopLeft write SetIsTopLeft;
     property Azimuth : single read fAzimuth write SetAzimuth;
@@ -87,6 +88,7 @@ var
 begin
      if (shaderPipeline <> nil) then exit; //already set
      options := TMetalPipelineOptions.Default;
+     //options.shaderLibrary.;
      shaderName := ResourceFolderPath + pathdelim + 'cube.metal';
      if not fileexists(shaderName) then
         shaderName := ShaderDir + pathdelim +  '_Cube.metal';
@@ -104,6 +106,7 @@ begin
      options.pipelineDescriptor.colorAttachmentAtIndex(0).setDestinationAlphaBlendFactor(MTLBlendFactorOneMinusSourceAlpha);
      shaderPipeline := MTLCreatePipeline(options);
      MTLSetDepthStencil(shaderPipeline, MTLCompareFunctionLess, true);
+
 end;
 {$ELSE}
 const
@@ -434,13 +437,13 @@ end;
 
 procedure TGPUCube.SetAzimuth(f: single);
 begin
-  if (f <> fAzimuth) then isRedraw := true;
+  //if (f <> fAzimuth) then isRedraw := true;
   fAzimuth := f;
 end;
 
 procedure TGPUCube.SetElevation(f: single);
 begin
-  if (f <> fElevation) then isRedraw := true;
+  //if (f <> fElevation) then isRedraw := true;
   fElevation := f;
 end;
 

@@ -2,7 +2,9 @@ unit retinahelper;
 
 interface
 
-uses glcorearb, OpenGLContext;
+ {$include glopts.inc}
+
+uses {$IFDEF COREGL}glcorearb, {$ELSE}gl, {$ENDIF} OpenGLContext;
 
 type
   TCustomOpenGLControl = class helper for TOpenGLControl

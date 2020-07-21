@@ -12,7 +12,9 @@ MacOS must use Cocoa, regardless of whether OpenGL Core or Metal is used.
 {$ENDIF}
 {$DEFINE MATCAP}
 interface
-
+{$IFNDEF METALAPI}
+ {$include ../common/glopts.inc}
+{$ENDIF}
 uses
   {$IFDEF LCLCocoa}{$IFNDEF METALAPI}retinahelper,{$ENDIF}{$ENDIF}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, Types, fileutil;
@@ -75,8 +77,8 @@ uses
   SimdUtils, MetalPipeline, MetalControl, Metal, mtlmesh;
 const  kExt = '.metal';
 {$ELSE}
-uses OpenGLContext,  SimdUtils, glmesh, glcorearb, gl_core_utils;
-const kExt = '.glsl';
+uses {$IFDEF COREGL} glcorearb, {$ELSE} gl, glext, {$ENDIF} OpenGLContext,  SimdUtils, glmesh, gl_core_utils;
+{$IFDEF COREGL} const kExt = '.glsl'; {$ELSE} const kExt = '.glsl2';{$ENDIF}
 {$ENDIF}
 var
  gMouse : TPoint;
@@ -220,8 +222,13 @@ begin
   //ViewGPU1.OnPrepare := @ViewGPUPrepare;
   {$ELSE}
   ViewGPU1 :=  TOpenGLControl.Create(Form1);
+  {$IFDEF COREGL}
   ViewGPU1.OpenGLMajorVersion:= 3;
   ViewGPU1.OpenGLMinorVersion:= 3;
+  {$ELSE}
+  ViewGPU1.OpenGLMajorVersion:= 2;
+  ViewGPU1.OpenGLMinorVersion:= 1;
+  {$ENDIF}
   {$ENDIF}
   ViewGPU1.Parent := Form1;
   ViewGPU1.Align:= alClient;
@@ -237,7 +244,11 @@ begin
   {$IFDEF LCLCocoa}
   ViewGPU1.setRetina(true);
   {$ENDIF}
+  {$IFDEF COREGL}
   if (not  Load_GL_version_3_3_CORE) then begin
+  {$ELSE}
+  if (not  Load_GL_version_2_1) then begin
+  {$ENDIF}
      showmessage('Unable to load OpenGL 3.3 Core');
      halt;
   end;
@@ -302,6 +313,7 @@ var
 begin
  matCapName := Mesh1.MatCapPath + (Sender as TMenuItem).caption+'.jpg';
  Mesh1.SetMatCap(matCapName);
+ caption := matCapName;
  //Caption := inttostr(mesh1.uniform_MatCap)+' '+inttostr(mesh1.matCapTexture);
  ViewGPU1.Invalidate;
 end;

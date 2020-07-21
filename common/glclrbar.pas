@@ -6,14 +6,17 @@ unit glclrbar; //OpenGL and Metal differ in only in first 2 lines
 {$IFDEF METALAPI}
 {$modeswitch objectivec1}
 {$ENDIF}
+{$IFNDEF METALAPI}
+ {$include glopts.inc}
+{$ENDIF}
 interface
 
 uses
   {$IFDEF METALAPI}
   MetalPipeline, MetalUtils, MetalControl, Metal, VectorMath, mtlfont,
   {$ELSE}
-  retinahelper,
-  glcorearb, gl_core_utils, glfont, OpenGLContext,
+  {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
+  {$IFDEF COREGL}glcorearb, {$ELSE} gl, glext, {$ENDIF} gl_core_utils, glfont, OpenGLContext,
   {$ENDIF}
    SimdUtils,
   Classes, SysUtils, Graphics,  math, dialogs;
@@ -39,7 +42,8 @@ type
          pipeline: TMetalPipeline;
          {$ELSE}
          uniform_viewportSize: GLint;
-         vbo_face2d, vao_point2d, vbo_point, shaderProgram: GLuint;
+         {$IFDEF COREGL}vbo_face2d, vao_point2d, vbo_point, {$ELSE} displayLst, {$ENDIF}
+         shaderProgram: GLuint;
          glControl: TOpenGLControl;
          {$ENDIF}
          txt: TGPUFont;
@@ -110,7 +114,8 @@ TRGBAx = TRGBA;
 
 const
 //the 'flat' in GLSL code below uses nearest neighbor for colorbars: useful for atlases with discrete colors
-    kVert2D ='#version 330'
+{$IFDEF COREGL}
+kVert2D ='#version 330'
 +#10'layout(location = 0) in vec3 Vert;'
 +#10'layout(location = 3) in vec4 Clr;'
 +#10'flat out vec4 vClr;'
@@ -122,12 +127,33 @@ const
 +#10'    //gl_Position = ModelViewProjectionMatrix * vec4(Vert, 1.0);'
 +#10'    vClr = Clr;'
 +#10'}';
-    kFrag2D = '#version 330'
+kFrag2D = '#version 330'
 +#10'flat in vec4 vClr;'
 +#10'out vec4 color;'
 +#10'void main() {'
 +#10'    color = vClr;'
 +#10'}';
+{$ELSE}
+//extension that allows flat shading may not be available for all https://forum.unity.com/threads/solved-flat-shading.410943/
+kVert2D ='#version 120'
++#10'//#extension GL_EXT_gpu_shader4 : require'
++#10'//flat varying vec4 vClr;'
++#10'varying vec4 vClr;'
++#10'uniform vec2 ViewportSize;'
++#10'void main() {'
++#10'    vec2 ptx = gl_Vertex.xy;'
++#10'    ptx -= (ViewportSize/2.0);'
++#10'    gl_Position = vec4((ptx / (ViewportSize/2.0)), 0.0, 1.0);'
++#10'    vClr = gl_Color;'
++#10'}';
+kFrag2D = '#version 120'
++#10'//#extension GL_EXT_gpu_shader4 : require'
++#10'//flat varying vec4 vClr;'
++#10'varying vec4 vClr;'
++#10'void main() {'
++#10'    gl_FragColor = vClr;'
++#10'}';
+{$ENDIF}
 {$ENDIF}
 
 var
@@ -329,9 +355,14 @@ begin
   {$ELSE}
   glControl.MakeCurrent();
   shaderProgram :=  initVertFrag(kVert2D, kFrag2D);
+  {$IFDEF UNIX}
+  if GLErrorStr <> '' then
+    writeln(GLErrorStr);
+  {$ENDIF}
   uniform_viewportSize := glGetUniformLocation(shaderProgram, pAnsiChar('ViewportSize'));
   //
   num_vbo_face2d := 0;
+  {$IFDEF COREGL}
   vbo_point := 0;
   vao_point2d := 0;
   vbo_face2d := 0;
@@ -348,6 +379,9 @@ begin
   glEnableVertexAttribArray(kATTRIB_CLR);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
+  {$ELSE}
+  displayLst := 0;
+  {$ENDIF}
   glFinish;
   glControl.ReleaseContext;
   {$ENDIF}
@@ -523,6 +557,9 @@ var
   faces: TInts;
   BGThick, BarLength,BarThick, i,b,  t,tn: integer;
   frac, pos, fntScale: single;
+  {$IFNDEF COREGL}
+  q: TVtxClr;
+  {$ENDIF}
 begin
      if (nLUTs < 1) and (RulerClr.a = 0) then begin
        isRedraw := false;
@@ -630,6 +667,7 @@ begin
      vertexBuffer := mtlControl.renderView.device.newBufferWithBytes_length_options(@g2Dvnc[0], gnface*SizeOf(TVtxClr), MTLResourceStorageModeShared);
      CreateStrips();
      {$ELSE}
+     {$IFDEF COREGL}
      glBindBuffer(GL_ARRAY_BUFFER, vbo_point);
      glBufferData(GL_ARRAY_BUFFER, Length(g2Dvnc)*SizeOf(TVtxClr), @g2Dvnc[0], GL_STATIC_DRAW);
      glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -645,6 +683,22 @@ begin
        num_vbo_face2d := gnface;
        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
      end;
+     {$ELSE}
+     //
+     if displayLst <> 0 then
+        glDeleteLists(displayLst, 1);
+     displayLst := glGenLists(1);
+     glNewList(displayLst, GL_COMPILE);
+     glBegin(GL_TRIANGLE_STRIP);
+     for i := 0 to (gnface-1) do begin
+         q := g2Dvnc[i];
+         glColor4ub(q.clr.R, q.clr.G, q.clr.B, q.clr.A);
+         glVertex3f(q.vtx.x, q.vtx.y, q.vtx.z);
+     end;
+     glEnd();
+     glEndList();
+
+     {$ENDIF}
      {$ENDIF}
      setlength(g2Dvnc,0);
      isRedraw := false;
@@ -730,15 +784,25 @@ begin
      CreateClrbar;
   if gnface < 1 then exit;
   //glViewport(0, 0, Width, Height); //required for form resize
+  {$IFDEF METALAPI}
   glControl.SetViewport();
+  {$ENDIF}
+  {$IFDEF COREGL}
+  glControl.SetViewport();
+  {$ENDIF}
   glDisable(GL_DEPTH_TEST);
   glEnable (GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glUniform2f(uniform_viewportSize, Width, Height);
+  {$IFDEF COREGL}
   glBindVertexArray(vao_point2d);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_face2d);
   glDrawElements(GL_TRIANGLE_STRIP, gnface, GL_UNSIGNED_INT, nil);
   glBindVertexArray(0);
+  {$ELSE}
+  if displayLst <> 0 then
+     glCallList(displayLst);
+  {$ENDIF}
   glUseProgram(0);
   {$ENDIF}
   if isText then

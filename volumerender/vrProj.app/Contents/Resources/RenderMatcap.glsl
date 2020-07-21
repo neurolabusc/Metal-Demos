@@ -22,8 +22,8 @@ uniform float ambient = 1.0;
 uniform float diffuse = 0.3;
 uniform float specular = 0.25;
 uniform float shininess = 10.0;
-uniform float surfaceColor = 1.0;
-uniform float brighten = 1.5;
+uniform float surfaceColor = 0.7;
+uniform float brighten = 1.8;
 uniform mat3 NormalMatrix;
 uniform sampler2D matcap2D;
 vec3 GetBackPosition (vec3 startPosition) { //when does ray exit unit cube http://prideout.net/blog/?p=64
@@ -59,11 +59,6 @@ void main() {
 			if (gradientSample.a < prevNorm.a)
 				gradientSample.rgb = prevNorm.rgb;
 			prevNorm = gradientSample;
-			//float lightNormDot = dot(gradientSample.rgb, lightPosition);
-			//vec3 a = colorSample.rgb * ambient;
-			//vec3 d = max(lightNormDot, 0.0) * colorSample.rgb * diffuse;
-			//float s =   specular * pow(max(dot(reflect(lightPosition, gradientSample.rgb), dir), 0.0), shininess);
-			//colorSample.rgb = a + d + s;
 			vec3 n = normalize(NormalMatrix * gradientSample.rgb);
 			vec3 d = texture(matcap2D, n.xy * 0.5 + 0.5).rgb;
 			vec3 surf = mix(defaultDiffuse, colorSample.rgb, surfaceColor); //0.67 as default Brighten is 1.5
@@ -71,8 +66,6 @@ void main() {
 			colAcc= (1.0 - colAcc.a) * colorSample + colAcc;
 
 		}
-		//colorSample.rgb *= colorSample.a;
-		//colAcc= (1.0 - colAcc.a) * colorSample + colAcc;
 		samplePos += deltaDir;
 		lengthAcc += stepSize;
 		if ( lengthAcc >= len || colAcc.a > 0.95 )

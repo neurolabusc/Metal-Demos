@@ -6,6 +6,10 @@ unit clrbarmain;
  //{$DEFINE METALAPI} //set in ProjectOptions/CompilerOptions/CustomOptions
   {$modeswitch objectivec1}
 {$ENDIF}
+{$IFNDEF METALAPI}
+ {$include ../common/glopts.inc}
+{$ENDIF}
+
 
 interface
 
@@ -43,7 +47,7 @@ implementation
 {$IFDEF METALAPI}
 uses Metal, MetalPipeline, MetalControl, mtlclrbar;
 {$ELSE}
-uses glcorearb, OpenGLContext, gl_core_utils, glclrbar ;
+uses {$IFDEF COREGL}glcorearb,{$ELSE} gl, glext, {$ENDIF} {$IFDEF LCLCocoa}retinahelper,{$ENDIF} OpenGLContext, gl_core_utils, glclrbar ;
 {$ENDIF}
 var
   gClrbar: TGPUClrbar;
@@ -94,8 +98,13 @@ begin
   ViewGPU1.OnPrepare := @ViewGPU1Prepare;
   {$ELSE}
   ViewGPU1 :=  TOpenGLControl.Create(Form1);
+  {$IFDEF COREGL}
   ViewGPU1.OpenGLMajorVersion:= 3;
   ViewGPU1.OpenGLMinorVersion:= 3;
+  {$ELSE}
+  ViewGPU1.OpenGLMajorVersion:= 2;
+  ViewGPU1.OpenGLMinorVersion:= 1;
+  {$ENDIF}
   ViewGPU1.DepthBits := 0;
   {$ENDIF}
   ViewGPU1.Parent := Form1;
@@ -107,9 +116,16 @@ begin
   ViewGPU1.Invalidate;
   {$ENDIF}
   {$IFNDEF METALAPI}
+  {$IFDEF LCLCocoa}
+  ViewGPU1.setRetina(true);
+  {$ENDIF}
   ViewGPU1.MakeCurrent(false);
+  {$IFDEF COREGL}
   if (not  Load_GL_version_3_3_CORE) then begin
-     showmessage('Unable to load OpenGL 3.3 Core');
+  {$ELSE}
+  if (not  Load_GL_version_2_1) then begin
+  {$ENDIF}
+     showmessage('Unable to load OpenGL');
      halt;
   end;
   Form1.caption := glGetString(GL_VENDOR)+'; OpenGL= '+glGetString(GL_VERSION)+'; Shader='+glGetString(GL_SHADING_LANGUAGE_VERSION);

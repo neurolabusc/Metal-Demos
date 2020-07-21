@@ -3,11 +3,11 @@
   <ProjectSession>
     <Version Value="12"/>
     <BuildModes Active="Default"/>
-    <Units Count="2">
+    <Units Count="4">
       <Unit0>
         <Filename Value="graph.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
       </Unit0>
       <Unit1>
         <Filename Value="graphmain.pas"/>
@@ -15,16 +15,68 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="210"/>
+        <CursorPos Y="223"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="../common/glgraph.pas"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="71" Y="15"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../common/gllines.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="40" Y="13"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit3>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory Count="9" HistoryIndex="8">
+      <Position1>
+        <Filename Value="graphmain.pas"/>
+      </Position1>
+      <Position2>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="75" Column="90" TopLine="52"/>
+      </Position2>
+      <Position3>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="209" Column="34" TopLine="192"/>
+      </Position3>
+      <Position4>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="75" Column="140" TopLine="61"/>
+      </Position4>
+      <Position5>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="75" Column="140" TopLine="61"/>
+      </Position5>
+      <Position6>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="188" Column="24" TopLine="184"/>
+      </Position6>
+      <Position7>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="179" Column="39" TopLine="175"/>
+      </Position7>
+      <Position8>
+        <Filename Value="graphmain.pas"/>
+        <Caret Line="222" Column="45" TopLine="198"/>
+      </Position8>
+      <Position9>
+        <Filename Value="../common/glgraph.pas"/>
+        <Caret Line="15" Column="71"/>
+      </Position9>
+    </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
-      <Modes ActiveMode=""/>
+      <Modes ActiveMode="default"/>
     </RunParams>
   </ProjectSession>
 </CONFIG>

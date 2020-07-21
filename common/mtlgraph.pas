@@ -9,7 +9,7 @@ uses
 {$IFDEF METALAPI}
  MetalUtils, Metal, MetalPipeline, MetalControl, mtllines,  mtlfont;
 {$ELSE}
- {$IFDEF DARWIN}retinahelper,{$ENDIF} //required!
+ {$IFDEF LCLCocoa}retinahelper,{$ENDIF}  //required!
  glcorearb, OpenGLContext, gllines, glfont;
 {$ENDIF}
 const
@@ -28,7 +28,7 @@ type
 
   TGPUGraph = class
   private
-         numLines, numLinesNoOverwrite : integer;
+
          Lines: array of TGPUGraphLine;
          isText: boolean;
          scrnSz: TPoint;
@@ -41,6 +41,7 @@ type
          procedure ScaledGlobalMinMax(out mn, mx: single);
          function ScaledValue(line, pt: integer): single;
   public
+        numLines, numLinesNoOverwrite : integer;
         Style: integer;
         HorizontalSelection: integer;
         TextColor,BackColor,GridColor, MinorLineColor: TRGBA;
@@ -58,7 +59,7 @@ type
     function AsText(isSaveXData: boolean = false): TStringList;
     function LoadText(filename: string; isKeepOld: boolean = false): boolean;
     function PointsPerLine: integer;
-    procedure SaveBmp(filename: string);
+    procedure SaveBmp(filename: string; hasAlpha: boolean = true);
     {$IFDEF METALAPI}
     constructor Create(fromView: TMetalControl);
     procedure Paint(fromView: TMetalControl);
@@ -73,9 +74,22 @@ implementation
 
 uses graphticks;
 
-procedure TGPUGraph.SaveBmp(filename: string);
+//{$DEFINE DEBUG}
+{$IFDEF DEBUG}
+procedure DebugLn(str: string);
 begin
-     MTLWriteTextureToFile(pChar(filename));
+{$IFDEF UNIX}
+        writeln(str);
+{$ENDIF}
+end;
+{$ENDIF}
+
+procedure TGPUGraph.SaveBmp(filename: string; hasAlpha: boolean);
+begin
+     if filename = '' then
+        MTLWriteTextureToClipboard(hasAlpha)
+     else
+         MTLWriteTextureToFile(pChar(filename), hasAlpha);
 end;
 
 function TGPUGraph.PointsPerLine: integer;
@@ -109,7 +123,7 @@ var
     line: TVec2s;
     St: string;
 begin
-     if (not isRedraw) and (w = scrnSz.x) and (h = scrnSz.y) then exit;
+     if (not isRedraw) and (w = scrnSz.x) and (h = scrnSz.y) then exit;  //2021
      scrnSz.x := w;
      scrnSz.y := h;
      gpuLines.ClearLines();
@@ -150,7 +164,11 @@ begin
               maxTextWid := StWid;
            ticPos := ticPos + ticStep;
      end;
+     {$IFDEF METALAPI}
+     if (fntHeight < 6) or ((maxTextWid * 2) > w) then begin
+     {$ELSE}
      if (fntHeight < 12) or ((maxTextWid * 2) > w) then begin
+     {$ENDIF}
         fntHeight := 0;
         maxTextWid := 0;
      end;
@@ -310,11 +328,22 @@ procedure TGPUGraph.Paint(fromView: TMetalControl);
 procedure TGPUGraph.Paint(fromView: TOpenGLControl);
 {$ENDIF}
 begin
-  if (fromView.ClientWidth < 2) or (fromView.ClientHeight < 3) then exit();
+  //2022
+  //if (fromView.ClientWidth < 2) or (fromView.ClientHeight < 3) then exit();
+  //MTLMakeContextCurrent(fromView);
   //   GLForm1.caption := format('%d %d', [fromView.ClientWidth,fromView.ClientHeight]);
+  {$IFDEF DEBUG} DebugLn(format('>GraphPaint %d %d', [fromView.ClientWidth,fromView.ClientHeight]));{$ENDIF}
   DrawLines(fromView.ClientWidth,fromView.ClientHeight);
   {$IFDEF METALAPI}
+  //MakeCurrent()
+  fromView.MakeCurrent();
+  //fromView.conteext
+  //renderView.MakeCurrent;
+  //fromView.MakeCurrent();
+  //fromView.renderView.makeBackingLayer; //renderView.MakeCurrent
   MTLSetClearColor(MTLClearColorMake(BackColor.R/255, BackColor.G/255, BackColor.B/255, 1));
+  //MTLBeginFrame();
+
   MTLBeginFrame();
     gpuLines.Draw();
     if isText then

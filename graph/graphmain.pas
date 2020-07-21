@@ -3,7 +3,7 @@ unit graphmain;
 {$mode objfpc}{$H+}
 {$IFDEF LCLCocoa}
  //MetalAPI supported on modern MacOS: disable for Linux, Windows and old MacOS
- {$DEFINE METALAPI} //set in ProjectOptions/CompilerOptions/CustomOptions
+ //{$DEFINE METALAPI} //set in ProjectOptions/CompilerOptions/CustomOptions
   {$modeswitch objectivec1}
 {$ENDIF}
 {$IFDEF LCLCarbon}
@@ -11,6 +11,10 @@ unit graphmain;
 {$ENDIF}
 
 interface
+
+{$IFNDEF METALAPI}
+ {$include ../common/glopts.inc}
+{$ENDIF}
 
 uses
   Classes, SysUtils, Forms, Clipbrd,
@@ -68,7 +72,7 @@ implementation
 {$IFDEF METALAPI}
 uses Metal, MetalPipeline, MetalControl, mtlgraph;
 {$ELSE}
-uses {$IFDEF LCLCocoa}retinahelper,{$ENDIF} glcorearb, OpenGLContext, gl_core_utils, gllines, glgraph;
+uses {$IFDEF LCLCocoa}retinahelper,{$ENDIF}{$IFDEF COREGL} glcorearb, {$ELSE} gl, glext,{$ENDIF} OpenGLContext, gl_core_utils, gllines, glgraph;
 {$ENDIF}
 var
    gGraph: TGPUGraph;
@@ -173,6 +177,7 @@ begin
   {$IFDEF METALAPI}
    gGraph.SaveBmp(SaveDialog1.Filename);
   {$ELSE}
+
   showmessage('Not implemented');
   {$ENDIF}
 end;
@@ -198,8 +203,13 @@ begin
   ViewGPU1.OnPrepare := @ViewGPU1Prepare;
   {$ELSE}
   ViewGPU1 :=  TOpenGLControl.Create(Form1);
+  {$IFDEF COREGL}
   ViewGPU1.OpenGLMajorVersion:= 3;
   ViewGPU1.OpenGLMinorVersion:= 3;
+  {$ELSE}
+  ViewGPU1.OpenGLMajorVersion:= 2;
+  ViewGPU1.OpenGLMinorVersion:= 1;
+  {$ENDIF}
   ViewGPU1.MultiSampling:=4;
   {$ENDIF}
   ViewGPU1.Parent := Form1;
@@ -209,11 +219,13 @@ begin
   {$IFDEF METALAPI}ViewGPU1.renderView.setSampleCount(4);{$ENDIF}
   {$IFNDEF METALAPI}
   ViewGPU1.MakeCurrent(false);
-  {$IFDEF LCLCocoa}
-  ViewGPU1.setRetina(true);
-  {$ENDIF}
+  {$IFDEF LCLCocoa}ViewGPU1.setRetina(true);{$ENDIF}
+  {$IFDEF COREGL}
   if (not  Load_GL_version_3_3_CORE) then begin
-     showmessage('Unable to load OpenGL 3.3 Core');
+  {$ELSE}
+   if (not  Load_GL_version_2_1) then begin
+  {$ENDIF}
+     showmessage('Unable to load OpenGL');
      halt;
   end;
   Form1.caption := glGetString(GL_VENDOR)+'; OpenGL= '+glGetString(GL_VERSION)+'; Shader='+glGetString(GL_SHADING_LANGUAGE_VERSION);

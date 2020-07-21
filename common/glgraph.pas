@@ -1,6 +1,8 @@
 unit glgraph; //OpenGL and Metal differ in only in first 2 lines
 //{$DEFINE METALAPI} //<- set by ProjectOptions/CompilerOptions/CustomOptions
-
+{$IFNDEF METALAPI}
+{$include glopts.inc}
+{$ENDIF}
 {$mode objfpc}{$H+}
 interface
 
@@ -9,8 +11,8 @@ uses
 {$IFDEF METALAPI}
  MetalUtils, Metal, MetalPipeline, MetalControl, mtllines,  mtlfont;
 {$ELSE}
- {$IFDEF DARWIN}retinahelper,{$ENDIF} //required!
- glcorearb, OpenGLContext, gllines, glfont;
+ {$IFDEF LCLCocoa}retinahelper,{$ENDIF}  //required!
+ {$IFDEF COREGL}glcorearb,{$ELSE}gl, glext, {$ENDIF} OpenGLContext, gllines, glfont;
 {$ENDIF}
 const
     kStyleRaw = 0;

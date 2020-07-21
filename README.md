@@ -9,14 +9,14 @@ Metal is an Apple framework that allows supports high performance graphics. Thes
    *   You will need to download [the Alchemist Guild Lazarus Metal Package by Ryan Joseph](https://github.com/genericptr/Metal-Framework).
    *  From the Lazarus graphical interface, choose Package/OpenPackageFile and select lazmetalcontrol.lpk and install this package.
    *  To use Metal you will need MacOS 10.12 (Sierra) or later and a Mac computer that [supports Metal](https://support.apple.com/kb/SP765?locale=en_US) - typically Macs from 2012 and later.
- - You should now be able to open and compile the projects provided here (the projects that end '_gl.lpi' will create OpenGL executables).
+
 
 ## Compiling for OpenGL
 
-Each of these projects can be compiled to use Apple's Metal Framework. However, most of the projects can also be compiled to use OpenGL 3.3 Core. This allows you to build these projects for computers that do not support Metal (Windows, Linux and older Mac hardware).
+Each of these projects can be compiled to use Apple's Metal Framework. However, most of the projects can also be compiled to use either OpenGL 2.1 or OpenGL 3.3 Core. The projects that support OpenGL have a project name that ends *_gl.lpi. For example, the "lines" project includes the "lines.lpi" (Metal, MacOS only) and "lines_gl.lpi" (OpenGL). This allows you to build these projects for computers that do not support Metal (Windows, Linux and older Mac hardware).
 
- - For MacOS, to compile for OpenGL you will want to comment out the line "{$DEFINE METALAPI}" at the start of each projects main form unit.
- - For Windows and Linux, you will need to open the project and select the Project/ProjectInspector menu item. Then remove the required package "lazmetalcontrol".
+ - You should now be able to open and compile the projects provided here (the projects that end '_gl.lpi' will create OpenGL executables).
+ - The file "glopts.inc" allows you to specify OpenGL 2.1 or OpenGL 3.3 Core. To support the core specification, make sure 
 
 ## Notes
 

@@ -5,12 +5,13 @@ object Form1: TForm1
   Width = 320
   Caption = 'Volume Rendering'
   Menu = MainMenu
+  OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '2.1.0.0'
   object MainMenu: TMainMenu
-    left = 17
-    top = 72
+    Left = 17
+    Top = 72
     object AppleMenu: TMenuItem
       Caption = ''
       object AboutMenu: TMenuItem
@@ -56,8 +57,8 @@ object Form1: TForm1
     end
   end
   object OpenDialog1: TOpenDialog
-    left = 17
-    top = 16
+    Left = 17
+    Top = 16
   end
   object ColorDialog1: TColorDialog
     Color = clBlack
@@ -83,12 +84,12 @@ object Form1: TForm1
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 17
-    top = 128
+    Left = 17
+    Top = 128
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.png'
-    left = 17
-    top = 184
+    Left = 17
+    Top = 184
   end
 end

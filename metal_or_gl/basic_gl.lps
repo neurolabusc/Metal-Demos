@@ -3,11 +3,11 @@
   <ProjectSession>
     <Version Value="12"/>
     <BuildModes Active="Default"/>
-    <Units Count="3">
+    <Units Count="5">
       <Unit0>
         <Filename Value="basic.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="22"/>
       </Unit0>
       <Unit1>
         <Filename Value="unit1.pas"/>
@@ -17,17 +17,121 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="79"/>
+        <CursorPos X="33" Y="96"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="glunit.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="95"/>
+        <CursorPos X="3" Y="110"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="../common/gl_core_utils.pas"/>
+        <EditorIndex Value="2"/>
+        <CursorPos Y="8"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../common/retinahelper.pas"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit4>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory Count="21" HistoryIndex="20">
+      <Position1>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="14" Column="61"/>
+      </Position1>
+      <Position2>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="12" Column="6" TopLine="7"/>
+      </Position2>
+      <Position3>
+        <Filename Value="../common/gl_core_utils.pas"/>
+        <Caret Line="13" Column="15"/>
+      </Position3>
+      <Position4>
+        <Filename Value="../common/gl_core_utils.pas"/>
+        <Caret Line="12" Column="24"/>
+      </Position4>
+      <Position5>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="99" Column="15" TopLine="76"/>
+      </Position5>
+      <Position6>
+        <Filename Value="../common/gl_core_utils.pas"/>
+        <Caret Line="15" Column="26"/>
+      </Position6>
+      <Position7>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="118" Column="17" TopLine="99"/>
+      </Position7>
+      <Position8>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="105" Column="11" TopLine="80"/>
+      </Position8>
+      <Position9>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="32" Column="11" TopLine="16"/>
+      </Position9>
+      <Position10>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="92" Column="28" TopLine="75"/>
+      </Position10>
+      <Position11>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="109" Column="6" TopLine="94"/>
+      </Position11>
+      <Position12>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="110" Column="29" TopLine="83"/>
+      </Position12>
+      <Position13>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="111" Column="3" TopLine="95"/>
+      </Position13>
+      <Position14>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="112" Column="21" TopLine="97"/>
+      </Position14>
+      <Position15>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="114" Column="19" TopLine="98"/>
+      </Position15>
+      <Position16>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="81" Column="15" TopLine="68"/>
+      </Position16>
+      <Position17>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="116" Column="71" TopLine="102"/>
+      </Position17>
+      <Position18>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="117" Column="63" TopLine="105"/>
+      </Position18>
+      <Position19>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="163" Column="11" TopLine="134"/>
+      </Position19>
+      <Position20>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="110" Column="4" TopLine="95"/>
+      </Position20>
+      <Position21>
+        <Filename Value="glunit.pas"/>
+        <Caret Line="104" Column="6" TopLine="95"/>
+      </Position21>
+    </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>

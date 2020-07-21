@@ -1,11 +1,15 @@
 unit glmesh;
 interface
 {$DEFINE MATCAP}
+{$IFNDEF METALAPI}
+ {$include glopts.inc}
+{$ENDIF}
 uses
   //clipbrd,
   {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
+  {$IFDEF COREGL} glcorearb, {$ELSE} gl, glext, {$ENDIF}
   {$IFDEF MATCAP} Graphics, GraphType, FPImage, IntfGraphics, LCLType,{$ENDIF}
-  SimdUtils, classes, dialogs,OpenGLContext,mesh, VectorMath, glcorearb, gl_core_utils,SysUtils, Math;
+  SimdUtils, classes, dialogs,OpenGLContext,mesh, VectorMath, gl_core_utils,SysUtils, Math;
 const
   kDefaultDistance = 1.0;
   kMaxDistance = 2;
@@ -16,7 +20,8 @@ type
         fAzimuth,fElevation: integer;
         fDistance: single;
         fLightPos: TVec4;
-        vbo, vao, shaderProgram: GLuint;
+        {$IFDEF COREGL}vbo, vao,{$ELSE} displayLst, {$ENDIF}
+        shaderProgram: GLuint;
         {$IFDEF MATCAP}
         matCapFnm: string;
         matCapTexture: GLuint;
@@ -55,6 +60,7 @@ implementation
 uses meshForm;
 
 const
+  {$IFDEF COREGL}
 kVertStr = '#version 330'
 +#10'layout(location = 0) in vec3 Vert;'
 +#10'layout(location = 3) in vec3 Norm;'
@@ -95,6 +101,43 @@ kFragStr = '#version 330'
 +#10' float specular =  pow(max(0.0,dot(n,h)),1.0/(Roughness * Roughness));'
 +#10' color = vec4(AmbientColour*Ambient + DiffuseColour*diffuse*Diffuse +SpecularColour*specular* Specular, 1.0);'
 +#10'}';
+{$ELSE}
+kVertStr = '#version 120'
++#10'varying vec3 vN, vL, vV;'
++#10'varying vec4 vClr;'
++#10'uniform mat4 ModelViewProjectionMatrix;'
++#10'uniform mat4 ModelViewMatrix;'
++#10'uniform mat4 NormalMatrix;'
++#10'uniform vec3 LightPosition = vec3(0.0, 20.0, 30.0); //LR, -DU+, -FN+'
++#10'void main() {'
++#10'    vN = normalize((NormalMatrix * vec4(gl_Normal.xyz, 1.0)).xyz);'
++#10'    gl_Position = ModelViewProjectionMatrix * vec4(gl_Vertex.xyz, 1.0);'
++#10'    vL = normalize(LightPosition);'
++#10'    vV = -vec3(ModelViewMatrix*vec4(gl_Vertex.xyz,1.0));'
++#10'    vClr = gl_Color;'
++#10'}';
+
+//Blinn/Phong Shader GPLv2 (C) 2007 Dave Griffiths, FLUXUS GLSL library
+kFragStr = '#version 120'
++#10'varying vec4 vClr;'
++#10'varying vec3 vN, vL, vV;'
++#10'uniform float Ambient = 0.4;'
++#10'uniform float Diffuse = 0.7;'
++#10'uniform float Specular = 0.6;'
++#10'uniform float Roughness = 0.1;'
++#10'void main() {'
++#10' vec3 n = normalize(vN);'
++#10' //color = vec4(abs(n * 2.0) - 1.0,1.0); return;'
++#10' vec3 v = normalize(vV);'
++#10' vec3 h = normalize(vL+v);'
++#10' float diffuse = dot(vL,n);'
++#10' vec3 AmbientColour = vClr.rgb;'
++#10' vec3 DiffuseColour = vClr.rgb;'
++#10' vec3 SpecularColour = vec3(1.0, 1.0, 1.0);'
++#10' float specular =  pow(max(0.0,dot(n,h)),1.0/(Roughness * Roughness));'
++#10' gl_FragColor = vec4(AmbientColour*Ambient + DiffuseColour*diffuse*Diffuse +SpecularColour*specular* Specular, 1.0);'
++#10'}';
+{$ENDIF}
 
 
 type
@@ -121,6 +164,10 @@ begin
   if VertexProgram = '' then VertexProgram := kVertStr;
   if FragmentProgram = '' then FragmentProgram := kFragStr;
   shaderProgram :=  initVertFrag(VertexProgram,  FragmentProgram);
+  {$IFDEF UNIX}
+  if GLErrorStr <> '' then
+     printf(GLErrorStr);
+  {$ENDIF}
   uniform_ModelViewProjectionMatrix := glGetUniformLocation(shaderProgram, pAnsiChar('ModelViewProjectionMatrix'));
   uniform_ModelViewMatrix := glGetUniformLocation(shaderProgram, pAnsiChar('ModelViewMatrix'));
   uniform_NormalMatrix := glGetUniformLocation(shaderProgram, pAnsiChar('NormalMatrix'));
@@ -210,9 +257,10 @@ begin
   end;
   px.Bitmap.Height;
   px.Bitmap.Width;
+  glControl.MakeCurrent(false);
   if matCapTexture <> 0 then
      glDeleteTextures(1,@matCapTexture);
-  glGenTextures(1, @matCapTexture);;
+  glGenTextures(1, @matCapTexture);
   glBindTexture(GL_TEXTURE_2D,  matCapTexture);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -223,6 +271,7 @@ begin
   {$ELSE}
   glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, px.Width, px.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, PInteger(px.Bitmap.RawImage.Data));
   {$ENDIF}
+  glControl.ReleaseContext;
   px.Free;
   result := true;
 end;
@@ -241,7 +290,11 @@ end;
 procedure TGPUMesh.Prepare();
 begin
      //SetShader(ResourceFile('Phong', 'glsl'));
-     SetShader(ShaderPath+'Phong.glsl');
+  {$IFDEF COREGL}
+  SetShader(ShaderPath+'Phong.glsl');
+  {$ELSE}
+  SetShader(ShaderPath+'Phong.glsl2');
+  {$ENDIF}
 end;
 
 constructor TGPUMesh.Create(fromView: TOpenGLControl; InitMeshName: string);  overload;
@@ -256,8 +309,12 @@ begin
   fMeshColor.r := 210;
   fMeshColor.g := 148;
   fMeshColor.b := 148;
+  {$IFDEF COREGL}
   vbo := 0;
   vao := 0;
+  {$ELSE}
+  displayLst := 0;
+  {$ENDIF}
   shaderProgram :=0;
   {$IFDEF MATCAP}
   matCapTexture := 0;
@@ -320,6 +377,7 @@ begin
   glControl.MakeCurrent(false);
   //create VBO that combines vertex, normal and color information
   setlength(vnc, length(verts));
+  {$IFDEF COREGL}
   for i := 0 to (length(verts) -1) do begin
       vnc[i].vtx := verts[i];
       vnc[i].norm :=  AsGL_INT_2_10_10_10_REV(vNorm[i]);
@@ -354,6 +412,31 @@ begin
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, Length(faces)*sizeof(TPoint3i), @faces[0], GL_STATIC_DRAW);
   glDeleteBuffers(1, @vbo_point);
+  {$ELSE}
+  //GL_TRIANGLES
+  if displayLst <> 0 then
+     glDeleteLists(displayLst, 1);
+  displayLst := glGenLists(1);
+  glNewList(displayLst, GL_COMPILE);
+  glBegin(GL_TRIANGLES);
+  for i := 0 to (length(faces)-1) do begin
+     glNormal3d(vNorm[faces[i].X].X, vNorm[faces[i].X].Y, vNorm[faces[i].X].Z);
+     glColor4ub(colors[faces[i].X].R,colors[faces[i].X].G,colors[faces[i].X].B,colors[faces[i].X].A);
+     glVertex3f(verts[faces[i].X].X, verts[faces[i].X].Y, verts[faces[i].X].Z);
+     glNormal3d(vNorm[faces[i].Y].X, vNorm[faces[i].Y].Y, vNorm[faces[i].Y].Z);
+     glColor4ub(colors[faces[i].Y].R,colors[faces[i].Y].G,colors[faces[i].Y].B,colors[faces[i].Y].A);
+     glVertex3f(verts[faces[i].Y].X, verts[faces[i].Y].Y, verts[faces[i].Y].Z);
+     glNormal3d(vNorm[faces[i].Z].X, vNorm[faces[i].Z].Y, vNorm[faces[i].Z].Z);
+     glColor4ub(colors[faces[i].Z].R,colors[faces[i].Z].G,colors[faces[i].Z].B,colors[faces[i].Z].A);
+     glVertex3f(verts[faces[i].Z].X, verts[faces[i].Z].Y, verts[faces[i].Z].Z);
+ end;
+  //for i := 0 to (length(verts) -1) do begin
+      //glColor4ub(g2Dvnc[i].clr.R, g2Dvnc[i].clr.G, g2Dvnc[i].clr.B, g2Dvnc[i].clr.A);
+      //glVertex3f(g2Dvnc[i].vtx.x, g2Dvnc[i].vtx.y, g2Dvnc[i].vtx.z);
+  //end;
+  glEnd();
+  glEndList();
+  {$ENDIF}
   nface := Length(faces) * 3; //each face has 3 vertices
   GetError(2, 'OpenMesh');
   glControl.invalidate;
@@ -366,7 +449,11 @@ var
 begin
   if shaderProgram = 0 then
      Prepare();
+  {$IFDEF COREGL}
   if vbo = 0 then
+  {$ELSE}
+  if displayLst = 0 then
+  {$ENDIF}
      OpenMesh(fMeshName, false);
   if (glControl.width = 0) or (glControl.height = 0) then exit; //avoid divide by zero
   {$IFDEF MATCAP}
@@ -416,12 +503,15 @@ begin
      glUniform1i(uniform_MatCap, 1);
   end;
   {$ENDIF}
+  {$IFDEF COREGL}
   glBindVertexArray(vao);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,vbo);
   //glDrawElements(GL_TRIANGLES,  nface, GL_UNSIGNED_INT, nil);
   glDrawElements(GL_TRIANGLES,  nface, GL_UNSIGNED_INT, nil);
   glBindVertexArray(0);
-
+  {$ELSE}
+  glCallList(displayLst);
+  {$ENDIF}
   //glBindVertexArray(vao);
   //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
   //glDrawElements(GL_TRIANGLES, nface, GL_UNSIGNED_INT, nil);

@@ -9,6 +9,9 @@ unit cubemain;
 {$IFDEF LCLCarbon}
   MacOS must use Cocoa, regardless of whether OpenGL Core or Metal is used.
 {$ENDIF}
+{$IFNDEF METALAPI}
+ {$include ../common/glopts.inc}
+{$ENDIF}
 
 interface
 
@@ -23,6 +26,7 @@ type
     MainMenu1: TMainMenu;
     MenuItem1: TMenuItem;
     RandomMenu: TMenuItem;
+    procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure ViewGPU1Prepare(Sender: TObject);
     procedure ViewGPU1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -47,7 +51,8 @@ implementation
 {$IFDEF METALAPI}
 uses Metal, MetalPipeline, MetalControl, mtlcube, VectorMath;
 {$ELSE}
-uses {$IFDEF LCLCocoa}retinahelper,{$ENDIF} glcorearb, OpenGLContext, gl_core_utils, VectorMath,  glcube;
+uses {$IFDEF LCLCocoa}retinahelper,{$ENDIF}{$IFDEF COREGL} glcorearb,{$ELSE} gl,glext,{$ENDIF}
+  OpenGLContext, gl_core_utils, VectorMath,  glcube;
 {$ENDIF}
 var
   gCube : TGPUCube;
@@ -105,32 +110,42 @@ end;
 
 procedure TForm1.FormShow(Sender: TObject);
 begin
+  ClrMenu(Sender);
+  ViewGPU1.Invalidate;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
   gMouse.Y := -1;
   {$IFDEF METALAPI}
   ViewGPU1 :=  TMetalControl.Create(Form1);
   ViewGPU1.OnPrepare := @ViewGPU1Prepare;
   {$ELSE}
   ViewGPU1 :=  TOpenGLControl.Create(Form1);
+  {$IFDEF COREGL}
   ViewGPU1.OpenGLMajorVersion:= 3;
   ViewGPU1.OpenGLMinorVersion:= 3;
+  {$ELSE}
+  ViewGPU1.OpenGLMajorVersion:= 2;
+  ViewGPU1.OpenGLMinorVersion:= 1;
+  {$ENDIF}
   ViewGPU1.MultiSampling:=4;
   {$ENDIF}
   ViewGPU1.Parent := Form1;
   {$IFDEF METALAPI}ViewGPU1.renderView.setSampleCount(4);{$ENDIF}
   ViewGPU1.Align:= alClient;
-  ViewGPU1.OnPaint := @ViewGPU1Paint;
   ViewGPU1.OnMouseDown := @ViewGPU1MouseDown;
   ViewGPU1.OnMouseUp := @ViewGPUMouseUp;
   ViewGPU1.OnMouseMove := @ViewGPUMouseMove;
   {$IFNDEF METALAPI}
   ViewGPU1.MakeCurrent(false);
-  {$IFDEF LCLCocoa}
-  ViewGPU1.setRetina(true);
-  //LSetWantsBestResolutionOpenGLSurface(true, ViewGPU1.Handle);
-  {$ENDIF}
-
+  {$IFDEF LCLCocoa}ViewGPU1.setRetina(true);{$ENDIF}
+  {$IFDEF COREGL}
   if (not  Load_GL_version_3_3_CORE) then begin
-     showmessage('Unable to load OpenGL 3.3 Core');
+  {$ELSE}
+  if (not  Load_GL_version_2_1) then begin
+  {$ENDIF}
+     showmessage('Unable to load OpenGL');
      halt;
   end;
   Form1.caption := glGetString(GL_VENDOR)+'; OpenGL= '+glGetString(GL_VERSION)+'; Shader='+glGetString(GL_SHADING_LANGUAGE_VERSION);
@@ -142,8 +157,7 @@ begin
   end;
   {$ENDIF}
   gCube := TGPUCube.Create(ViewGPU1);
-  ClrMenu(Sender);
-  ViewGPU1.Invalidate;
+  ViewGPU1.OnPaint := @ViewGPU1Paint;
 end;
 
 

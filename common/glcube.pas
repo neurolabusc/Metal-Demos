@@ -6,6 +6,7 @@ unit glcube; //OpenGL and Metal differ in only in first 2 lines
 {$IFDEF METALAPI}
 {$modeswitch objectivec1}
 {$ENDIF}
+{$include glopts.inc}
 
 interface
 
@@ -13,7 +14,8 @@ uses
   {$IFDEF METALAPI}
   MetalPipeline, MetalUtils, MetalControl, Metal,
   {$ELSE}
-  glcorearb, gl_core_utils, OpenGLContext,
+  {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
+  {$IFDEF COREGL}glcorearb,{$ELSE} glext, gl, {$ENDIF} gl_core_utils, OpenGLContext,
   {$ENDIF}
   SimdUtils, VectorMath,
   Classes, SysUtils, Graphics,  math, dialogs;
@@ -27,7 +29,12 @@ type
     mtlControl: TMetalControl;
     {$ELSE}
     uniform_mtx: GLint;
-    vbo_point,vao_point2d, shaderProgram: GLuint;
+    {$IFDEF COREGL}
+    vbo_point, vao_point2d,
+    {$ELSE}
+    displayLst,
+    {$ENDIF}
+    shaderProgram: GLuint;
     {$ENDIF}
     fAzimuth, fElevation,SizeFrac : Single;
     scrnW, scrnH, nVtx: integer;
@@ -106,6 +113,7 @@ begin
      MTLSetDepthStencil(shaderPipeline, MTLCompareFunctionLess, true);
 end;
 {$ELSE}
+ {$IFDEF COREGL}
 const
 kVert2D ='#version 330'
   +#10'layout(location = 0) in vec3 Vert;'
@@ -113,7 +121,6 @@ kVert2D ='#version 330'
   +#10'out vec4 vClr;'
   +#10'uniform mat4 ModelViewProjectionMatrix;'
   +#10'void main() {'
-  +#10'    //vClr = vec4(Vert.rgb, 1.0);'
   +#10'    gl_Position = ModelViewProjectionMatrix * vec4(Vert, 1.0);'
   +#10'    vClr = Clr;'
   +#10'}';
@@ -123,6 +130,25 @@ kFrag2D = '#version 330'
   +#10'void main() {'
   +#10'    color = vClr;'
   +#10'}';
+ {$ELSE}
+const
+ //Simple Vertex Shader
+    kVert2D = '#version 120'
++#10'varying vec4 vClr;'
++#10'uniform mat4 ModelViewProjectionMatrix;'
++#10'void main() {'
++#10'    gl_Position = ModelViewProjectionMatrix * vec4(gl_Vertex.xyz, 1.0);'
++#10'    vClr = gl_Color;'
++#10'}';
+
+//Simple Fragment Shader
+kFrag2D = '#version 120'
++#10'varying vec4 vClr;'
++#10'void main() {'
++#10'    vec4 fClr = vec4(vClr.r, vClr.g, vClr.b, 1.0);'
++#10'    gl_FragColor = fClr;'
++#10'}';
+ {$ENDIF}
 {$ENDIF}
 
 {$DEFINE CUBETEXT}
@@ -391,16 +417,20 @@ begin
 end; //MakeCube()
 
 procedure  TGPUCube.CreateCube(sz: single);
-{$IFNDEF METALAPI}
+{$IFNDEF METALAPI}  {$IFDEF COREGL}
 const
     kATTRIB_VERT = 0;  //vertex XYZ are positions 0,1,2
     kATTRIB_CLR = 3;   //color RGBA are positions 3,4,5,6
-{$ENDIF}
+{$ENDIF}  {$ENDIF}
 var
   nface: integer;
   vtxClrs: TVtxClrRA;
+  {$IFNDEF METALAPI} {$IFNDEF COREGL}
+  i: integer;
+  {$ENDIF} {$ENDIF}
 begin
   if not isRedraw then exit;
+  //writeln('redraw'); //only when scale changed
   isRedraw := false;
   vtxClrs := nil;
   MakeCube(sz, vtxClrs);
@@ -409,6 +439,7 @@ begin
   {$IFDEF METALAPI}
    vertexBuffer := mtlControl.renderView.device.newBufferWithBytes_length_options(@vtxClrs[0], nface*sizeof(TVtxClr), MTLResourceStorageModeShared);
   {$ELSE}
+  {$IFDEF COREGL}
   if vao_point2d <> 0 then
      glDeleteVertexArrays(1,@vao_point2d);
   glGenVertexArrays(1, @vao_point2d);
@@ -428,20 +459,31 @@ begin
   glEnableVertexAttribArray(kATTRIB_CLR);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
-  {$ENDIF}
+  {$ELSE}
+  if not displayLst <> 0 then
+     glDeleteLists(displayLst, 1);
+  displayLst := glGenLists(1);
+  glNewList(displayLst, GL_COMPILE);
+  glBegin(GL_TRIANGLE_STRIP);
+  for i := 0 to nface-1 do begin
+      glColor4ub(vtxClrs[i].clr.R, vtxClrs[i].clr.G, vtxClrs[i].clr.B, vtxClrs[i].clr.A);
+      glVertex3f(vtxClrs[i].vtx.x, vtxClrs[i].vtx.y, vtxClrs[i].vtx.z);
+  end;
+  glEnd();
+  glEndList();
+  {$ENDIF} //if CoreGL else legacy OpenGL
+  {$ENDIF} //if Metal else OpenGL
   nVtx := length(vtxClrs);
   setlength(vtxClrs,0);
 end;
 
 procedure TGPUCube.SetAzimuth(f: single);
 begin
-  if (f <> fAzimuth) then isRedraw := true;
   fAzimuth := f;
 end;
 
 procedure TGPUCube.SetElevation(f: single);
 begin
-  if (f <> fElevation) then isRedraw := true;
   fElevation := f;
 end;
 
@@ -491,8 +533,12 @@ begin
      vertexBuffer := nil;
      shaderPipeline := nil;
      {$ELSE}
+     {$IFDEF COREGL}
      vao_point2d := 0;
      vbo_point := 0;
+     {$ELSE}
+     displayLst := 0;
+     {$ENDIF}
      Ctx.MakeCurrent();
      shaderProgram :=  initVertFrag(kVert2D, kFrag2D);
      uniform_mtx := glGetUniformLocation(shaderProgram, pAnsiChar('ModelViewProjectionMatrix'));
@@ -548,6 +594,7 @@ begin
   glDisable(GL_DEPTH_TEST);
   glUseProgram(shaderProgram);
   glUniformMatrix4fv(uniform_mtx, 1, GL_FALSE, @modelViewProjectionMatrix);
+  {$IFDEF COREGL}
   glBindBuffer(GL_ARRAY_BUFFER, vbo_point);
   glBindVertexArray(vao_point2d);
   if isText then
@@ -555,6 +602,9 @@ begin
   else
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 36);
   glBindVertexArray(0);
+  {$ELSE}
+  glCallList(displayLst);
+  {$ENDIF}
   glDisable(GL_CULL_FACE);
   glUseProgram(0);
   {$ENDIF}

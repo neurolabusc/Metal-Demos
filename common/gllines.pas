@@ -2,18 +2,28 @@ unit gllines;
 //openGL lines
 
 {$mode objfpc}{$H+}
+{$IFNDEF METALAPI}
+ {$include glopts.inc}
+{$ENDIF}
+
 interface
 
 
 uses
-  {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
-  glcorearb, gl_core_utils, VectorMath, SimdUtils, Classes, SysUtils, Graphics, OpenGLContext, dialogs;
+ {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
+ {$IFDEF COREGL}glcorearb, {$ELSE} gl, glext,{$ENDIF}
+  gl_core_utils, VectorMath, SimdUtils, Classes, SysUtils, Graphics, OpenGLContext, dialogs;
 
 type
   TGPULines = class
   private
          uniform_viewportSize: GLint;
-         vaoLine2D, vboLine2D, shaderProgram: GLuint;
+         {$IFDEF COREGL}
+         vaoLine2D, vboLine2D,
+         {$ELSE}
+         displayLst,
+         {$ENDIF}
+         shaderProgram: GLuint;
          numVertices: integer;
          LineWid: single;
          LineClr: TRGBA;
@@ -48,6 +58,7 @@ var
     g2Dvnc: array of TVtxClr;
     const
         kBlockSz = 8192;
+{$IFDEF COREGL}
         kVert2D ='#version 330'
     +#10'layout(location = 0) in vec3 Vert;'
     +#10'layout(location = 3) in vec4 Clr;'
@@ -56,7 +67,7 @@ var
     +#10'void main() {'
     +#10'    vec2 ptx = Vert.xy - 0.5;'
     +#10'    ptx -= (ViewportSize/2.0);'
-    +#10'    gl_Position = vec4((ptx / (ViewportSize/2)), 0.0, 1.0);'
+    +#10'    gl_Position = vec4((ptx / (ViewportSize/2.0)), 0.0, 1.0);'
     +#10'    vClr = Clr;'
     +#10'}';
         kFrag2D = '#version 330'
@@ -65,12 +76,32 @@ var
     +#10'void main() {'
     +#10'    color = vClr;'
     +#10'}';
+{$ELSE}
+        kVert2D = '#version 120'
+    +#10'varying vec4 vClr;'
+    +#10'uniform vec2 ViewportSize;'
+    +#10'void main() {'
+    +#10'    vec2 ptx = gl_Vertex.xy - 0.5;'
+    +#10'    ptx -= (ViewportSize/2.0);'
+    +#10'    gl_Position = vec4((ptx / (ViewportSize/2.0)), 0.0, 1.0);'
+    +#10'    vClr = gl_Color;'
+    +#10'}';
 
+    //Simple Fragment Shader
+    kFrag2D = '#version 120'
+    +#10'varying vec4 vClr;'
+    +#10'void main() {'
+    +#10'    gl_FragColor = vClr;'
+    +#10'}';
+
+{$ENDIF}
 
 constructor TGPULines.Create(fromView: TOpenGLControl);
+{$IFDEF COREGL}
 const
     kATTRIB_VERT = 0;  //vertex XYZ are positions 0,1,2
     kATTRIB_CLR = 3;   //color RGBA are positions 3,4,5,6
+{$ENDIF}
 begin
   glControl := fromView;
   LineClr := setRGBA(255, 255, 255, 255);
@@ -79,6 +110,11 @@ begin
   glControl.MakeCurrent();
   shaderProgram :=  initVertFrag(kVert2D, kFrag2D);
   uniform_viewportSize := glGetUniformLocation(shaderProgram, pAnsiChar('ViewportSize'));
+  {$IFDEF UNIX}
+  if GLErrorStr <> '' then
+     writeln(GLErrorStr);
+  {$ENDIF}
+  {$IFDEF COREGL}
   //setup VAO for lines
   vboLine2D := 0;
   vaoLine2D := 0;
@@ -94,6 +130,9 @@ begin
   glEnableVertexAttribArray(kATTRIB_CLR);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);  //required, even if we will bind it next
+  {$ELSE}
+  displayLst := 0;
+  {$ENDIF}
   //done
   glFinish;
   glControl.ReleaseContext;
@@ -245,10 +284,31 @@ begin
 end;
 
 procedure TGPULines.Draw();
+{$IFNDEF COREGL}
+var
+  i: integer;
+{$ENDIF}
 begin
   if isRedraw then begin
-    glBindBuffer(GL_ARRAY_BUFFER, vboLine2D);
+    {$IFDEF COREGL}glBindBuffer(GL_ARRAY_BUFFER, vboLine2D);
     glBufferData(GL_ARRAY_BUFFER, numVertices*SizeOf(TVtxClr), @g2Dvnc[0], GL_STATIC_DRAW);
+    {$ELSE}
+           if displayLst <> 0 then
+              glDeleteLists(displayLst, 1);
+           displayLst := glGenLists(1);
+           glNewList(displayLst, GL_COMPILE);
+           {$IFDEF STRIP}
+           glBegin(GL_TRIANGLE_STRIP);
+           {$ELSE}
+           glBegin(GL_TRIANGLES);
+           {$ENDIF}
+           for i := 0 to (numVertices - 1) do begin
+               glColor4ub(g2Dvnc[i].clr.R, g2Dvnc[i].clr.G, g2Dvnc[i].clr.B, g2Dvnc[i].clr.A);
+               glVertex3f(g2Dvnc[i].vtx.x, g2Dvnc[i].vtx.y, g2Dvnc[i].vtx.z);
+           end;
+           glEnd();
+           glEndList();
+    {$ENDIF}
     isRedraw := false;
   end;
   if numVertices < 1 then exit;
@@ -257,6 +317,7 @@ begin
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glUseProgram(shaderProgram);
   glUniform2f(uniform_viewportSize, glControl.ClientWidth, glControl.ClientHeight);
+  {$IFDEF COREGL}
   glBindBuffer(GL_ARRAY_BUFFER, vboLine2D);
   glBindVertexArray(vaoLine2d);
   {$IFDEF STRIP}
@@ -265,6 +326,9 @@ begin
   glDrawArrays(GL_TRIANGLES, 0, numVertices);
   {$ENDIF}
   glBindVertexArray(0);
+  {$ELSE}
+  glCallList(displayLst);
+  {$ENDIF}
   glUseProgram(0);
 end;
 

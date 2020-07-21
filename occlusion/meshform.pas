@@ -202,13 +202,14 @@ begin
   ViewGPU1.Invalidate;
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
-//procedure TForm1.FormShow(Sender: TObject);
+//procedure TForm1.FormCreate(Sender: TObject);
+procedure TForm1.FormShow(Sender: TObject);
 begin
 
 end;
-procedure TForm1.FormShow(Sender: TObject);
-//procedure TForm1.FormCreate(Sender: TObject);
+
+//procedure TForm1.FormShow(Sender: TObject);
+procedure TForm1.FormCreate(Sender: TObject);
 var
  i: integer;
  shaderName, shaderPth: string;
@@ -296,7 +297,9 @@ begin
   //Mesh1.Prepare();
   {$IFDEF METALAPI}
   ViewGPU1.setPreferredFrameRate(0);
-  Form1.OnResize := @FormResize;
+  ViewGPU1.invalidateOnResize:= true;
+  //Form1.OnResize := @FormResize;
+  //ViewGPU1.Invalidate;
   {$ENDIF}
 end;
 

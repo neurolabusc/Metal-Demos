@@ -6,10 +6,13 @@ interface
 {$DEFINE STRIP} //we can define cube as either a triangle or triangle strip - no implications on performance
 {$DEFINE GPUGRADIENTS} //Computing volume gradients on the GPU is much faster than using the CPU
 {$DEFINE MATCAP}
+{$include ../common/glopts.inc}
 uses
  {$IFDEF Darwin} CocoaAll, MacOSAll, {$ENDIF}
+ {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
  {$IFDEF MATCAP}GraphType, FPImage, IntfGraphics, LCLType,{$ENDIF}
- SimdUtils, glcorearb, gl_core_utils, VectorMath, Classes, SysUtils, Graphics,
+ {$IFDEF COREGL} glcorearb,  {$ELSE} gl, glext, {$ENDIF}
+ SimdUtils,gl_core_utils, VectorMath, Classes, SysUtils, Graphics,
     math, OpenGLContext, dialogs, loadNifti;
 
 const
@@ -24,8 +27,9 @@ type
         glControl: TOpenGLControl;
         rayDirLoc,intensityVolLoc, gradientVolLoc,mvpLoc, lightPositionLoc, //imvLoc
         sliceSizeLoc, stepSizeLoc, loopsLoc : GLint;
-        {$IFDEF GPUGRADIENTS}programSobel, programBlur: GLuint;  {$ENDIF}
-        gradientTexture3D, intensityTexture3D, vao, programRaycast, vboBox3D: GLuint;
+        {$IFDEF GPUGRADIENTS}programSobel: GLuint;  {$ENDIF}
+        {$IFDEF COREGL} vao, vboBox3D, {$ELSE} displayLst,{$ENDIF}
+        programBlur,gradientTexture3D, intensityTexture3D, programRaycast: GLuint;
         {$IFDEF MATCAP}
         matcap2D: GLuint;
         matcapLoc, normLoc: GLint;
@@ -47,7 +51,7 @@ type
 
 implementation
 
-//uses vrForm;
+{$IFDEF Darwin}uses vrForm; {$ENDIF}
 
 {$IFDEF MATCAP}
 procedure printf (lS: AnsiString);
@@ -178,6 +182,7 @@ begin
     glUniform1f(glGetUniformLocation(prog, pAnsiChar(Name)), value) ;
 end;
 
+{$IFDEF COREGL}
 const kBlurSobelVert = '#version 330 core'
 +#10'layout(location = 0) in vec3 vPos;'
 +#10'out vec2 TexCoord;'
@@ -229,6 +234,50 @@ const kSobelFrag = '#version 330 core'
 +#10'  gradientSample.rgb =  (gradientSample.rgb * 0.5)+0.5;'
 +#10'  FragColor = gradientSample;'
 +#10'}';
+ {$ELSE}
+
+const kBlurSobelVert = '';
+
+kBlurFrag = '#version 120'
++#10'uniform float coordZ, dX, dY, dZ;'
++#10'uniform sampler3D intensityVol;'
++#10'void main(void) {'
++#10' vec3 vx = vec3(gl_TexCoord[0].xy, coordZ);'
++#10' vec4 samp = texture3D(intensityVol,vx+vec3(+dX,+dY,+dZ));'
++#10' samp += texture3D(intensityVol,vx+vec3(+dX,+dY,-dZ));'
++#10' samp += texture3D(intensityVol,vx+vec3(+dX,-dY,+dZ));'
++#10' samp += texture3D(intensityVol,vx+vec3(+dX,-dY,-dZ));'
++#10' samp += texture3D(intensityVol,vx+vec3(-dX,+dY,+dZ));'
++#10' samp += texture3D(intensityVol,vx+vec3(-dX,+dY,-dZ));'
++#10' samp += texture3D(intensityVol,vx+vec3(-dX,-dY,+dZ));'
++#10' samp += texture3D(intensityVol,vx+vec3(-dX,-dY,-dZ));'
++#10' gl_FragColor = samp*0.125;'
++#10'}';
+
+//this will estimate a Sobel smooth
+const kSobelFrag = '#version 120'
++#10'uniform float coordZ, dX, dY, dZ;'
++#10'uniform sampler3D intensityVol;'
++#10'void main(void) {'
++#10'  vec3 vx = vec3(gl_TexCoord[0].xy, coordZ);'
++#10'  float TAR = texture3D(intensityVol,vx+vec3(+dX,+dY,+dZ)).a;'
++#10'  float TAL = texture3D(intensityVol,vx+vec3(+dX,+dY,-dZ)).a;'
++#10'  float TPR = texture3D(intensityVol,vx+vec3(+dX,-dY,+dZ)).a;'
++#10'  float TPL = texture3D(intensityVol,vx+vec3(+dX,-dY,-dZ)).a;'
++#10'  float BAR = texture3D(intensityVol,vx+vec3(-dX,+dY,+dZ)).a;'
++#10'  float BAL = texture3D(intensityVol,vx+vec3(-dX,+dY,-dZ)).a;'
++#10'  float BPR = texture3D(intensityVol,vx+vec3(-dX,-dY,+dZ)).a;'
++#10'  float BPL = texture3D(intensityVol,vx+vec3(-dX,-dY,-dZ)).a;'
++#10'  vec4 gradientSample = vec4 (0.0, 0.0, 0.0, 0.0);'
++#10'  gradientSample.r =   BAR+BAL+BPR+BPL -TAR-TAL-TPR-TPL;'
++#10'  gradientSample.g =  TPR+TPL+BPR+BPL -TAR-TAL-BAR-BAL;'
++#10'  gradientSample.b =  TAL+TPL+BAL+BPL -TAR-TPR-BAR-BPR;'
++#10'  gradientSample.a = (abs(gradientSample.r)+abs(gradientSample.g)+abs(gradientSample.b))*0.29;'
++#10'  gradientSample.rgb = normalize(gradientSample.rgb);'
++#10'  gradientSample.rgb =  (gradientSample.rgb * 0.5)+0.5;'
++#10'  gl_FragColor = gradientSample;'
++#10'}';
+ {$ENDIF}
 
 procedure TGPUVolume.CreateGradientVolumeGPU(Xsz,Ysz,Zsz: integer);
 //procedure TGPUVolume.performBlurSobel(rData: tVolB; Xsz,Ysz,Zsz: integer; lIsOverlay: boolean);
@@ -239,10 +288,15 @@ var
    coordZ: single;
    fb, tempTex3D: GLuint;
 begin
+  {$IFDEF COREGL}
   glBindVertexArray(vao);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboBox3D);
   glGenFramebuffers(1, @fb);
   glBindFramebuffer(GL_FRAMEBUFFER, fb);
+  {$ELSE}
+  glGenFramebuffersEXT(1, @fb);
+  glBindFramebufferEXT(GL_FRAMEBUFFER, fb);
+  {$ENDIF}
   glDisable(GL_CULL_FACE);
   //{$IFNDEF COREGL}glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);{$ENDIF}// <- REQUIRED
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -250,6 +304,13 @@ begin
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
   glViewport(0, 0, XSz, YSz);
+  {$IFNDEF COREGL}
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho (0, 1,0, 1, -1, 1);  //gluOrtho2D(0, 1, 0, 1);  https://www.opengl.org/sdk/docs/man2/xhtml/gluOrtho2D.xml
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  {$ENDIF}
   glDisable(GL_TEXTURE_2D);
   glDisable(GL_BLEND);
   //STEP 1: run smooth program gradientTexture -> tempTex3D
@@ -262,18 +323,37 @@ begin
   glUniform1fx(programBlur, 'dX', 0.7/XSz); //0.5 for smooth - center contributes
   glUniform1fx(programBlur, 'dY', 0.7/YSz);
   glUniform1fx(programBlur, 'dZ', 0.7/ZSz);
+  {$IFDEF COREGL}
   glBindVertexArray(vao);
+  {$ENDIF}
   for i := 0 to (ZSz-1) do begin
       coordZ := 1/ZSz * (i + 0.5);
       glUniform1fx(programBlur, 'coordZ', coordZ);
       //glFramebufferTexture3D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0, GL_TEXTURE_3D, tempTex3D, 0, i);//output texture
       //Ext required: Delphi compile on Winodws 32-bit XP with NVidia 8400M
+      {$IFDEF COREGL}
       glFramebufferTexture3D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_3D, tempTex3D, 0, i);//output texture
+      {$ELSE}
+      glFramebufferTexture3DExt(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0, GL_TEXTURE_3D, tempTex3D, 0, i);//output texture
+      {$ENDIF}
       glClear(GL_DEPTH_BUFFER_BIT);  // clear depth bit (before render every layer)
+      {$IFDEF COREGL}
       {$IFDEF STRIP}
       glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, nil);
       {$ELSE}
       glDrawElements(GL_TRIANGLES, 2*3, GL_UNSIGNED_INT, nil);
+      {$ENDIF}
+      {$ELSE}
+      glBegin(GL_QUADS);
+      glTexCoord2f(0, 0);
+      glVertex2f(0, 0);
+      glTexCoord2f(1.0, 0);
+      glVertex2f(1.0, 0.0);
+      glTexCoord2f(1.0, 1.0);
+      glVertex2f(1.0, 1.0);
+      glTexCoord2f(0, 1.0);
+      glVertex2f(0.0, 1.0);
+      glEnd();
       {$ENDIF}
   end;
   glUseProgram(0);
@@ -287,42 +367,65 @@ begin
     glUniform1fx(programSobel, 'dX', 1.2/XSz ); //1.0 for SOBEL - center excluded
     glUniform1fx(programSobel, 'dY', 1.2/YSz);
     glUniform1fx(programSobel, 'dZ', 1.2/ZSz);
+    {$IFDEF COREGL}
     glBindVertexArray(vao);
+    {$ENDIF}
     for i := 0 to (ZSz-1) do begin
         coordZ := 1/ZSz * (i + 0.5);
         glUniform1fx(programSobel, 'coordZ', coordZ);
+        {$IFDEF COREGL}
         glFramebufferTexture3D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_3D, gradientTexture3D, 0, i);//output is background
+        {$ELSE}
+        glFramebufferTexture3DExt(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0, GL_TEXTURE_3D, gradientTexture3D, 0, i);//output is background
+        {$ENDIF}
         glClear(GL_DEPTH_BUFFER_BIT);
+        {$IFDEF COREGL}
         {$IFDEF STRIP}
         glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, nil);
         {$ELSE}
         glDrawElements(GL_TRIANGLES, 2*3, GL_UNSIGNED_INT, nil);
         {$ENDIF}
+        {$ELSE}
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 0);
+        glVertex2f(0, 0);
+        glTexCoord2f(1.0, 0);
+        glVertex2f(1.0, 0.0);
+        glTexCoord2f(1.0, 1.0);
+        glVertex2f(1.0, 1.0);
+        glTexCoord2f(0, 1.0);
+        glVertex2f(0.0, 1.0);
+        glEnd();
+        {$ENDIF}
     end;
     glUseProgram(0);
      //clean up:
      glDeleteTextures(1,@tempTex3D);
+     {$IFDEF COREGL}
      glBindFramebuffer(GL_FRAMEBUFFER, 0);
      glDeleteFramebuffers(1, @fb);
+     {$ELSE}
+     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+     glDeleteFramebuffersEXT(1, @fb);
+     {$ENDIF}
      glActiveTexture( GL_TEXTURE0 );  //required if we will draw 2d slices next
 end;
 {$ENDIF}
 
+{$IFDEF COREGL}
 const kVert = '#version 330 core'
 +#10'layout(location = 0) in vec3 vPos;'
 +#10'out vec3 TexCoord1;'
-+#10'out vec4 vPosition;'
 +#10'uniform mat4 ModelViewProjectionMatrix;'
 +#10'void main() {'
 +#10'  TexCoord1 = vPos;'
 +#10'  gl_Position = ModelViewProjectionMatrix * vec4(vPos, 1.0);'
-+#10'  vPosition = gl_Position;'
 +#10'}';
 
 kFrag ='#version 330 core'
 +#10'in vec3 TexCoord1;'
 +#10'out vec4 FragColor;'
-+#10'in vec4 vPosition;'
++#10'//in vec4 vPosition;'
 +#10'uniform int loops;'
 +#10'uniform float stepSize, sliceSize;'
 +#10'uniform sampler3D intensityVol, gradientVol;'
@@ -381,7 +484,76 @@ kFrag ='#version 330 core'
 +#10'	colAcc.a = colAcc.a/0.95;'
 +#10'	FragColor = colAcc;'
 +#10'}';
+{$ELSE}
+const kVert = '#version 120'
++#10'varying vec3 TexCoord1;'
++#10'uniform mat4 ModelViewProjectionMatrix;'
++#10'void main() {'
++#10'    gl_Position = ModelViewProjectionMatrix * vec4(gl_Vertex.xyz, 1.0);'
++#10'    TexCoord1 = gl_Vertex.rgb;'
++#10'}';
 
+kFrag ='#version 120'
++#10'varying vec3 TexCoord1;'
++#10'uniform int loops;'
++#10'uniform float stepSize, sliceSize;'
++#10'uniform sampler3D intensityVol, gradientVol;'
++#10'uniform vec3 lightPosition, rayDir;'
++#10'uniform float ambient = 1.0;'
++#10'uniform float diffuse = 0.3;'
++#10'uniform float specular = 0.25;'
++#10'uniform float shininess = 10.0;'
++#10'vec3 GetBackPosition (vec3 startPosition) { //when does ray exit unit cube http://prideout.net/blog/?p=64'
++#10'	vec3 invR = 1.0 / rayDir;'
++#10'    vec3 tbot = invR * (vec3(0.0)-startPosition);'
++#10'    vec3 ttop = invR * (vec3(1.0)-startPosition);'
++#10'    vec3 tmax = max(ttop, tbot);'
++#10'    vec2 t = min(tmax.xx, tmax.yz);'
++#10'	return startPosition + (rayDir * min(t.x, t.y));'
++#10'}'
++#10'void main() {'
++#10'	vec3 start = TexCoord1.xyz;'
++#10'	vec3 backPosition = GetBackPosition(start);'
++#10'	//gl_FragColor = vec4(start, 1.0); return;'
++#10'	//gl_FragColor = vec4(backPosition, 1.0); return;'
++#10'	vec3 dir = backPosition - start;'
++#10'	//gl_FragColor = vec4(dir, 1.0); return;'
++#10'	float len = length(dir);'
++#10'	dir = normalize(dir);'
++#10'	vec3 deltaDir = dir * stepSize;'
++#10'	vec4 colorSample,gradientSample,colAcc = vec4(0.0,0.0,0.0,0.0);'
++#10'	float lengthAcc = 0.0;'
++#10'	vec3 samplePos = start.xyz + deltaDir* (fract(sin(gl_FragCoord.x * 12.9898 + gl_FragCoord.y * 78.233) * 43758.5453));'
++#10'	vec4 prevNorm = vec4(0.0,0.0,0.0,0.0);'
++#10'	for(int i = 0; i < loops; i++) {'
++#10'		//float tex = texture(intensityVol,samplePos).r;'
++#10'		//colorSample.rgba = vec4(tex,tex,tex,tex);'
++#10'		colorSample.rgba = texture3D(intensityVol,samplePos);'
++#10'		colorSample.a = 1.0-pow((1.0 - colorSample.a), stepSize/sliceSize);'
++#10'		if (colorSample.a > 0.01) {'
++#10'			gradientSample= texture3D(gradientVol,samplePos);'
++#10'			gradientSample.rgb = normalize(gradientSample.rgb*2.0 - 1.0);'
++#10'			if (gradientSample.a < prevNorm.a)'
++#10'				gradientSample.rgb = prevNorm.rgb;'
++#10'			prevNorm = gradientSample;'
++#10'			float lightNormDot = dot(gradientSample.rgb, lightPosition);'
++#10'			vec3 a = colorSample.rgb * ambient;'
++#10'			vec3 d = max(lightNormDot, 0.0) * colorSample.rgb * diffuse;'
++#10'			float s =   specular * pow(max(dot(reflect(lightPosition, gradientSample.rgb), dir), 0.0), shininess);'
++#10'			colorSample.rgb = a + d + s;'
++#10'		}'
++#10'		colorSample.rgb *= colorSample.a;'
++#10'		colAcc= (1.0 - colAcc.a) * colorSample + colAcc;'
++#10'		samplePos += deltaDir;'
++#10'		lengthAcc += stepSize;'
++#10'		if ( lengthAcc >= len || colAcc.a > 0.95 )'
++#10'			break;'
++#10'	}'
++#10'	colAcc.a = colAcc.a/0.95;'
++#10'	gl_FragColor = colAcc;'
++#10'}';
+
+{$ENDIF}
 procedure TGPUVolume.SetShader(shaderName: string);
 var
   VertexProgram, FragmentProgram: string;
@@ -409,7 +581,12 @@ begin
   gradientVolLoc := glGetUniformLocation(programRaycast, pAnsiChar('gradientVol'));
   if GLErrorStr <>  '' then begin
    glControl.ReleaseContext;
+   {$IFDEF Darwin} //unable to show modal dialog
+   Form1.caption := GLErrorStr;
+   {$ELSE}
    showmessage(GLErrorStr);
+   {$ENDIF}
+   printf(GLErrorStr);
    GLErrorStr := '';
   end;
 end;
@@ -436,7 +613,11 @@ begin
   fElevation := 30;
   RaycastQuality1to10 := 6;
   fLightPos := Vec4(0,0.707,0.707, 0.0);
-  vao:= 0;
+  {$IFDEF COREGL}
+  vao := 0;
+  {$ELSE}
+  displayLst := 0;
+  {$ENDIF}
   {$IFDEF MATCEP}
   matcap2D := 0;
   {$ENDIF}
@@ -475,8 +656,14 @@ var
       0,7,3
       ); //idx = each cube has 6 faces, each composed of two triangles = 12 tri indices
 {$ENDIF}
-    vbo_point: gluint;
+   {$IFDEF COREGL}
+   vbo_point: gluint;
+   {$ELSE}
+   i, nface, v: integer;
+   v3: TVec3;
+   {$ENDIF}
 begin  //vboCube, vaoCube,
+  {$IFDEF COREGL}
   vbo_point := 0;
   vao := 0;
   vboBox3D := 0;
@@ -499,6 +686,29 @@ begin  //vboCube, vaoCube,
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, 14*sizeof(GLuint), @idx[0], GL_STATIC_DRAW); //cube is 6 faces, 2 triangles per face, 3 indices per triangle
   {$ELSE}
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36*sizeof(GLuint), @idx[0], GL_STATIC_DRAW); //cube is 6 faces, 2 triangles per face, 3 indices per triangle
+  {$ENDIF}
+  {$ELSE}
+  //Legacy OpenGL:
+  if not displayLst <> 0 then
+     glDeleteLists(displayLst, 1);
+  displayLst := glGenLists(1);
+  glNewList(displayLst, GL_COMPILE);
+  {$IFDEF STRIP}
+  glBegin(GL_TRIANGLE_STRIP);
+  nface := 14;
+  {$ELSE}
+  glBegin(GL_TRIANGLES);
+  nface := 36;
+  {$ENDIF}
+  for i := 0 to nface-1 do begin
+      v := idx[i];
+      v3.x := vtx[v*3];
+      v3.y := vtx[(v*3)+1];
+      v3.z := vtx[(v*3)+2];
+      glVertex3f(v3.x, v3.y, v3.z);
+  end;
+  glEnd();
+  glEndList();
   {$ENDIF}
   //do not delete the VBOs! http://stackoverflow.com/questions/25167562/how-to-dispose-vbos-stored-in-a-vao
 end;
@@ -593,10 +803,13 @@ begin
     SetMatCap(fnm);
   end;
   {$ENDIF}
-
   if programBlur = 0 then
     Prepare();
+  {$IFDEF COREGL}
   if vao = 0 then // only once
+  {$ELSE}
+  if displayLst = 0 then // only once
+  {$ENDIF}
     LoadCube();
   if (vol.VolRGBA <> nil) then
      LoadTexture(vol);
@@ -675,14 +888,23 @@ begin
   glEnable (GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_CULL_FACE);
+  {$IFDEF STRIP}
+  glCullFace(GL_BACK);
+  {$ELSE}
+  glCullFace(GL_FRONT);
+  {$ENDIF}
+  {$IFDEF COREGL}
   glBindVertexArray(vao);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboBox3D);
   {$IFDEF STRIP}
-  glCullFace(GL_BACK);
   glDrawElements(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_INT, nil);
   {$ELSE}
-  glCullFace(GL_FRONT);
   glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nil);
+  {$ENDIF}
+  glBindVertexArray(0);
+  {$ELSE}
+  //Legacy OpenGL
+  glCallList(displayLst);
   {$ENDIF}
   glDisable(GL_CULL_FACE);
   glControl.SwapBuffers;

@@ -7,6 +7,9 @@ unit Unit1;
 {$IFDEF LCLCarbon}
 MacOS must use Cocoa, regardless of whether OpenGL Core or Metal is used.
 {$ENDIF}
+{$IFNDEF METALAPI}
+ {$include ../common/glopts.inc}
+{$ENDIF}
 interface
 
 uses
@@ -89,8 +92,13 @@ begin
  {$IFDEF METALAPI}
  ViewGPU1.OnPrepare := @ViewGPU1.MyPrepare;
  {$ELSE}
+ {$IFDEF COREGL}
  ViewGPU1.OpenGLMajorVersion:= 3;
  ViewGPU1.OpenGLMinorVersion:= 3;
+ {$ELSE}
+ ViewGPU1.OpenGLMajorVersion:= 2;
+ ViewGPU1.OpenGLMinorVersion:= 1;
+ {$ENDIF}
  ViewGPU1.InitGL(ViewGPU1);
  {$ENDIF}
  ViewGPU1.OnPaint := @ViewGPU1.MyPaint;

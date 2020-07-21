@@ -103,6 +103,8 @@ begin
  if not fileexists(options.libraryName) then
     showmessage('Unable to find ' + options.libraryName);
  pipeline := MTLCreatePipeline(options);
+ //MetalControl1.SetPreferredFrameRate(0);
+ //MetalControl1.invalidateOnResize:=true;
 end;
 
 const

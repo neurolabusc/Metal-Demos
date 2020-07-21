@@ -3,11 +3,11 @@
   <ProjectSession>
     <Version Value="12"/>
     <BuildModes Active="Default"/>
-    <Units Count="2">
+    <Units Count="5">
       <Unit0>
         <Filename Value="lines.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
       </Unit0>
       <Unit1>
         <Filename Value="linesmain.pas"/>
@@ -15,16 +15,132 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="143"/>
+        <CursorPos X="54" Y="146"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="../common/gllines.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="71"/>
+        <CursorPos Y="94"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="/usr/local/share/fpcsrc/packages/opengl/src/gl.pp"/>
+        <UnitName Value="GL"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="1155"/>
+        <CursorPos X="13" Y="1171"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../common/gl_core_utils.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="180"/>
+        <CursorPos X="15" Y="201"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory Count="22" HistoryIndex="21">
+      <Position1>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret TopLine="55"/>
+      </Position1>
+      <Position2>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="20" Column="25" TopLine="9"/>
+      </Position2>
+      <Position3>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="90" Column="12" TopLine="65"/>
+      </Position3>
+      <Position4>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="127" Column="19" TopLine="105"/>
+      </Position4>
+      <Position5>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="286" Column="13" TopLine="272"/>
+      </Position5>
+      <Position6>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="305" Column="14" TopLine="279"/>
+      </Position6>
+      <Position7>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="301" Column="29" TopLine="279"/>
+      </Position7>
+      <Position8>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="57" Column="24" TopLine="33"/>
+      </Position8>
+      <Position9>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="51" TopLine="33"/>
+      </Position9>
+      <Position10>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="299" Column="23" TopLine="274"/>
+      </Position10>
+      <Position11>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="90" Column="12" TopLine="67"/>
+      </Position11>
+      <Position12>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="109" Column="30" TopLine="91"/>
+      </Position12>
+      <Position13>
+        <Filename Value="../common/gl_core_utils.pas"/>
+        <Caret Line="21" Column="25"/>
+      </Position13>
+      <Position14>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="313" Column="13" TopLine="286"/>
+      </Position14>
+      <Position15>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="29" Column="18" TopLine="13"/>
+      </Position15>
+      <Position16>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="109" Column="11" TopLine="82"/>
+      </Position16>
+      <Position17>
+        <Filename Value="../common/gllines.pas"/>
+        <Caret Line="175" Column="11" TopLine="181"/>
+      </Position17>
+      <Position18>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="101" Column="8" TopLine="117"/>
+      </Position18>
+      <Position19>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="102" Column="42" TopLine="87"/>
+      </Position19>
+      <Position20>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="33" Column="29" TopLine="17"/>
+      </Position20>
+      <Position21>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="73" Column="9" TopLine="46"/>
+      </Position21>
+      <Position22>
+        <Filename Value="linesmain.pas"/>
+        <Caret Line="127" Column="10" TopLine="101"/>
+      </Position22>
+    </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
-      <Modes ActiveMode=""/>
+      <Modes ActiveMode="default"/>
     </RunParams>
   </ProjectSession>
 </CONFIG>

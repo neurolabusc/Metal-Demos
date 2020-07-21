@@ -2,11 +2,12 @@ unit gltexture;
 //OpenGL Texture - draw a bitmap
 {$mode objfpc}{$H+}
 interface
-{$DEFINE COREGL} //<- defines CORE OpenGL >=3.3, else uses LEGACY OpenGL 2.1
+{$include glopts.inc}//<- defines CORE OpenGL >=3.3, else uses LEGACY OpenGL 2.1
 
 uses
   {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
-  glcorearb, gl_core_utils,Classes, SysUtils, Graphics, OpenGLContext, dialogs;
+  {$IFDEF COREGL}glcorearb, {$ELSE} gl, glext,{$ENDIF}
+  gl_core_utils,Classes, SysUtils, Graphics, OpenGLContext, dialogs;
 
 type
 Txyuv = Packed Record
@@ -15,7 +16,12 @@ Txyuv = Packed Record
 end;
   TGPUTexture = class
   private
-         vbo, vao,tex, shaderProgram: GLuint;
+         {$IFDEF COREGL}
+         vbo, vao,
+         {$ELSE}
+          displayLst,
+         {$ENDIF}
+           tex, shaderProgram: GLuint;
          uniform_viewportSize, uniform_tex: GLint;
          bmpHt, bmpWid: integer;
          glControl: TOpenGLControl;
@@ -35,7 +41,8 @@ end;
 implementation
 
 const
- //Simple Vertex Shader
+{$IFDEF COREGL}
+//vertex shader
     kVert = '#version 330'
 +#10'layout(location = 0) in vec2 point;'
 +#10'layout(location = 1) in vec2 uvX;'
@@ -55,7 +62,22 @@ const
 +#10'void main() {'
 +#10'    color = texture(tex,uv);'
 +#10'}';
+{$ELSE} //if core opengl, else legacy shaders
+kVert = '#version 120'
++#10'uniform vec2 ViewportSize;'
++#10'varying vec4 uv;'
++#10'void main() {'
++#10'    gl_Position = vec4((gl_Vertex.xy / (ViewportSize/2)), 0.0, 1.0);'
++#10'    uv = gl_Color;'
++#10'}';
 
+const kFrag = '#version 120'
++#10'varying vec4 uv;'
++#10'uniform sampler2D tex;'
++#10'void main() {'
++#10'  gl_FragColor = texture2D(tex, uv.xy);'
++#10'}';
+{$ENDIF}
 
 function MakeXYUV(x,y,u,v: single):Txyuv;
 begin
@@ -69,6 +91,9 @@ procedure TGPUTexture.VboUpdate();
 var
     Sq : packed array [0..3] of Txyuv;
     ZoomX,ZoomY: single;
+    {$IFNDEF COREGL}
+     i: integer;
+    {$ENDIF}
 begin
   if not isVboRequiresUpdate then exit;
   ZoomX := bmpWid * Zoom * 0.5;
@@ -77,9 +102,26 @@ begin
   Sq[1] := MakeXYUV(OffsetX - ZoomX, OffsetY -ZoomY, 0, 1);
   Sq[2] := MakeXYUV(OffsetX + ZoomX, OffsetY + ZoomY, 1, 0);
   Sq[3] := MakeXYUV(OffsetX + ZoomX, OffsetY -ZoomY, 1, 1);
+  {$IFDEF COREGL}
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferSubData(GL_ARRAY_BUFFER,0,sizeof(Sq),@Sq[0]);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+  {$ELSE}
+  if not displayLst <> 0 then
+     glDeleteLists(displayLst, 1);
+  displayLst := glGenLists(1);
+  glNewList(displayLst, GL_COMPILE);
+  glBegin(GL_TRIANGLE_STRIP);
+  for i := 0 to 3 do begin
+      glColor3f(Sq[i].u, Sq[i].v, 1.0);
+      glVertex2f(Sq[i].x, Sq[i].y);
+      //
+      //  x,y   : single; //vertex coordinates
+      //u,v : single; //texture coordinates
+  end;
+  glEnd();
+  glEndList();
+  {$ENDIF}
   isVboRequiresUpdate:= false;
 end;
 
@@ -108,6 +150,7 @@ begin
   if not fileexists(fnm) then exit;
   glControl.MakeCurrent();
   //setup VAO for lines
+  {$IFDEF COREGL}
   vbo := 0;
   vao := 0;
   glGenBuffers(1, @vbo);
@@ -123,6 +166,9 @@ begin
   glEnableVertexAttribArray(kATTRIB_UV);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
+  {$ELSE}
+  displayLst := 0;
+  {$ENDIF}
   //done
   shaderProgram :=  initVertFrag(kVert,  kFrag);
   uniform_viewportSize := glGetUniformLocation(shaderProgram, pAnsiChar('ViewportSize'));
@@ -183,9 +229,13 @@ begin
   glBindTexture(GL_TEXTURE_2D, tex);
   glUniform1i(uniform_tex, 1);
   glUniform2f(uniform_viewportSize, glControl.ClientWidth, glControl.ClientHeight);
+  {$IFDEF COREGL}
   glBindVertexArray(vao);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   glBindVertexArray(0);
+  {$ELSE}
+  glCallList(displayLst);
+  {$ENDIF}
   glUseProgram(0);
 end;
 

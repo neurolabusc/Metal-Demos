@@ -6,7 +6,9 @@ unit Unit1;
  //{$DEFINE METALAPI} //set in ProjectOptions/CompilerOptions/CustomOptions
   {$modeswitch objectivec1}
 {$ENDIF}
-
+{$IFNDEF METALAPI}
+ {$include ../common/glopts.inc}
+{$ENDIF}
 interface
 
 uses
@@ -43,7 +45,7 @@ implementation
 {$IFDEF METALAPI}
 uses Metal,MetalPipeline, MetalControl, mtltexture, VectorMath,SimdUtils;
 {$ELSE}
-uses glcorearb, OpenGLContext, gl_core_utils, VectorMath, gltexture, SimdUtils;
+uses {$IFDEF LCLCocoa}retinahelper,{$ENDIF} {$IFDEF COREGL}glcorearb,{$ELSE}gl, glext, {$ENDIF} OpenGLContext, gl_core_utils, VectorMath, gltexture, SimdUtils;
 {$ENDIF}
 var
   gMouseY : integer = -1;
@@ -106,8 +108,6 @@ begin
  ViewGPU1.OnPrepare := @ViewGPUPrepare;
  {$ELSE}
  ViewGPU1 := TOpenGLControl.Create(Form1);
- ViewGPU1.OpenGLMajorVersion:= 3;
- ViewGPU1.OpenGLMinorVersion:= 3;
  {$ENDIF}
  ViewGPU1.Parent := Form1;
  ViewGPU1.Align:= alClient;
@@ -117,9 +117,21 @@ begin
  ViewGPU1.OnMouseWheel := @ViewGPUMouseWheel;
  ViewGPU1.OnPaint := @ViewGPUPaint;
  {$IFNDEF METALAPI}
+ {$IFDEF COREGL}
+ ViewGPU1.OpenGLMajorVersion:= 3;
+ ViewGPU1.OpenGLMinorVersion:= 3;
+ {$ELSE}
+ ViewGPU1.OpenGLMajorVersion:= 2;
+ ViewGPU1.OpenGLMinorVersion:= 1;
+ {$ENDIF}
+ {$IFDEF LCLCocoa}ViewGPU1.setRetina(true);{$ENDIF}
  ViewGPU1.MakeCurrent(false);
+ {$IFDEF COREGL}
  if (not  Load_GL_version_3_3_CORE) then begin
-    showmessage('Unable to load OpenGL 3.3 Core');
+ {$ELSE}
+ if (not  Load_GL_version_2_1) then begin
+ {$ENDIF}
+    showmessage('Unable to load OpenGL');
     halt;
  end;
  Form1.caption := glGetString(GL_VENDOR)+'; OpenGL= '+glGetString(GL_VERSION)+'; Shader='+glGetString(GL_SHADING_LANGUAGE_VERSION);

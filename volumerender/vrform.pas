@@ -9,6 +9,9 @@ unit vrForm;
   error: you must compile for the Cocoa widgetset (ProjectOptions/Additions&Overrides)
   MacOS must use Cocoa, regardless of whether OpenGL Core or Metal is used.
 {$ENDIF}
+{$IFNDEF METALAPI}
+ {$include ../common/glopts.inc}
+{$ENDIF}
 
 interface
 
@@ -40,6 +43,7 @@ type
     procedure BackColorMenuClick(Sender: TObject);
     procedure ContrastMenuClick(Sender: TObject);
     procedure CopyMenuClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure NewInstanceMenuClick(Sender: TObject);
     procedure SaveMenuClick(Sender: TObject);
@@ -50,7 +54,7 @@ type
     procedure ShaderMenuClick(Sender: TObject);
     //procedure FormCreate(Sender: TObject);
     procedure ViewGPUMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    //procedure ViewGPUPrepare(Sender: TObject);
+    procedure ViewGPUPrepare(Sender: TObject);
     procedure ViewGPUPaint(Sender: TObject);
   private
     //
@@ -68,8 +72,8 @@ uses
   MetalControl, mtlvolume, loadNifti;
 const  kExt = '.metal';
 {$ELSE}
-uses OpenGLContext,  glvolume, glcorearb, gl_core_utils, loadNifti;
-const kExt = '.glsl';
+uses {$IFDEF LCLCocoa}retinahelper,{$ENDIF} {$IFDEF COREGL} glcorearb, {$ELSE} gl, glext, {$ENDIF} OpenGLContext,  glvolume, gl_core_utils, loadNifti;
+{$IFDEF COREGL}const kExt = '.glsl'; {$ELSE} const kExt = '.glsl2'; {$ENDIF}
 {$ENDIF}
 var
  gClearColor: TRGBA = (r: 200; g:200; b:255; a: 255);
@@ -230,6 +234,21 @@ begin
   ViewGPU1.Invalidate;
 end;
 
+procedure TForm1.ViewGPUPrepare(Sender: TObject);
+begin
+  {$IFDEF METALAPI}
+  ViewGPU1.setPreferredFrameRate(0);
+  ViewGPU1.invalidateOnResize:= true;
+  {$ENDIF}
+end;
+
+//procedure TForm1.FormShow(Sender: TObject);
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+     //
+end;
+
+//procedure TForm1.FormCreate(Sender: TObject);
 procedure TForm1.FormShow(Sender: TObject);
 var
  i: integer;
@@ -244,13 +263,16 @@ begin
   niftiVol := TNIfTI.Create();
   {$IFDEF METALAPI}
   ViewGPU1 :=  TMetalControl.Create(Form1);
-  //{$IFDEF METALAPI}ViewGPU1.renderView.setSampleCount(4);{$ENDIF}
-  //ViewGPU1.renderView.setPreferredFramesPerSecond(0);
-  //ViewGPU1.OnPrepare := @ViewGPUPrepare;
+  ViewGPU1.renderView.setSampleCount(4);
   {$ELSE}
   ViewGPU1 :=  TOpenGLControl.Create(Form1);
+  {$IFDEF COREGL}
   ViewGPU1.OpenGLMajorVersion:= 3;
   ViewGPU1.OpenGLMinorVersion:= 3;
+  {$ELSE}
+  ViewGPU1.OpenGLMajorVersion:= 2;
+  ViewGPU1.OpenGLMinorVersion:= 1;
+  {$ENDIF}
   {$ENDIF}
   ViewGPU1.Parent := Form1;
   ViewGPU1.Align:= alClient;
@@ -259,14 +281,24 @@ begin
   ViewGPU1.OnMouseUp := @ViewGPUMouseUp;
   ViewGPU1.OnMouseWheel := @ViewGPUMouseWheel;
   ViewGPU1.OnPaint := @ViewGPUPaint;
-  {$IFDEF METALAPI}ViewGPU1.renderView.setSampleCount(4);{$ENDIF}
   Vol1 := TGPUVolume.Create(ViewGPU1);
-  {$IFNDEF METALAPI}
+  {$IFDEF METALAPI}
+  ViewGPU1.OnPrepare := @ViewGPUPrepare;
+  {$ELSE}
+  {$IFDEF LCLCocoa}ViewGPU1.setRetina(true);{$ENDIF}
   ViewGPU1.MakeCurrent(false);
+  {$IFDEF COREGL}
   if (not  Load_GL_version_3_3_CORE) then begin
-     showmessage('Unable to load OpenGL 3.3 Core');
+  {$ELSE}
+  if (not  Load_GL_version_2_1) then begin
+  {$ENDIF}
+     showmessage('Unable to load OpenGL');
      halt;
   end;
+  {$IFNDEF COREGL}
+  glext_LoadExtension('GL_version_1_2'); //https://bugs.freepascal.org/view.php?id=37368
+  glext_LoadExtension('GL_EXT_framebuffer_object');
+  {$ENDIF}
   Form1.caption := glGetString(GL_VENDOR)+'; OpenGL= '+glGetString(GL_VERSION)+'; Shader='+glGetString(GL_SHADING_LANGUAGE_VERSION);
   ViewGPU1.ReleaseContext;
   //Vol1.Prepare();

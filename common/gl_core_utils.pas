@@ -5,11 +5,18 @@ interface
   //{$mode objfpc}
  // {$modeswitch objectivec1}
 {$ENDIF}
+{$include glopts.inc}
 uses
   //{$IFDEF Darwin} CocoaAll, MacOSAll, {$ENDIF}
+  {$IFDEF COREGL}
+  glcorearb,
+
+  {$ELSE}
+  gl, glext,
+  {$ENDIF}
   {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
-  Dialogs, clipbrd, strutils,
-  glcorearb, SysUtils, OpenGLContext, Graphics, lcltype, LCLIntf, GraphType;
+  Dialogs, clipbrd,
+  SysUtils, OpenGLContext, Graphics, lcltype, LCLIntf, GraphType;
   procedure  loadVertFrag(shaderName: string; out VertexProgram, FragmentProgram: string; fragHeader: string = '');
   function  initVertFrag(vert, frag: string): GLuint;
   procedure GetError(p: integer; str: string = '');  //report OpenGL Error
@@ -172,8 +179,10 @@ begin
   setlength(s, maxLength);
   glGetShaderInfoLog(glObjectID, maxLength, @maxLength, @s[1]);
   s:=trim(s);
-  if GLErrorStr = '' then
+  if GLErrorStr = '' then begin
      GLErrorStr := 'GLSL error '+s;
+     {$IFDEF UNIX}writeln(GLErrorStr); {$ENDIF}
+  end;
 end;
 
 procedure GetError(p: integer; str: string = '');  //report OpenGL Error
@@ -190,8 +199,10 @@ begin
     s := s+'GL_INVALID_VALUE' //out of range https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/glGetError.xml
  else
      s := s + inttostr(Error);
- if GLErrorStr = '' then
+ if GLErrorStr = '' then begin
     GLErrorStr := 'GLSL error '+str+s;
+    {$IFDEF UNIX}writeln(GLErrorStr);{$ENDIF}
+ end;
 end;
 
 function compileShaderOfType (shaderType: GLEnum;  shaderText: string): GLuint;
@@ -217,7 +228,6 @@ begin
   glGetProgramiv(glObjectID, GL_LINK_STATUS, @maxLength);
   //if (maxLength = GL_TRUE) then exit;
   if (maxLength = 1) then exit; //DGL  GL_TRUE
-
   maxLength := 4096;
   setlength(s, maxLength);
   {$IFDEF OLDDGL} //older DGL
@@ -241,6 +251,7 @@ var
    fs, vs: GLuint;
 begin
   result := 0;
+  vs := 0;
   glGetError(); //<- ignore proior errors
   //GetError(121); // <- report prior errors
   result := glCreateProgram();

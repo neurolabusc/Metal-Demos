@@ -21,7 +21,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="meshForm"/>
         <IsVisibleTab Value="True"/>
-        <CursorPos X="3" Y="5"/>
+        <TopLine Value="272"/>
+        <CursorPos Y="303"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -217,8 +218,8 @@
       <Unit28>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="389"/>
-        <CursorPos Y="367"/>
+        <TopLine Value="312"/>
+        <CursorPos X="22" Y="326"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit28>
@@ -252,123 +253,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="30" Column="10" TopLine="12"/>
+        <Caret Line="266" Column="58" TopLine="237"/>
       </Position1>
       <Position2>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="186" Column="4" TopLine="154"/>
+        <Caret Line="269" Column="57" TopLine="240"/>
       </Position2>
       <Position3>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="263" Column="7" TopLine="233"/>
+        <Caret Line="34" Column="58" TopLine="12"/>
       </Position3>
       <Position4>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="306" Column="29" TopLine="278"/>
+        <Caret Line="264" Column="58" TopLine="263"/>
       </Position4>
       <Position5>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="5" Column="94"/>
+        <Caret Line="273" Column="56" TopLine="261"/>
       </Position5>
       <Position6>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="30" Column="58"/>
+        <Caret Line="6" Column="81"/>
       </Position6>
       <Position7>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="31" Column="59"/>
+        <Caret Line="33" Column="27" TopLine="3"/>
       </Position7>
       <Position8>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="32" Column="58" TopLine="2"/>
+        <Caret Line="258" Column="24" TopLine="229"/>
       </Position8>
       <Position9>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="266" Column="58" TopLine="237"/>
+        <Caret Line="270" Column="54" TopLine="258"/>
       </Position9>
       <Position10>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="269" Column="57" TopLine="240"/>
+        <Caret Line="271" Column="56" TopLine="262"/>
       </Position10>
       <Position11>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="34" Column="58" TopLine="12"/>
+        <Caret Line="264" Column="7" TopLine="255"/>
       </Position11>
       <Position12>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="264" Column="58" TopLine="263"/>
+        <Caret Line="300" Column="32" TopLine="271"/>
       </Position12>
       <Position13>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="273" Column="56" TopLine="261"/>
+        <Caret Line="303" Column="29" TopLine="274"/>
       </Position13>
       <Position14>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="6" Column="81"/>
+        <Caret Line="31" Column="9" TopLine="13"/>
       </Position14>
       <Position15>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="33" Column="27" TopLine="3"/>
+        <Caret Line="185" TopLine="155"/>
       </Position15>
       <Position16>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="258" Column="24" TopLine="229"/>
+        <Caret Line="261" TopLine="232"/>
       </Position16>
       <Position17>
-        <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="270" Column="54" TopLine="258"/>
+        <Filename Value="../common/mtlcube.pas"/>
+        <Caret Line="35" Column="43" TopLine="17"/>
       </Position17>
       <Position18>
-        <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="271" Column="56" TopLine="262"/>
+        <Filename Value="../common/mtlcube.pas"/>
+        <Caret Line="206" Column="49" TopLine="188"/>
       </Position18>
       <Position19>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="264" Column="7" TopLine="255"/>
+        <Caret Line="296" TopLine="283"/>
       </Position19>
       <Position20>
-        <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="300" Column="32" TopLine="271"/>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="263" Column="37" TopLine="258"/>
       </Position20>
       <Position21>
         <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="303" Column="29" TopLine="274"/>
+        <Caret Line="2"/>
       </Position21>
       <Position22>
-        <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="31" Column="9" TopLine="13"/>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="5" Column="3" TopLine="211"/>
       </Position22>
       <Position23>
-        <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="185" TopLine="155"/>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="62" Column="29" TopLine="45"/>
       </Position23>
       <Position24>
-        <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="261" TopLine="232"/>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="222" Column="21" TopLine="193"/>
       </Position24>
       <Position25>
-        <Filename Value="../common/mtlcube.pas"/>
-        <Caret Line="35" Column="43" TopLine="17"/>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="239" Column="40" TopLine="204"/>
       </Position25>
       <Position26>
-        <Filename Value="../common/mtlcube.pas"/>
-        <Caret Line="206" Column="49" TopLine="188"/>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="245" Column="16" TopLine="217"/>
       </Position26>
       <Position27>
-        <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="296" TopLine="283"/>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="302" Column="24" TopLine="298"/>
       </Position27>
       <Position28>
         <Filename Value="meshform.pas"/>
-        <Caret Line="263" Column="37" TopLine="258"/>
+        <Caret Line="2" Column="132"/>
       </Position28>
       <Position29>
-        <Filename Value="../common/mtlmesh_ssao.pas"/>
-        <Caret Line="2"/>
+        <Filename Value="meshform.pas"/>
+        <Caret Line="47" Column="25" TopLine="18"/>
       </Position29>
       <Position30>
         <Filename Value="meshform.pas"/>
-        <Caret Line="5" Column="5"/>
+        <Caret Line="150" Column="28" TopLine="121"/>
       </Position30>
     </JumpHistory>
     <RunParams>
