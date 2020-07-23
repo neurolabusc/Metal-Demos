@@ -3,11 +3,11 @@
   <ProjectSession>
     <Version Value="12"/>
     <BuildModes Active="Default"/>
-    <Units Count="5">
+    <Units Count="6">
       <Unit0>
         <Filename Value="meshProj.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="58"/>
       </Unit0>
       <Unit1>
         <Filename Value="meshform.pas"/>
@@ -16,155 +16,165 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="meshForm"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="219"/>
-        <CursorPos X="28" Y="245"/>
-        <UsageCount Value="23"/>
+        <TopLine Value="310"/>
+        <CursorPos X="44" Y="322"/>
+        <UsageCount Value="58"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="../common/glmesh.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="41" Y="4"/>
-        <UsageCount Value="11"/>
+        <TopLine Value="149"/>
+        <CursorPos X="34" Y="71"/>
+        <UsageCount Value="29"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="../common/gl_core_utils.pas"/>
-        <EditorIndex Value="3"/>
-        <CursorPos X="14" Y="27"/>
-        <UsageCount Value="11"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="184"/>
+        <CursorPos X="19" Y="188"/>
+        <UsageCount Value="29"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="../common/retinahelper.pas"/>
-        <EditorIndex Value="2"/>
-        <CursorPos X="43" Y="7"/>
-        <UsageCount Value="10"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="10" Y="8"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="mesh.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="204"/>
+        <CursorPos X="77" Y="211"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit5>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="119" Column="14" TopLine="92"/>
+        <Caret Line="301" Column="12" TopLine="284"/>
       </Position1>
       <Position2>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="294" Column="36" TopLine="263"/>
+        <Caret Line="411" Column="29" TopLine="392"/>
       </Position2>
       <Position3>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="151" Column="26" TopLine="135"/>
+        <Caret Line="412" Column="50" TopLine="395"/>
       </Position3>
       <Position4>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="161" TopLine="135"/>
+        <Caret Line="426" Column="15" TopLine="409"/>
       </Position4>
       <Position5>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="168" Column="12" TopLine="141"/>
+        <Caret Line="6" Column="107"/>
       </Position5>
       <Position6>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="151" Column="26" TopLine="141"/>
+        <Caret Line="22" Column="48"/>
       </Position6>
       <Position7>
-        <Filename Value="meshform.pas"/>
-        <Caret Line="243" Column="67" TopLine="243"/>
+        <Filename Value="../common/glmesh.pas"/>
+        <Caret Line="23" Column="18"/>
       </Position7>
       <Position8>
-        <Filename Value="meshform.pas"/>
-        <Caret Line="297" Column="21" TopLine="280"/>
+        <Filename Value="../common/glmesh.pas"/>
+        <Caret Line="301" Column="12" TopLine="273"/>
       </Position8>
       <Position9>
-        <Filename Value="meshform.pas"/>
-        <Caret Line="315" Column="17" TopLine="288"/>
+        <Filename Value="../common/glmesh.pas"/>
+        <Caret Line="305" Column="13" TopLine="277"/>
       </Position9>
       <Position10>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="38" Column="27" TopLine="23"/>
+        <Caret Line="363" Column="13" TopLine="335"/>
       </Position10>
       <Position11>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="264" Column="46" TopLine="253"/>
+        <Caret Line="371" Column="15" TopLine="343"/>
       </Position11>
       <Position12>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="319" Column="16" TopLine="292"/>
+        <Caret Line="372" Column="17" TopLine="344"/>
       </Position12>
       <Position13>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="469" Column="46" TopLine="437"/>
+        <Caret Line="373" Column="36" TopLine="345"/>
       </Position13>
       <Position14>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="501" Column="48" TopLine="475"/>
+        <Caret Line="384" Column="30" TopLine="357"/>
       </Position14>
       <Position15>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="26" Column="22" TopLine="10"/>
+        <Caret Line="385" Column="43" TopLine="357"/>
       </Position15>
       <Position16>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="221" Column="6" TopLine="213"/>
+        <Caret Line="393" Column="43" TopLine="365"/>
       </Position16>
       <Position17>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="377" TopLine="375"/>
+        <Caret Line="407" Column="33" TopLine="379"/>
       </Position17>
       <Position18>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="221" Column="35" TopLine="205"/>
+        <Caret Line="409" Column="16" TopLine="381"/>
       </Position18>
       <Position19>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="377" Column="24" TopLine="350"/>
+        <Caret Line="410" Column="35" TopLine="382"/>
       </Position19>
       <Position20>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="178" Column="3" TopLine="176"/>
+        <Caret Line="411" Column="29" TopLine="383"/>
       </Position20>
       <Position21>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="220" TopLine="215"/>
+        <Caret Line="412" Column="50" TopLine="384"/>
       </Position21>
       <Position22>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="225" Column="15" TopLine="215"/>
+        <Caret Line="426" Column="15" TopLine="398"/>
       </Position22>
       <Position23>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="254" Column="12" TopLine="228"/>
+        <Caret Line="479" Column="49" TopLine="451"/>
       </Position23>
       <Position24>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="149" Column="17" TopLine="133"/>
+        <Caret Line="484" Column="43" TopLine="456"/>
       </Position24>
       <Position25>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="155" Column="14" TopLine="141"/>
+        <Caret Line="491" Column="50" TopLine="463"/>
       </Position25>
       <Position26>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="151" Column="25" TopLine="141"/>
+        <Caret Line="24" Column="38" TopLine="5"/>
       </Position26>
       <Position27>
         <Filename Value="../common/glmesh.pas"/>
-        <Caret Line="9" Column="32"/>
+        <Caret Line="303" Column="13" TopLine="275"/>
       </Position27>
       <Position28>
-        <Filename Value="../common/retinahelper.pas"/>
-        <Caret Line="7" Column="40"/>
+        <Filename Value="../common/glmesh.pas"/>
+        <Caret Line="391" Column="35" TopLine="361"/>
       </Position28>
       <Position29>
-        <Filename Value="meshform.pas"/>
-        <Caret Line="289" Column="30" TopLine="289"/>
+        <Filename Value="../common/glmesh.pas"/>
+        <Caret Line="392" Column="31" TopLine="364"/>
       </Position29>
       <Position30>
-        <Filename Value="meshform.pas"/>
-        <Caret Line="19" Column="51"/>
+        <Filename Value="../common/glmesh.pas"/>
+        <Caret Line="478" Column="31" TopLine="450"/>
       </Position30>
     </JumpHistory>
     <RunParams>

@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 380
+  Left = 217
   Height = 302
-  Top = 23
+  Top = 273
   Width = 360
   Caption = 'Mesh Viewer'
   Menu = MainMenu

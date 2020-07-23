@@ -1,10 +1,10 @@
 //vert
-#version 330
-layout(location = 0) in vec3 Vert;
-layout(location = 3) in vec3 Norm;
-layout(location = 6) in vec4 Clr;
-out vec3 vN, vV;
-out vec4 vClr;
+#version 120
+attribute vec3 Vert;
+attribute vec3 Norm;
+attribute vec4 Clr;
+varying vec3 vN, vV;
+varying vec4 vClr;
 uniform mat4 ModelViewProjectionMatrix;
 uniform mat4 ModelViewMatrix;
 uniform mat4 NormalMatrix;
@@ -16,14 +16,15 @@ void main() {
     vClr = Clr;
 }
 //frag
-#version 330
-in vec4 vClr;
-in vec3 vN, vV;
-out vec4 color;
+#version 120
+varying vec4 vClr;
+varying vec3 vN, vL, vV;
 uniform float Ambient = 0.0;
 uniform float Diffuse = 1.0;
 uniform float Specular = 0.6;
 uniform float SpecularRough = 0.1;
+uniform float Edge = 0.05;
+uniform vec4 ClipPlane = vec4(2.0, 0.0, 0.0, 0.0);
 
 vec3 SH(vec3 vNormal) {
 //Spherical harmonics constants
@@ -79,7 +80,7 @@ void main() {
 	d *= SH(-reflect(n, l) );
 	float specular = max(0.0,dot(n,h));
 	specular = pow(specular, 1.0/(SpecularRough * SpecularRough));
-	color = vec4(a + d + specular* Specular, 1.0);
+	vec4 color = vec4(a + d + specular* Specular, 1.0);
 	float backface = step(0.0, n.z);
-	color = vec4(mix(backcolor.rgb, color.rgb,  backface), 1.0);
+	gl_FragColor = vec4(mix(backcolor.rgb, color.rgb,  backface), 1.0);
 }

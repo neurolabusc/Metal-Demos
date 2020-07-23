@@ -1,33 +1,32 @@
 //vert
-#version 330
-layout(location = 0) in vec3 Vert;
-layout(location = 3) in vec3 Norm;
-layout(location = 6) in vec4 Clr;
-out vec3 vN, vL, vV;
-out vec4 vClr;
+#version 120
+attribute vec3 Vert;
+attribute vec3 Norm;
+attribute vec4 Clr;
+varying vec3 vN, vL, vV;
+varying vec4 vClr;
 uniform mat4 ModelViewProjectionMatrix;
 uniform mat4 ModelViewMatrix;
 uniform mat4 NormalMatrix;
 uniform vec3 LightPosition = vec3(0.0, 20.0, 30.0); //LR, -DU+, -FN+
 void main() {
-    vN = normalize((NormalMatrix * vec4(Norm,1.0)).xyz);
-    gl_Position = ModelViewProjectionMatrix * vec4(Vert, 1.0);
+    vN = normalize((NormalMatrix * vec4(Norm.xyz,1.0)).xyz);
+    gl_Position = ModelViewProjectionMatrix * vec4(Vert.xyz, 1.0);
     vL = normalize(LightPosition);
-    vV = -vec3(ModelViewMatrix*vec4(Vert,1.0));
+    vV = -vec3(ModelViewMatrix*vec4(Vert.xyz,1.0));
     vClr = Clr;
 }
 //frag
-#version 330
-in vec4 vClr;
-in vec3 vN, vL, vV;
-out vec4 color;
+#version 120
+varying vec3 vN, vL, vV;
+varying vec4 vClr;
 uniform float Ambient = 0.4;
 uniform float Diffuse = 0.7;
 uniform float Specular = 0.6;
 uniform float Roughness = 0.1;
 void main() {
  vec3 n = normalize(vN);
- //color = vec4(abs(n * 2.0) - 1.0,1.0); return;
+ //gl_FragColor = vec4(abs(n * 2.0) - 1.0,1.0); return;
  vec3 v = normalize(vV);
  vec3 h = normalize(vL+v);
  float diffuse = dot(vL,n);
@@ -35,5 +34,5 @@ void main() {
  vec3 DiffuseColour = vClr.rgb;
  vec3 SpecularColour = vec3(1.0, 1.0, 1.0);
  float specular =  pow(max(0.0,dot(n,h)),1.0/(Roughness * Roughness));
- color = vec4(AmbientColour*Ambient + DiffuseColour*diffuse*Diffuse +SpecularColour*specular* Specular, 1.0);
+ gl_FragColor = vec4(AmbientColour*Ambient + DiffuseColour*diffuse*Diffuse +SpecularColour*specular* Specular, 1.0);
 }

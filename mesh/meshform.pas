@@ -78,7 +78,7 @@ uses
 const  kExt = '.metal';
 {$ELSE}
 uses {$IFDEF COREGL} glcorearb, {$ELSE} gl, glext, {$ENDIF} OpenGLContext,  SimdUtils, glmesh, gl_core_utils;
-{$IFDEF COREGL} const kExt = '.glsl'; {$ELSE} const kExt = '.glsl2';{$ENDIF}
+{$IFDEF COREGL} const kExt = '.glsl'; {$ELSE} const kExt = '.gls';{$ENDIF}
 {$ENDIF}
 var
  gMouse : TPoint;
@@ -159,7 +159,7 @@ end;
 
 procedure TForm1.AboutMenuClick(Sender: TObject);
 begin
-  MessageDlg('Mesh demo for reading PLY/OBJ files',mtInformation,[mbAbort, mbOK],0);
+ MessageDlg('Mesh demo for reading PLY/OBJ files',mtInformation,[mbAbort, mbOK],0);
 end;
 
 procedure TForm1.ViewGPUMouseDown(Sender: TObject; Button: TMouseButton;
@@ -167,7 +167,6 @@ procedure TForm1.ViewGPUMouseDown(Sender: TObject; Button: TMouseButton;
 begin
  gMouse.Y := Y;
  gMouse.X := X;
-
 end;
 
 procedure TForm1.ViewGPUMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -313,8 +312,7 @@ var
 begin
  matCapName := Mesh1.MatCapPath + (Sender as TMenuItem).caption+'.jpg';
  Mesh1.SetMatCap(matCapName);
- caption := matCapName;
- //Caption := inttostr(mesh1.uniform_MatCap)+' '+inttostr(mesh1.matCapTexture);
+ //caption := matCapName;
  ViewGPU1.Invalidate;
 end;
 {$ELSE}

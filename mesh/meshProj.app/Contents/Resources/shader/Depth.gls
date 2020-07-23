@@ -1,0 +1,20 @@
+//vert
+#version 120
+attribute vec3 Vert;
+attribute vec3 Norm;
+attribute vec4 Clr;
+varying vec4 vClr;
+uniform mat4 ModelViewProjectionMatrix;
+uniform mat4 ModelViewMatrix;
+uniform mat4 NormalMatrix;
+void main() {
+    gl_Position = ModelViewProjectionMatrix * vec4(Vert, 1.0);
+    float d = 1.0 - (2.0* (gl_Position.z+1.0));
+	vClr = vec4(d, d, d, 1.0);
+}
+//frag
+#version 120
+varying vec4 vClr;
+void main() {
+ gl_FragColor = vClr;
+}

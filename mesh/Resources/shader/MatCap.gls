@@ -1,13 +1,15 @@
 //vert
 #version 120
+attribute vec3 Vert;
+attribute vec3 Norm;
+attribute vec4 Clr;
 varying vec3 vN;
 uniform mat4 ModelViewProjectionMatrix;
 uniform mat4 ModelViewMatrix;
 uniform mat4 NormalMatrix;
-uniform vec3 LightPosition = vec3(0.0, 20.0, 30.0); //LR, -DU+, -FN+
 void main() {
-    vN = normalize((NormalMatrix * vec4(gl_Normal.xyz, 1.0)).xyz);
-    gl_Position = ModelViewProjectionMatrix * vec4(gl_Vertex.xyz, 1.0);
+    vN = normalize((NormalMatrix * vec4(Norm,1.0)).xyz);
+    gl_Position = ModelViewProjectionMatrix * vec4(Vert, 1.0);
 }
 //frag
 #version 120
@@ -17,4 +19,4 @@ void main() {
 	vec3 n = normalize(vN);
 	vec2 uv = n.xy * 0.5 + 0.5;
 	gl_FragColor = vec4(texture2D(MatCap,uv.xy).rgb, 1.0);
-} 
+}
