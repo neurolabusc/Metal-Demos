@@ -26,7 +26,7 @@ type
         matCapTexture: GLuint;
         {$ENDIF}
         nface: integer;
-        {$IFNDEF COREGL} vertLoc, normLoc, clrLoc: GLint; {$ENDIF}
+        //{$IFNDEF COREGL} vertLoc, normLoc, clrLoc: GLint; {$ENDIF}
         uniform_lightPos, uniform_ModelViewProjectionMatrix, uniform_ModelViewMatrix, uniform_NormalMatrix: GLint;
         fPerspective: boolean;
         glControl: TOpenGLControl;
@@ -52,11 +52,13 @@ type
         procedure Paint();
         procedure OpenMesh(Filename: string; isSwapYZ: boolean = true);
         procedure SetShader(shaderName: string);
+        {$IFNDEF COREGL}procedure SetVertexAttrib();{$ENDIF}
   end;
 
 implementation
 
 //uses meshForm;
+
 
 const
   {$IFDEF COREGL}
@@ -156,9 +158,9 @@ begin
      printf(GLErrorStr);
   {$ENDIF}
   {$IFNDEF COREGL}
-  vertLoc := glGetAttribLocation(shaderProgram, 'Vert');
-  normLoc := glGetAttribLocation(shaderProgram, 'Norm');
-  clrLoc := glGetAttribLocation(shaderProgram, 'Clr');
+  //vertLoc := glGetAttribLocation(shaderProgram, 'Vert');
+  //normLoc := glGetAttribLocation(shaderProgram, 'Norm');
+  //clrLoc := glGetAttribLocation(shaderProgram, 'Clr');
   {$ENDIF}
   uniform_ModelViewProjectionMatrix := glGetUniformLocation(shaderProgram, pAnsiChar('ModelViewProjectionMatrix'));
   uniform_ModelViewMatrix := glGetUniformLocation(shaderProgram, pAnsiChar('ModelViewMatrix'));
@@ -168,6 +170,7 @@ begin
   uniform_MatCap := glGetUniformLocation(shaderProgram, pAnsiChar('MatCap'));
   {$ENDIF}
   glFinish;
+  {$IFNDEF COREGL}SetVertexAttrib(); {$ENDIF}
   glControl.ReleaseContext;
   if GLErrorStr <> '' then begin
         printf(GLErrorStr);
@@ -347,6 +350,28 @@ begin
 end;
 {$ENDIF}
 
+{$IFNDEF COREGL}
+procedure TGPUMesh.SetVertexAttrib();
+//for Legacy OpenGL: vertexattribs must be updated if either vertex_vbo or shader is updated.
+//  in contrast, Modern OpenGL supports "location" in shader,  so only update when vertex_vbo is updated
+var
+  vertLoc, normLoc, clrLoc: GLint;
+begin
+  if (vertex_vbo = 0) or (shaderProgram = 0) then exit;
+  glUseProgram(shaderProgram);
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
+  vertLoc := glGetAttribLocation(shaderProgram, 'Vert');
+  normLoc := glGetAttribLocation(shaderProgram, 'Norm');
+  clrLoc := glGetAttribLocation(shaderProgram, 'Clr');
+  glVertexAttribPointer(vertLoc, 3, GL_FLOAT, GL_FALSE, sizeof(TVtxNormClr), PChar(0));
+  glVertexAttribPointer(normLoc, 3, GL_FLOAT, GL_TRUE, sizeof(TVtxNormClr), PChar(sizeof(TPoint3f)));
+  glVertexAttribPointer(clrLoc, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TVtxNormClr), PChar(sizeof(TPoint3f) + sizeof(TPoint3f)));
+  glEnableVertexAttribArray(vertLoc);
+  glEnableVertexAttribArray(normLoc);
+  glEnableVertexAttribArray(clrLoc);
+end;
+{$ENDIF}
+
 procedure TGPUMesh.OpenMesh(Filename: string; isSwapYZ: boolean = true);
 {$IFDEF COREGL}
 const
@@ -399,7 +424,6 @@ begin
   glVertexAttribPointer(kATTRIB_NORM, 4, GL_INT_2_10_10_10_REV, GL_FALSE, sizeof(TVtxNormClr), PChar(sizeof(TPoint3f)));
   glEnableVertexAttribArray(kATTRIB_NORM);
   //Color
-
   glVertexAttribPointer(kATTRIB_CLR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TVtxNormClr), PChar(sizeof(int32)+ sizeof(TPoint3f)));
   glEnableVertexAttribArray(kATTRIB_CLR);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -413,6 +437,7 @@ begin
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, Length(faces)*sizeof(TPoint3i), @faces[0], GL_STATIC_DRAW);
   nface := Length(faces) * 3; //each face has 3 vertices
   GetError(2, 'OpenMesh');
+  {$IFNDEF COREGL}SetVertexAttrib(); {$ENDIF}
   glControl.invalidate;
 end; //OpenMesh()
 
@@ -481,18 +506,8 @@ begin
   glDrawElements(GL_TRIANGLES,  nface, GL_UNSIGNED_INT, nil);
   glBindVertexArray(0);
   {$ELSE}
-  glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
-  glEnableVertexAttribArray(vertLoc);
-  glEnableVertexAttribArray(normLoc);
-  glEnableVertexAttribArray(clrLoc);
-  glVertexAttribPointer(vertLoc, 3, GL_FLOAT, GL_FALSE, sizeof(TVtxNormClr), PChar(0));
-  glVertexAttribPointer(normLoc, 3, GL_FLOAT, GL_TRUE, sizeof(TVtxNormClr), PChar(sizeof(TPoint3f)));
-  glVertexAttribPointer(clrLoc, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TVtxNormClr), PChar(sizeof(TPoint3f) + sizeof(TPoint3f)));
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_vbo);
   glDrawElements(GL_TRIANGLES,  nface, GL_UNSIGNED_INT, PChar(0));
-  glDisableVertexAttribArray(vertLoc);
-  glDisableVertexAttribArray(normLoc);
-  glDisableVertexAttribArray(clrLoc);
   {$ENDIF}
   glControl.SwapBuffers;
 end;

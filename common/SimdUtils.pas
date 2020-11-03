@@ -74,7 +74,6 @@ type
   function ShaderDir (): string;
   function Vec6 (xLo, yLo, zLo, xHi, yHi, zHi: single): TVec6;
 
-
 implementation
 
 function Vec6 (xLo, yLo, zLo, xHi, yHi, zHi: single): TVec6;

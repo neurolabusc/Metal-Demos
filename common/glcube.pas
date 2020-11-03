@@ -36,7 +36,7 @@ type
     {$ENDIF}
     shaderProgram: GLuint;
     {$ENDIF}
-    fAzimuth, fElevation,SizeFrac : Single;
+    fAzimuth, fElevation, fPitch, SizeFrac : Single;
     scrnW, scrnH, nVtx: integer;
     isText, isRedraw, isTopLeft: boolean;
     procedure SetIsTopLeft(f: boolean);
@@ -54,6 +54,7 @@ type
     property TopLeft : boolean read isTopLeft write SetIsTopLeft;
     property Azimuth : single read fAzimuth write SetAzimuth;
     property Elevation : single read fElevation write fElevation;
+    property Pitch: single read fPitch write fPitch;
     property Size : single read SizeFrac write SetSize;
     procedure Draw(Width,Height: integer); //must be called while TOpenGLControl is current context
     {$IFDEF METALAPI}
@@ -526,6 +527,7 @@ begin
      isRedraw := true;
      fAzimuth := 30;
      fElevation := -15;
+     fPitch := 0;
      isTopLeft := false;
      isText := true;
      {$IFDEF METALAPI}
@@ -580,6 +582,9 @@ begin
   projectionMatrix *= TMat4.RotateX(-DegToRad(90-fElevation));
   {$ENDIF}
   projectionMatrix *= TMat4.RotateZ(-DegToRad(fAzimuth));
+  projectionMatrix *= TMat4.RotateX(-DegToRad(fPitch));
+
+
   {$IFDEF METALAPI}
   vertUniforms.modelViewProjectionMatrix := ( projectionMatrix * modelMatrix);
   MTLSetVertexBuffer(vertexBuffer, 0, 0);

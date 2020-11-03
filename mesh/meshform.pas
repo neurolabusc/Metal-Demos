@@ -327,6 +327,7 @@ var
 begin
   shaderName := Mesh1.ShaderPath + (Sender as TMenuItem).caption+kExt;
   Mesh1.SetShader(shaderName);
+  caption := shaderName;
   ViewGPU1.Invalidate;
   {$IFDEF MATCAP}
   MatCapMenu.enabled := Mesh1.uniform_MatCap >= 0;

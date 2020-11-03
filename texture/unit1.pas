@@ -124,7 +124,8 @@ begin
  ViewGPU1.OpenGLMajorVersion:= 2;
  ViewGPU1.OpenGLMinorVersion:= 1;
  {$ENDIF}
- {$IFDEF LCLCocoa}ViewGPU1.setRetina(true);{$ENDIF}
+ ViewGPU1.MultiSampling:=1;
+ {$IFDEF LCLCocoa}ViewGPU1.setRetina(false);{$ENDIF}
  ViewGPU1.MakeCurrent(false);
  {$IFDEF COREGL}
  if (not  Load_GL_version_3_3_CORE) then begin

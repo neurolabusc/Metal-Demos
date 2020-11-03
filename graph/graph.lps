@@ -17,7 +17,6 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <TopLine Value="66"/>
         <CursorPos X="44" Y="75"/>
         <UsageCount Value="119"/>
@@ -233,6 +232,7 @@
       </Unit31>
       <Unit32>
         <Filename Value="../../Metal-Framework/lazarus/package/utils/MetalUtils.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="7"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
