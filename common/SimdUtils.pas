@@ -1,12 +1,14 @@
 unit SimdUtils;
 {$mode objfpc}
 {$H+}
+{$DEFINE BMP24} //support 24-bit bitmaps (convert to 32-bit)
 interface
 {$IFDEF Darwin}
   //
   {$modeswitch objectivec1}
 {$ENDIF}
 uses
+  {$IFDEF BMP24} intfgraphics, graphtype,{$ENDIF} Graphics, Dialogs,
   {$IFDEF Darwin} CocoaAll, MacOSAll, {$ENDIF}
   {$IFDEF Linux} Classes, BaseUnix, {$ENDIF}
   sysutils, VectorMath; //dialogs,
@@ -73,8 +75,68 @@ type
   function ResourceFile (name: pchar; ofType: pchar): string;
   function ShaderDir (): string;
   function Vec6 (xLo, yLo, zLo, xHi, yHi, zHi: single): TVec6;
+  function LoadPng(fnm: string; out px: TPicture; out is32bit: boolean): boolean;
+
 
 implementation
+
+{$IFDEF BMP24}
+procedure ForcePF32bit(var px: TPicture);
+var
+  test1, test : TLazIntfImage;
+  ImgFormatDescription: TRawImageDescription;
+begin
+  if (px.Bitmap.PixelFormat = pf32bit) then exit;
+  test1:=TLazIntfImage.Create(px.Bitmap.Width,px.Bitmap.Height);
+  test:= px.Bitmap.CreateIntfImage;
+  ImgFormatDescription.Init_BPP32_B8G8R8A8_M1_BIO_TTB(px.Bitmap.Width, px.Bitmap.Height);//Blue-red-rev
+  test1.DataDescription:=ImgFormatDescription;
+  test1.CopyPixels(test);
+  px.Bitmap.PixelFormat:=pf32bit;
+  px.Bitmap.LoadFromIntfImage(test1);
+end;
+{$ENDIF}
+
+procedure printf(s: string);
+begin
+{$IFDEF Darwin}
+writeln(s);
+{$ELSE}
+showmessage(s);
+{$ENDIF}
+end;
+
+function LoadPng(fnm: string; out px: TPicture; out is32bit: boolean): boolean;
+begin
+  is32bit := true;
+  if (fnm <> '') and (not fileexists(fnm)) then begin
+     fnm := changefileext(fnm,'.png');
+     if not fileexists(fnm) then showmessage('Unable to find font "'+fnm+'"');
+     if not fileexists(fnm) then
+        exit(false);
+  end;
+  px := TPicture.Create;
+  try
+    if fnm = '' then
+       px.LoadFromLazarusResource('png')
+    else
+        px.LoadFromFile(fnm);
+  except
+    px.Bitmap.Width:=0;
+  end;
+  {$IFDEF BMP24}
+  if (px.Bitmap.PixelFormat <> pf32bit) then begin
+  	ForcePF32bit(px);
+        is32bit := false;
+  end;
+  {$ENDIF}
+  if (px.Bitmap.PixelFormat <> pf32bit ) or (px.Bitmap.Width < 1) or (px.Bitmap.Height < 1) then begin
+     printf('Error loading 32-bit power-of-two bitmap '+fnm);
+     px.Free;
+     exit(false);
+  end;
+  exit(true);
+end;
 
 function Vec6 (xLo, yLo, zLo, xHi, yHi, zHi: single): TVec6;
 begin
@@ -105,6 +167,8 @@ var
 begin
 	url := ResourceURL(name, ofType);
 	result := url.relativePath.UTF8String;
+        if (result = '') then
+        	writeln('Error: unable to load resource "'+StrPas(name)+'.'+StrPas(ofType)+'" in "'+ResourceDir()+'"');
 end;
 {$ELSE}
  {$IFDEF LINUX}

@@ -7,6 +7,7 @@ unit mtlfont;
 //  https://github.com/Jam3/msdf-bmfont
 {$mode objfpc}{$H+}
 {$modeswitch objectivec1}
+{$include glopts.inc}//newmsdf
 interface
 
 uses
@@ -34,33 +35,21 @@ var
   bmpHt, bmpWid: integer;
   pngTexDesc: MTLTextureDescriptor;
   pngRegion: MTLRegion;
+  is32bit: boolean;
+
 begin
   result := false;
-  if (fnm <> '') and (not fileexists(fnm)) then begin
-     fnm := changefileext(fnm,'.png');
-     if not fileexists(fnm) then showmessage('Unable to find font "'+fnm+'"');
-     if not fileexists(fnm) then
-        exit;
-  end;
-  px := TPicture.Create;
-  try
-    if fnm = '' then
-       px.LoadFromLazarusResource('png')
-    else
-        px.LoadFromFile(fnm);
-  except
-    px.Bitmap.Width:=0;
-  end;
-  if (px.Bitmap.PixelFormat <> pf32bit ) or (px.Bitmap.Width < 1) or (px.Bitmap.Height < 1) then begin
-     showmessage('Error loading 32-bit power-of-two bitmap '+fnm);
-     exit;
-  end;
+  if not (LoadPng(fnm, px, is32bit)) then exit;
   bmpHt := px.Bitmap.Height;
   bmpWid := px.Bitmap.Width;
   if px.Bitmap.PixelFormat <> pf32bit then
      exit; //distance stored in ALPHA field
   pngTexDesc := MTLTextureDescriptor.alloc.init.autorelease;
+  {$IFDEF NEWMSDF}
+  pngTexDesc.setTextureType(MTLTextureType2D);
+  {$ELSE}
   pngTexDesc.setTextureType(MTLTextureType3D);
+  {$ENDIF}
   pngTexDesc.setPixelFormat(MTLPixelFormatBGRA8Unorm);
   pngTexDesc.setWidth(bmpWid);
   pngTexDesc.setHeight(bmpHt);
@@ -118,9 +107,13 @@ var
 begin
   if pipeline <> nil then exit;
   options := TMetalPipelineOptions.Default;
+  {$IFDEF NEWMSDF}
+  fnm := ShaderDir + pathdelim +  '_sdf.metal';
+  {$ELSE}
   fnm := ResourceDir + pathdelim + 'msdf.metal';
   if not fileexists(fnm) then
      fnm := ShaderDir + pathdelim +  '_Msdf.metal';
+  {$ENDIF}
   options.libraryName := fnm;
   //options.libraryName := ResourcePath('msdf', 'metal');
   if not fileexists(options.libraryName) then

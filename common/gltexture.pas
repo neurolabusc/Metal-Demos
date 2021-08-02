@@ -3,10 +3,10 @@ unit gltexture;
 {$mode objfpc}{$H+}
 interface
 {$include glopts.inc}//<- defines CORE OpenGL >=3.3, else uses LEGACY OpenGL 2.1
-
 uses
   {$IFDEF LCLCocoa}retinahelper,{$ENDIF}
   {$IFDEF COREGL}glcorearb, {$ELSE} gl, glext,{$ENDIF}
+  SimdUtils,
   gl_core_utils,Classes, SysUtils, Graphics, OpenGLContext, dialogs;
 
 type
@@ -133,6 +133,14 @@ begin
   isVboRequiresUpdate:= true;
 end;
 
+procedure printf(s: string);
+begin
+{$IFDEF Darwin}
+writeln(s);
+{$ELSE}
+showmessage(s);
+{$ENDIF}
+end;
 
 constructor TGPUTexture.Create(fnm: string; fromView: TOpenGLControl);
 const
@@ -177,26 +185,18 @@ begin
   SetPosition(0.0,0.0, 1);
   glFinish;
   glControl.ReleaseContext;
-  if GLErrorStr <> '' then showmessage(GLErrorStr);
+  if GLErrorStr <> '' then printf(GLErrorStr);
 end;
 
 procedure TGPUTexture.LoadTex(fnm: string);
 var
   px: TPicture;
-  internalformat: GLint;
+  is32bit: boolean = true;
 begin
-  px := TPicture.Create;
-  try
-     px.LoadFromFile(fnm);
-  except
-    px.Bitmap.Width:=0;
-  end;
-  if (px.Bitmap.PixelFormat <> pf32bit ) or (px.Bitmap.Width < 1) or (px.Bitmap.Height < 1) then begin
-     //showmessage('Error loading 32-bit power-of-two bitmap '+fnm);
-     exit;
-  end;
+  if not (LoadPng(fnm, px, is32bit)) then exit;
   bmpHt := px.Bitmap.Height;
   bmpWid := px.Bitmap.Width;
+
   glGenTextures(1, @tex);
   glBindTexture(GL_TEXTURE_2D,  tex);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -205,17 +205,11 @@ begin
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
   //For both Darwin and Windows we seem to want BGRA - TODO: check Linux
   //{$IFDEF Darwin}
-  if px.Bitmap.PixelFormat = pf32bit then
-     internalformat := GL_BGRA
+  if (is32bit) then
+  	glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, px.Width, px.Height, 0, GL_BGRA, GL_UNSIGNED_BYTE, PInteger(px.Bitmap.RawImage.Data))
   else
-      internalformat := GL_BGR;
-  //{$ELSE}
-  //if px.Bitmap.PixelFormat = pf32bit then
-  //   internalformat := GL_RGBA
-  //else
-  //    internalformat := GL_RGB;
-  //{$ENDIF}
-   glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, px.Width, px.Height, 0, internalformat, GL_UNSIGNED_BYTE, PInteger(px.Bitmap.RawImage.Data));
+      //glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, px.Width, px.Height, 0, GL_BGRA, GL_UNSIGNED_BYTE, PInteger(px.Bitmap.RawImage.Data))
+      glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, px.Width, px.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, PInteger(px.Bitmap.RawImage.Data));
   px.Free;
 end;
 

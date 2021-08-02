@@ -9,9 +9,9 @@ unit Unit1;
 {$IFDEF LCLCarbon}
   MacOS must use Cocoa, regardless of whether you use OpenGL Core or Metal
 {$ENDIF}
-{$IFNDEF METALAPI}
+//{$IFNDEF METALAPI}
  {$include ../common/glopts.inc}
-{$ENDIF}
+//{$ENDIF}
 
 {$DEFINE myTextures} // <- show background texture
 interface
@@ -62,7 +62,7 @@ var
   gOffsetXY : TPoint =  (x:0; y:0);
   gClearColor: TVec4 =  (r: 0.4; g: 0.4;  b: 0.8; a: 1);
   gFontColor: TVec4 =  (r: 0.8; g: 0.8;  b: 0.5; a: 1);
-  gZoom : single = 1;
+  gZoom : single = 1.0;
   gStr : string = 'The quick brown fox jumped over the lazy dog';
   {$IFDEF METALAPI}
   ViewGPU1: TMetalControl;
@@ -180,23 +180,30 @@ var
  success: boolean;
 begin
   //create 1st font
+  {$IFDEF NEWMSDF}
+  fnm := ResourceFile('fnt', 'png');
+  {$ELSE}
   fnm := ResourceFile('Roboto', 'png');
+  {$ENDIF}
   gText := TGPUFont.Create(fnm, success, ViewGPU1);
   if not success then
+     {$IFDEF Darwin}
+     writeln('Error: unable to load .png and .fnt '+fnm);
+     {$ELSE}
      showmessage('Error: unable to load .png and .fnt '+fnm);
+     {$ENDIF}
   gText.FontColor := gFontColor;
   //gText.TextColor(gFontColor);//default
   //gText.ClearColor(gClearColor);//default
   //2nd font
   gText2 := TGPUFont.Create(fnm, success, ViewGPU1);
-  {$IFDEF myTextures}gTex := TGPUTexture.Create(ResourceFile('texture', 'png'), ViewGPU1);{$ENDIF}
+  {$IFDEF myTextures}
+  gTex := TGPUTexture.Create(ResourceFile('texture', 'png'), ViewGPU1);
+  {$ENDIF}
   if not success then
      showmessage('Error: unable to load default font ');
   gText.FontColor := vec4(0,0,0,1);
-
-  //gText2.TextColor(vec4(0,0,0,1));//
-  //gText2.ClearColor(gClearColor);//default
-  gText2.TextOut(6,16,1,10, 'Sphinx of black quartz, judge my vow.');
+  gText2.TextOut(6,16,4.0,10, 'Sphinx of black quartz, judge my vow.');
   {$IFDEF METALAPI}
     ViewGPU1.SetPreferredFrameRate(0);
     Form1.OnResize := @FormResize;

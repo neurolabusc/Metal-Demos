@@ -1,8 +1,12 @@
 unit retinahelper;
-
+{$IFDEF LCLCocoa}
+{$ModeSwitch objectivec1}
+{$ENDIF}
 interface
 
  {$include glopts.inc}
+
+
 
 uses {$IFDEF COREGL}glcorearb, {$ELSE}gl, {$ENDIF} OpenGLContext;
 
@@ -14,12 +18,12 @@ type
    procedure enableTiledScreenShot(tileLeft, tileBottom,totalWidth, totalHeight: integer );
    procedure disableTiledScreenShot();
    procedure SetViewPort(); //same as glViewport(0,0,w,h) but handles tiled screenshots
-   function retinaScale: Single;
+   function retinaScale (isXnotY: boolean = true): Single;
 end;
 
 implementation
 {$IFDEF LCLCocoa}
-uses  glcocoanscontext;
+uses  glcocoanscontext, MacOSAll, CocoaAll;
 {$ENDIF}
 
 var
@@ -39,11 +43,12 @@ begin
     exit;
   end;
   {$IFDEF LCLCocoa}
-  result := Round(width * LBackingScaleFactor(self.Handle));
+  result := Round(width * retinaScale(true));
   {$ELSE}
   result := width;
   {$ENDIF}
 end;
+
 
 function TCustomOpenGLControl.ClientHeight: integer;
 begin
@@ -52,7 +57,7 @@ begin
     exit;
   end;
   {$IFDEF LCLCocoa}
-  result := Round(height * LBackingScaleFactor(self.Handle));
+  result := Round(height * retinaScale(false));
   {$ELSE}
    result := height;
   {$ENDIF}
@@ -60,13 +65,19 @@ end;
 
 procedure TCustomOpenGLControl.SetViewPort();
 var
-    f: single;
+    //f: single;
     w,h: integer;
+    pt: NSPoint;
 begin
   {$IFDEF LCLCocoa}
-  f := LBackingScaleFactor(self.Handle);
-  w := round(f*width);
-  h := round(f*height);
+  //f := LBackingScaleFactor(self.Handle);
+  //https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/EnablingOpenGLforHighResolution/EnablingOpenGLforHighResolution.html
+  pt.x := width;
+  pt.y := height;
+  pt := TCocoaOpenGLView(Handle).convertPointToBacking(pt);
+
+  w := round(pt.x);//round(f*width);
+  h := round(pt.y);//round(f*height);
   {$ELSE}
   w := width;
   h := height;
@@ -98,14 +109,39 @@ begin
      fTotalHeight := 0;
 end;
 
-function TCustomOpenGLControl.retinaScale: Single;
+function TCustomOpenGLControl.retinaScale(isXnotY: boolean = true): Single;
+{$IFDEF LCLCocoa}
+const
+  kScale = 10000;
+var
+    pt: NSPoint;
+{$ENDIF}
 begin
   {$IFDEF LCLCocoa}
-  result := LBackingScaleFactor(self.Handle);
+  pt.x := kScale;
+  pt.y := kScale;
+  pt := TCocoaOpenGLView(Handle).convertPointToBacking(pt);
+  if (isXnotY) then // doubt we will ever have rectangular scaling, but to be safe...
+  	result := pt.x / kScale
+  else
+  	result := pt.y / kScale;
   {$ELSE}
    result := 1;
   {$ENDIF}
 end;
+
+(*function TCustomOpenGLControl.retinaScale: Single;
+//This only returns 1 or 2, fails on non-integer scaling or with multiple monitors
+// https://developer.apple.com/documentation/appkit/nswindow/1419459-backingscalefactor
+//   For almost all common cases, developers should avoid using the value of backingScaleFactor
+begin
+  {$IFDEF LCLCocoa}
+  //result := LBackingScaleFactor(self.Handle);
+  result := TCocoaOpenGLView(Handle).backingScaleFactor;
+  {$ELSE}
+   result := 1;
+  {$ENDIF}
+end; *)
 
 
 initialization

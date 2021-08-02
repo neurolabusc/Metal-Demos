@@ -43,24 +43,20 @@ var
  pngTexDesc: MTLTextureDescriptor;
  pngRegion: MTLRegion;
  px: TPicture;
+ is32bit: boolean;
 begin
  px := TPicture.Create;
  if (fnm='') or (not fileexists(fnm)) then
     fnm := ResourcePath('texture', 'png');
- try
-    px.LoadFromFile(fnm);
- except
-   px.Bitmap.Width:=0;
- end;
- if (px.Bitmap.PixelFormat <> pf32bit ) or (px.Bitmap.Width < 1) or (px.Bitmap.Height < 1) then begin
-    writeln('Error loading 32-bit power-of-two bitmap '+fnm);
-    exit;
- end;
+ if not (LoadPng(fnm, px, is32bit)) then exit;
  bmpWid := px.Bitmap.Width;
  bmpHt := px.Bitmap.Height;
  pngTexDesc := MTLTextureDescriptor.alloc.init.autorelease;
  pngTexDesc.setTextureType(MTLTextureType2D);
- pngTexDesc.setPixelFormat(MTLPixelFormatBGRA8Unorm);
+ if is32bit then
+    pngTexDesc.setPixelFormat(MTLPixelFormatBGRA8Unorm)
+ else
+ 	pngTexDesc.setPixelFormat(MTLPixelFormatRGBA8Unorm);
  //pngTexDesc.setPixelFormat(MTLPixelFormatRGBA8Unorm);
  pngTexDesc.setWidth(bmpWid);
  pngTexDesc.setHeight(bmpHt);

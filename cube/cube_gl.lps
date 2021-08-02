@@ -7,7 +7,7 @@
       <Unit0>
         <Filename Value="cube.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
       </Unit0>
       <Unit1>
         <Filename Value="cubemain.pas"/>
@@ -15,51 +15,50 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <TopLine Value="121"/>
         <CursorPos X="3" Y="133"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="../common/glcube.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="43" Y="17"/>
-        <UsageCount Value="11"/>
+        <TopLine Value="177"/>
+        <CursorPos X="19" Y="217"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="../common/VectorMath.pas"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="3"/>
         <CursorPos X="37" Y="153"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="/usr/local/share/fpcsrc/packages/opengl/src/glext.pp"/>
         <UnitName Value="GLext"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="4716"/>
         <CursorPos X="3" Y="4730"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="/usr/local/share/fpcsrc/packages/opengl/src/gl.pp"/>
         <UnitName Value="GL"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="1146"/>
         <CursorPos X="12" Y="1161"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="../common/SimdUtils.pas"/>
         <EditorIndex Value="2"/>
         <TopLine Value="51"/>
         <CursorPos X="12" Y="66"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
@@ -70,7 +69,7 @@
         <UsageCount Value="10"/>
       </Unit7>
     </Units>
-    <JumpHistory Count="22" HistoryIndex="21">
+    <JumpHistory Count="28" HistoryIndex="27">
       <Position1>
         <Filename Value="../common/glcube.pas"/>
         <Caret Line="568" Column="13" TopLine="555"/>
@@ -159,6 +158,30 @@
         <Filename Value="cubemain.pas"/>
         <Caret Line="80" Column="29" TopLine="74"/>
       </Position22>
+      <Position23>
+        <Filename Value="../common/glcube.pas"/>
+        <Caret Line="224" Column="14" TopLine="205"/>
+      </Position23>
+      <Position24>
+        <Filename Value="../common/glcube.pas"/>
+        <Caret Line="368" Column="11" TopLine="336"/>
+      </Position24>
+      <Position25>
+        <Filename Value="../common/glcube.pas"/>
+        <Caret Line="369" Column="11" TopLine="337"/>
+      </Position25>
+      <Position26>
+        <Filename Value="../common/glcube.pas"/>
+        <Caret Line="370" Column="11" TopLine="338"/>
+      </Position26>
+      <Position27>
+        <Filename Value="../common/glcube.pas"/>
+        <Caret Line="371" Column="11" TopLine="339"/>
+      </Position27>
+      <Position28>
+        <Filename Value="../common/glcube.pas"/>
+        <Caret Line="15" Column="20"/>
+      </Position28>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
