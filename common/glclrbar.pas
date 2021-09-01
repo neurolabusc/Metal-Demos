@@ -692,6 +692,7 @@ begin
      glBegin(GL_TRIANGLE_STRIP);
      for i := 0 to (gnface-1) do begin
          q := g2Dvnc[i];
+         //next line used to cause issues with x86-64: https://gitlab.com/freepascal.org/fpc/source/-/issues/39296#note_657746458
          glColor4ub(q.clr.R, q.clr.G, q.clr.B, q.clr.A);
          glVertex3f(q.vtx.x, q.vtx.y, q.vtx.z);
      end;

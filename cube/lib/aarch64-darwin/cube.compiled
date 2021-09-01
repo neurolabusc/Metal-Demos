@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="/usr/local/bin/fpc" Date="1628604853"/>
+  <Params Value=" -MObjFPC -Scghi -O1 -gw2 -godwarfsets -gl -k-framework -kOpenGL -k-dylib_file -k/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib -k-framework -kCocoa -l -vewnhibq -Fi/Users/chrisrorden/src/Metal-Demos/cube/lib/aarch64-darwin -Fu/Users/chrisrorden/src/Metal-Demos/common -Fu/Users/chrisrorden/src/lazarus/components/opengl/lib/aarch64-darwin/cocoa -Fu/Users/chrisrorden/src/lazarus/lcl/units/aarch64-darwin/cocoa -Fu/Users/chrisrorden/src/lazarus/lcl/units/aarch64-darwin -Fu/Users/chrisrorden/src/lazarus/components/freetype/lib/aarch64-darwin -Fu/Users/chrisrorden/src/lazarus/components/lazutils/lib/aarch64-darwin -Fu/Users/chrisrorden/src/lazarus/packager/units/aarch64-darwin -Fu/Users/chrisrorden/src/Metal-Demos/cube/ -FU/Users/chrisrorden/src/Metal-Demos/cube/lib/aarch64-darwin/ -FE/Users/chrisrorden/src/Metal-Demos/cube/ -o/Users/chrisrorden/src/Metal-Demos/cube/cube -dLCL -dLCLcocoa cube.lpr"/>
+</CONFIG>

@@ -16,17 +16,18 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="vrForm"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="264"/>
-        <CursorPos X="53" Y="288"/>
+        <TopLine Value="316"/>
+        <CursorPos X="21" Y="90"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="glvolume.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <CursorPos X="41" Y="12"/>
+        <TopLine Value="657"/>
+        <CursorPos X="28" Y="683"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit2>
@@ -40,7 +41,7 @@
       </Unit3>
       <Unit4>
         <Filename Value="../common/VectorMath.pas"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="53"/>
         <CursorPos X="14" Y="56"/>
         <UsageCount Value="12"/>
@@ -48,7 +49,7 @@
       </Unit4>
       <Unit5>
         <Filename Value="../common/gl_core_utils.pas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="3"/>
         <CursorPos X="25" Y="15"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
@@ -56,134 +57,125 @@
       <Unit6>
         <Filename Value="/usr/local/share/fpcsrc/packages/opengl/src/glext.pp"/>
         <UnitName Value="GLext"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="11007"/>
         <CursorPos X="17" Y="11039"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit6>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="28" HistoryIndex="27">
       <Position1>
-        <Filename Value="vrform.pas"/>
-        <Caret Line="334" TopLine="308"/>
+        <Filename Value="glvolume.pas"/>
+        <Caret Line="659" Column="16" TopLine="622"/>
       </Position1>
       <Position2>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="320" Column="60" TopLine="302"/>
+        <Caret Line="326" Column="6" TopLine="306"/>
       </Position2>
       <Position3>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="323" Column="17" TopLine="302"/>
+        <Caret Line="434" Column="33" TopLine="403"/>
       </Position3>
       <Position4>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="329" Column="23" TopLine="302"/>
+        <Caret Line="53" Column="37" TopLine="34"/>
       </Position4>
       <Position5>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="659" Column="16" TopLine="622"/>
+        <Caret Line="325" Column="11" TopLine="312"/>
       </Position5>
       <Position6>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="326" Column="6" TopLine="306"/>
+        <Caret Line="318" Column="24" TopLine="306"/>
       </Position6>
       <Position7>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="434" Column="33" TopLine="403"/>
+        <Caret Line="323" Column="17" TopLine="306"/>
       </Position7>
       <Position8>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="53" Column="37" TopLine="34"/>
+        <Caret Line="329" Column="23" TopLine="306"/>
       </Position8>
       <Position9>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="325" Column="11" TopLine="312"/>
+        <Caret Line="313" Column="3" TopLine="306"/>
       </Position9>
       <Position10>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="318" Column="24" TopLine="306"/>
+        <Caret Line="433" Column="11" TopLine="401"/>
       </Position10>
       <Position11>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="323" Column="17" TopLine="306"/>
+        <Caret Line="445" TopLine="412"/>
       </Position11>
       <Position12>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="329" Column="23" TopLine="306"/>
+        <Caret Line="58" Column="26" TopLine="38"/>
       </Position12>
       <Position13>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="313" Column="3" TopLine="306"/>
+        <Caret Line="436" Column="26" TopLine="401"/>
       </Position13>
       <Position14>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="433" Column="11" TopLine="401"/>
+        <Caret Line="395" Column="16" TopLine="386"/>
       </Position14>
       <Position15>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="445" TopLine="412"/>
+        <Caret Line="7"/>
       </Position15>
       <Position16>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="58" Column="26" TopLine="38"/>
+        <Caret Line="313" Column="20" TopLine="305"/>
       </Position16>
       <Position17>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="436" Column="26" TopLine="401"/>
+        <Caret Line="340" Column="22" TopLine="308"/>
       </Position17>
       <Position18>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="395" Column="16" TopLine="386"/>
+        <Caret Line="624" Column="20" TopLine="592"/>
       </Position18>
       <Position19>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="7"/>
+        <Caret Line="547" Column="30" TopLine="528"/>
       </Position19>
       <Position20>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="313" Column="20" TopLine="305"/>
+        <Filename Value="../common/gl_core_utils.pas"/>
+        <Caret Line="15" Column="25"/>
       </Position20>
       <Position21>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="340" Column="22" TopLine="308"/>
+        <Caret Line="297" Column="11" TopLine="286"/>
       </Position21>
       <Position22>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="624" Column="20" TopLine="592"/>
+        <Caret Line="375" Column="43" TopLine="340"/>
       </Position22>
       <Position23>
-        <Filename Value="glvolume.pas"/>
-        <Caret Line="547" Column="30" TopLine="528"/>
+        <Filename Value="vrform.pas"/>
+        <Caret Line="75" Column="45" TopLine="54"/>
       </Position23>
       <Position24>
-        <Filename Value="../common/gl_core_utils.pas"/>
-        <Caret Line="15" Column="25"/>
+        <Filename Value="vrform.pas"/>
+        <Caret Line="76" Column="28" TopLine="54"/>
       </Position24>
       <Position25>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="297" Column="11" TopLine="286"/>
+        <Caret Line="898" Column="49" TopLine="882"/>
       </Position25>
       <Position26>
-        <Filename Value="/usr/local/share/fpcsrc/packages/opengl/src/glext.pp"/>
-        <Caret Line="3906" Column="23" TopLine="3887"/>
+        <Filename Value="glvolume.pas"/>
+        <Caret Line="31" Column="38" TopLine="15"/>
       </Position26>
       <Position27>
-        <Filename Value="/usr/local/share/fpcsrc/packages/opengl/src/glext.pp"/>
-        <Caret Line="9869" Column="40" TopLine="9861"/>
+        <Filename Value="glvolume.pas"/>
+        <Caret Line="379" Column="49" TopLine="348"/>
       </Position27>
       <Position28>
         <Filename Value="glvolume.pas"/>
-        <Caret Line="375" Column="43" TopLine="340"/>
+        <Caret Line="669" Column="11" TopLine="643"/>
       </Position28>
-      <Position29>
-        <Filename Value="vrform.pas"/>
-        <Caret Line="75" Column="45" TopLine="54"/>
-      </Position29>
-      <Position30>
-        <Filename Value="vrform.pas"/>
-        <Caret Line="76" Column="28" TopLine="54"/>
-      </Position30>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>

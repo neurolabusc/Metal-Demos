@@ -303,6 +303,7 @@ begin
            glBegin(GL_TRIANGLES);
            {$ENDIF}
            for i := 0 to (numVertices - 1) do begin
+               //next line used to cause issues with LLVM: https://gitlab.com/freepascal.org/fpc/source/-/issues/39296#note_657746458
                glColor4ub(g2Dvnc[i].clr.R, g2Dvnc[i].clr.G, g2Dvnc[i].clr.B, g2Dvnc[i].clr.A);
                glVertex3f(g2Dvnc[i].vtx.x, g2Dvnc[i].vtx.y, g2Dvnc[i].vtx.z);
            end;

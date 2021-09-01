@@ -19,6 +19,9 @@ type
    procedure disableTiledScreenShot();
    procedure SetViewPort(); //same as glViewport(0,0,w,h) but handles tiled screenshots
    function retinaScale (isXnotY: boolean = true): Single;
+   function tileLeft: Integer;
+   function tileBottom: Integer;
+
 end;
 
 implementation
@@ -28,6 +31,16 @@ uses  glcocoanscontext, MacOSAll, CocoaAll;
 
 var
     fTileLeft, fTileBottom,fTotalWidth, fTotalHeight: integer;
+
+function  TCustomOpenGLControl.tileLeft: integer;
+begin
+	exit(fTileLeft);
+end;
+
+function  TCustomOpenGLControl.tileBottom: integer;
+begin
+	exit(fTileBottom);
+end;
 
 procedure TCustomOpenGLControl.setRetina(wantRetina: boolean);
 begin
