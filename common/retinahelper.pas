@@ -78,9 +78,8 @@ end;
 
 procedure TCustomOpenGLControl.SetViewPort();
 var
-    //f: single;
     w,h: integer;
-    pt: NSPoint;
+    {$IFDEF LCLCocoa}pt: NSPoint;{$ENDIF}
 begin
   {$IFDEF LCLCocoa}
   //f := LBackingScaleFactor(self.Handle);
