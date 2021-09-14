@@ -20,9 +20,12 @@ const
     kStyleNormalized = 2; //-1..1 (FSLeyes)
     kStyleNormalized01 = 3; //0..1
     kStylePercent = 4;
+    kStyleSqrt = 5;
+    kStyleLogN = 6; //ln
+    kStyleLog10 = 7; //log10
 type
     TGPUGraphLine = record
-      min, max, mean : single;
+      min, max, minPositive, mean : single;
       caption  : string[128];
       color: TRGBA;
       vals: TFloat32s;
@@ -46,7 +49,7 @@ type
         Style: integer;
         HorizontalSelection: integer;
         TextColor,BackColor,GridColor, MinorLineColor: TRGBA;
-         isRedraw, isMarker, isMinorLines: boolean;
+        isRedraw, isMarker, isMinorLines: boolean;
     procedure ClearLines();
     procedure CloneLine();
     procedure DarkColorScheme();
@@ -55,6 +58,7 @@ type
     procedure GrayColorScheme();
     procedure LightColorScheme();
     function HorizontalClickFrac(X: single): single;
+    function HorizontalClickString(X: single): string;
     procedure AddLine(newVals: TFloat32s; newCaption: string; isOverwrite: boolean = false; isOverwriteProtect: boolean = false);
     procedure AddXData(newVals: TFloat32s); //e.g. [0 4 8 12] suggests data evenly spaced one sample every 4 seconds
     function AsText(isSaveXData: boolean = false): TStringList;
@@ -91,6 +95,49 @@ begin
      if (X < mn) or (X > mx) or (mn >= mx) then exit;
      result := (X-mn) / (mx-mn);
 end;
+
+function TGPUGraph.HorizontalClickString(X: single): string;
+var
+  i, ptsPerLine, iClick: integer;
+  frac, xMin, xMax, xClick: single;
+begin
+     result := '';
+     frac := HorizontalClickFrac(X);
+     HorizontalSelection := iClick;
+     if (frac < 0.0) or (frac > 1.0) then exit;
+     if numLines < 1 then exit; //nothing to do
+     ptsPerLine := length(Lines[0].vals);
+     HorizontalSelection := -1;
+     if (ptsPerLine < 2) then exit;
+     if length(XData) <>  ptsPerLine then begin
+        xMin := 0;
+        xMax := ptsPerLine - 1;
+     end else begin
+         xMin := minXData;
+         xMax := maxXData;
+     end;
+     xClick := ((xMax - xMin) * frac) + xMin;
+     if length(XData) <>  ptsPerLine then begin
+        xClick := round(xClick);
+        iClick := round(xClick);
+     end else begin
+         //x values may not be evenly spaced: find sample closest to click
+         iClick := 0;
+         for i := 1 to (ptsPerLine -1) do
+         	if abs(XData[i]-xClick) < abs(XData[iClick]-xClick) then
+               iClick := i;
+         xClick := XData[iClick];
+     end;
+     HorizontalSelection := iClick;
+     //result := format('%f: ', [xClick]);
+
+     result := format('%3.6g: ', [xClick]);
+     for i := 0 to (numLines - 1) do begin
+         result += format('%3.6g ', [ ScaledValue(i, iClick)]);
+     end;
+
+end;
+
 
 procedure TGPUGraph.DrawLines(w,h: integer);
 var
@@ -165,17 +212,21 @@ begin
      vFrac := (gT-gB)/gRange;
      //draw vertical grid
      SelectTicks(xMin, xMax, ticMin, ticStep, ticDecimals);
+
      if (isMinorLines) then begin
+        ticPos := ticMin;
         gpuLines.LineWidth:= gridLineWid * 0.5;
         gpuLines.LineColor := MinorLineColor;//setRGBA(0,0,0,255);
         if (ticStep = 3) or (ticStep = 5) or (ticStep = 7) or (ticStep = 9) then begin
            //rationale if ticStep is 3, minor ticks should be at 1 and 2 not 1.5
            //might add toleratance, e.g. 3.0001 ~= 3
           minorStep := 1/ticStep;
-          ticPos := ticMin + (minorStep * ticStep);
+          if (ticPos-xMin) > minorStep then
+             ticPos -= trunc((ticPos-xMin) / minorStep) * minorStep;
+          ticPos := ticPos + (minorStep * ticStep);
           i := 1;
           while (ticPos <= xMax) do begin
-              pxX := gL + (gR-gL)*(ticPos / xMax);
+              pxX := gL + (gR-gL)*((ticPos - xMin) / (xMax - xMin));
               if (i mod round(ticStep)) <> 0 then
                  gpuLines.AddLine(pxX, gT+lineWid, pxX, gB-lineWid);
               i := i + 1;
@@ -184,9 +235,11 @@ begin
 
 
         end else begin
-          ticPos := ticMin + (0.5 * ticStep);
+          if (ticPos-xMin) > (0.5 * ticStep) then
+             ticPos -= ticStep;
+          ticPos := ticPos + (0.5 * ticStep);
           while (ticPos <= xMax) do begin
-              pxX := gL + (gR-gL)*(ticPos / xMax);
+              pxX := gL + (gR-gL)*((ticPos - xMin) / (xMax - xMin));
               gpuLines.AddLine(pxX, gT+lineWid, pxX, gB-lineWid);
               ticPos := ticPos + ticStep;
           end;
@@ -196,8 +249,9 @@ begin
      gpuLines.LineWidth:= gridLineWid;
      //xMin xMax maxH := (ptsPerLine-1);
      ticPos := ticMin;
+     //writeln(format('!<<<<<<<< %.2g %.2g: %g %g', [xMin,xMax, ticMin, ticStep]));
      while (ticPos <= xMax) do begin
-         pxX := gL + (gR-gL)*(ticPos / xMax);
+         pxX := gL + (gR-gL)*((ticPos - xMin) / (xMax - xMin));
          gpuLines.AddLine(pxX, gT+lineWid, pxX, gB-lineWid);
          St := FloatToStrF(ticPos, ffFixed,7,ticDecimals);
          //St := FloatToStrF(length(XData), ffFixed,7,ticDecimals);
@@ -225,8 +279,6 @@ begin
      ticPos := ticMin;
      while (ticPos <= gMax) do begin
            pxXY.y := gB + ((ticPos-gMin) * vFrac);
-           //pxXYprev.y := pxXY.y;
-           //gpuLines.AddLine(pxXYprev, pxXY);
            gpuLines.AddLine(pxXY.x, pxXY.y, gL-lineWid, pxXY.y);
            St := FloatToStrF(ticPos, ffFixed,7,ticDecimals);
            StWid := gpuTxt.TextWidth(fntScale, St);
@@ -499,6 +551,7 @@ begin
         v := 0;  //e.g. Inf+
      Lines[l].min :=  v;
      Lines[l].max :=  v;
+     Lines[l].minPositive := Infinity;
      sum := 0;
      for i := 0 to (n-1) do begin
          v := newVals[i];
@@ -509,8 +562,12 @@ begin
             Lines[l].max := v;
          if (v < Lines[l].min) then
             Lines[l].min := v;
+         if (v > 0) and (v < Lines[l].minPositive) then
+            Lines[l].minPositive := v;
          sum := sum + v;
      end;
+     if (Lines[l].minPositive > Lines[l].max) then //no positive values!
+     	Lines[l].minPositive := 0.0;
      Lines[l].mean := sum / n;
      Lines[l].caption := newCaption;
      lines[l].color := lineClr(l);
@@ -532,6 +589,7 @@ begin
         if (XData[i] < minXData) then minXData := XData[i];
         if (XData[i] > maxXData) then maxXData := XData[i];
     end;
+    //writeln(format('<<<<<<<< %.2g %.2g', [minXData,maxXData]));
 end;
 
 function TGPUGraph.LoadText(filename: string; isKeepOld: boolean = false): boolean;
@@ -698,6 +756,42 @@ begin
      setlength(captions, 0);
 end;
 
+function SqrtFcn(v: single): single;
+var
+  sgn: single;
+begin
+     sgn := sign(v);
+     result := sqrt(abs(v)) * sgn;
+end;
+
+function logNFcn(v: single): single;
+//https://www.freepascal.org/docs-html/rtl/math/log10.html
+// If x is less than or equal to 0 an 'invalid fpu operation' error will occur.
+//"symlog" is one approach, but requires choosing 'C'
+begin
+     if (v <= 0.0) then exit(0.0); // !!! log(0)
+     result := Lnxp1(v - 1.0) ;
+end;
+
+function log10Fcn(v: single): single;
+//https://www.freepascal.org/docs-html/rtl/math/log10.html
+// If x is less than or equal to 0 an 'invalid fpu operation' error will occur.
+//"symlog" is one approach, but requires choosing 'C'
+begin
+     if (v <= 0.0) then exit(0.0); // !!! log(0)
+     result := Log10(v) ;
+end;
+
+function fcn(v: single; style: integer): single;
+begin
+     case (style) of
+           kStyleSqrt: result := sqrtFcn(v);
+           kStyleLogN: result := logNFcn(v);
+           kStyleLog10: result := log10Fcn(v);
+           else result := v;
+     end;
+end;
+
 function TGPUGraph.ScaledValue(line, pt: integer): single;
 var
    inter, slope: single;
@@ -707,9 +801,7 @@ begin
      if pt >= length(Lines[line].vals) then exit;
      result := Lines[line].vals[pt];
      if Style = kStyleRaw then exit;
-     if (Lines[line].Max = Lines[line].Min) and (Style <> kStyleRaw) then begin
-        exit(0);
-     end;
+     if (Lines[line].Max = Lines[line].Min) then exit(Lines[line].Min);
      case Style of
           kStyleDeMean : inter := -Lines[line].Mean;
           kStyleNormalized : inter := -Lines[line].Min-(0.5 *(Lines[line].Max - Lines[line].Min));
@@ -727,12 +819,12 @@ begin
           end
           else slope := 1;
      end;
-     result := (result+inter)*slope
+     result := fcn((result+inter)*slope, style);
 end;
 
 procedure TGPUGraph.ScaledGlobalMinMax(out mn, mx: single);
 var
-   inter, slope, mni, mxi: single;
+   inter, slope, mni, mxi, val: single;
    line: integer;
 begin
      mn := -1;
@@ -761,8 +853,13 @@ begin
               end
               else slope := 1;
          end;
-         mni := (Lines[line].Min+inter)*slope;
-         mxi := (Lines[line].Max+inter)*slope;
+      	 mni := fcn((Lines[line].Min+inter)*slope, style);
+      	 mxi := fcn((Lines[line].Max+inter)*slope, style);
+         if (Lines[line].MinPositive > 0.0) then begin //e.g. with Log scales, <= 0 is undefined, most extreme value is minimum negative
+         	val := fcn((Lines[line].MinPositive+inter)*slope, style);
+            mxi := max(mxi, val);
+            mni := min(mni, val);
+         end;
          if (line = 0) or (mni < mn) then
             mn := mni;
          if (line = 0) or (mxi > mx) then
@@ -797,8 +894,12 @@ begin
      DefaultFormatSettings.DecimalSeparator := '.';
      for i := 0 to (ptsPerLine - 1) do begin
          s := '';
-         if isSaveXData then
-            s := inttostr(i)+kDelim;
+         if isSaveXData then begin
+            if length(XData) <>  ptsPerLine then
+               s := inttostr(i)+kDelim
+            else
+               s := format('%g', [XData[i]])+kDelim
+         end;
          for j := 0 to (numLines - 1) do begin
              if j <> 0 then
                 s := s + kDelim;

@@ -68,6 +68,7 @@ type
   function prod(v:TVec3i): int64;
   function SetRGBA(r,g,b,a: byte): TRGBA; overload;
   function SetRGBA(v:TVec4): TRGBA; overload;
+  function GetRGBA(v:TRGBA): TVec4;
   function pti(x,y,z: integer): TVec3i; //create integer vector
   procedure SortVec3i(var lo, hi: TVec3i);
   function  loadShaderPrefs(shaderName: string): TShaderPrefs;
@@ -419,6 +420,16 @@ begin
      result.b := round(v.b *255);
      result.a := round(v.a *255);
 end;
+
+function GetRGBA(v:TRGBA): TVec4;
+begin
+     result.r := round(v.r /255.0);
+     result.g := round(v.g /255.0);
+     result.b := round(v.b /255.0);
+     result.a := round(v.a /255.0);
+end;
+
+
 
 end.
 
