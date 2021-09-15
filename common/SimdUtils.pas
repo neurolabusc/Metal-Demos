@@ -423,10 +423,10 @@ end;
 
 function GetRGBA(v:TRGBA): TVec4;
 begin
-     result.r := round(v.r /255.0);
-     result.g := round(v.g /255.0);
-     result.b := round(v.b /255.0);
-     result.a := round(v.a /255.0);
+     result.r := (v.r /255.0);
+     result.g := (v.g /255.0);
+     result.b := (v.b /255.0);
+     result.a := (v.a /255.0);
 end;
 
 
