@@ -201,8 +201,11 @@ end;
     pths.Add('/usr/local/share/');
     pths.Add('/usr/share/');
     nms := TStringList.Create;
-    if (CompareText('MRIcroGL', paramstr(0)) <> 0) then
+    if (CompareText('MRIcroGL', paramstr(0)) <> 0) then begin
        nms.Add(ExtractFileName(paramstr(0)));
+       result := '/usr/share/mricrogl'; //e.g. Debian for either GTK2 or QT5
+       if  DirectoryExists(result) then goto 333;
+    end;
     nms.Add('MRIcroGL');
     exts := TStringList.Create;
     exts.Add('/Resources');
