@@ -127,6 +127,7 @@ begin
   options.pipelineDescriptor.colorAttachmentAtIndex(0).setDestinationRGBBlendFactor(MTLBlendFactorOneMinusSourceAlpha);
   options.pipelineDescriptor.colorAttachmentAtIndex(0).setDestinationAlphaBlendFactor(MTLBlendFactorOneMinusSourceAlpha);
   pipeline := MTLCreatePipeline(options);
+  MTLSetDepthStencil(pipeline, MTLCompareFunctionAlways, true);
 end; //InitShader()
 
 procedure TGPUFont.DrawText(); //call between MTLBeginFrame...MTLDrawIndexed

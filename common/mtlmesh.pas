@@ -50,6 +50,7 @@ type
         function SetMatCap(fnm: string): boolean;
         function MatCapPath(): string;
         {$ENDIF}
+        property nVert: integer read numVert;
         property MeshName: string read fMeshName;
         property Perspective: boolean read fPerspective write fPerspective;
         //{$IFDEF SSAO}

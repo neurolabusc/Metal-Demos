@@ -588,6 +588,100 @@ begin
   end;
 end; //NormalizeMeshSize()
 
+//
+function  getFirstPerpVector(v1: TVec3): TVec3;
+//https://stackoverflow.com/questions/1878257/how-can-i-draw-a-cylinder-that-connects-two-points-in-opengl
+//return a vector that is perpendicular to the first
+begin
+ result := Vec3(0.0,0.0,0.0);
+ if ((v1.x = 0.0) or (v1.y = 0.0) or (v1.z = 0.0)) then begin
+   if (v1.x = 0.0) then
+     result.x := 1.0
+   else if (v1.y = 0.0) then
+     result.y := 1.0
+   else
+     result.z := 1.0;
+ end else begin
+   // If xyz is all set, we set the z coordinate as first and second argument .
+   // As the scalar product must be zero, we add the negated sum of x and y as third argument
+   result.x := v1.z;      //scalp = z*x
+   result.y := v1.z;      //scalp = z*(x+y)
+   result.z := -(v1.x+v1.y); //scalp = z*(x+y)-z*(x+y) = 0
+   // Normalize vector
+   result := result.Normalize;
+ end;
+end;
+
+procedure makeCylinder(radius: single; start, dest: TVec3; var faces: TFaces; var vertices: TVertices; sides: integer = 20); overload;
+//https://stackoverflow.com/questions/1878257/how-can-i-draw-a-cylinder-that-connects-two-points-in-opengl
+{$DEFINE ENDCAPS}
+var
+	v1, v2, v3, pt: TVec3;
+    c, s: single;
+    i, num_v, num_f: integer;
+begin
+    if (sides < 3) then sides := 3; //prism is minimal 3D cylinder
+  	v1 := (dest - start).Normalize; //principle axis of cylinder
+    v2 := getFirstPerpVector(v1); //a unit length vector orthogonal to v1
+    // Get the second perp vector by cross product
+    v3 := (v1.Cross(v2)).Normalize; //a unit length vector orthogonal to v1 and v2
+    num_v := 2 * sides;
+    num_f := 2 * sides;
+    {$IFDEF ENDCAPS}
+    num_f += 2 * (sides - 2); //a prism endcap is one triangle, hexagonal has 4, etc.
+    {$ENDIF}
+    setlength(faces, num_f);
+    setlength(vertices, num_v);
+    for i := 0 to (sides-1) do begin
+      c :=  cos(i/sides * 2 * PI);
+      s :=  sin(i/sides * 2 * PI);
+      pt.x := (radius * (c * v2.x+ s *v3.x));
+      pt.y := (radius * (c * v2.y+ s *v3.y));
+      pt.z := (radius * (c * v2.z+ s *v3.z));
+      vertices[i] := start+pt;
+      vertices[i + sides] := dest+pt;
+      if i < (sides-1) then begin
+        faces[i * 2] := pti( i,  i + 1, i + sides);
+        faces[(i * 2)+1] := pti( i + 1,  i + sides + 1, i + sides);
+      end else begin //final 2 triangles of cylinder share vertices with first triangle (close the loop)
+        faces[i * 2] := pti( i,  0, i + sides);
+        faces[i * 2 + 1] := pti( 0,  0 + sides, i + sides);
+      end;
+      {$IFDEF ENDCAPS}
+      if i < 2 then continue; //a prism endcap is one triangle, hexagonal has 4, etc.
+      faces[(sides*2)+(i-2)] := pti(i, 0, i - 1);
+      faces[(sides*2)+(i-2)+(sides-2)] := pti(i+ sides, 0+ sides, i - 1+ sides);
+      {$ENDIF}
+    end;
+end;
+
+procedure AddCylinder(radius: single; start, dest: TVec3; var faces: TFaces; var vertices: TVertices);
+var
+    f: TFaces;
+    v: TVertices;
+    i, n: integer;
+begin
+	makeCylinder(radius, start, dest, f, v);
+    if length(vertices) > 0 then begin
+    	n := length(vertices);
+    	for i := 0 to (length(f)-1) do
+            f[i] := pti(f[i].x + n, f[i].y + n, f[i].z + n);
+    end;
+    faces := Concat(faces, f);
+    vertices := Concat(vertices, v);
+end;
+
+procedure MakeCrosshair(var faces: TFaces; var vertices: TVertices);
+var
+    radius: single = 0.05;
+    sliceFrac: TVec3; //location of crosshairs, 0..1 in each dimension
+begin
+  sliceFrac := Vec3(0.5, 0.5, 0.5);
+  AddCylinder(radius, Vec3(sliceFrac.x, sliceFrac.y, -0.1), Vec3(sliceFrac.x, sliceFrac.y, 1.1), faces, vertices);
+  AddCylinder(radius, Vec3(sliceFrac.x, -0.1, sliceFrac.z),  Vec3(sliceFrac.x, 1.1, sliceFrac.z), faces, vertices);
+  AddCylinder(radius, Vec3(-0.1, sliceFrac.y, sliceFrac.z),  Vec3(1.1, sliceFrac.y, sliceFrac.z), faces, vertices);
+end;
+
 procedure MakeTrefoil(var faces: TFaces; var vertices: TVertices);
 //http://prideout.net/blog/?p=22
 function EvaluateTrefoil(s, t: single): TPoint3f;
@@ -681,7 +775,7 @@ begin
        LoadPly(Filename, faces, vertices, vertexRGBA);
   end;
   if (length(faces) < 1) or (length(vertices) < 3) then
-      MakeTrefoil(faces, vertices);
+      MakeCrossHair(faces, vertices);//MakeTrefoil(faces, vertices);
   NormalizeMeshSize(vertices);
 end; //LoadMesh()
 
