@@ -612,13 +612,16 @@ begin
  end;
 end;
 
-procedure makeCylinder(radius: single; start, dest: TVec3; var faces: TFaces; var vertices: TVertices; sides: integer = 20); overload;
+procedure makeCylinder(radius: single; start, dest: TVec3; var faces: TFaces; var vertices: TVertices; sides: integer = 8); overload;
 //https://stackoverflow.com/questions/1878257/how-can-i-draw-a-cylinder-that-connects-two-points-in-opengl
 {$DEFINE ENDCAPS}
 var
 	v1, v2, v3, pt: TVec3;
     c, s: single;
-    i, num_v, num_f: integer;
+    i, num_v, num_f, nxt: integer;
+    {$IFDEF ENDCAPS}
+    startPole, destPole: integer;
+    {$ENDIF}
 begin
     if (sides < 3) then sides := 3; //prism is minimal 3D cylinder
   	v1 := (dest - start).Normalize; //principle axis of cylinder
@@ -628,10 +631,17 @@ begin
     num_v := 2 * sides;
     num_f := 2 * sides;
     {$IFDEF ENDCAPS}
-    num_f += 2 * (sides - 2); //a prism endcap is one triangle, hexagonal has 4, etc.
+    num_f += 2 * sides;
+    num_v += 2;
     {$ENDIF}
     setlength(faces, num_f);
     setlength(vertices, num_v);
+    {$IFDEF ENDCAPS}
+    startPole := 2 * sides;
+    destPole := startPole + 1;
+    vertices[startPole] := start; //pole of start
+    vertices[destPole] := dest; //pole of end
+    {$ENDIF}
     for i := 0 to (sides-1) do begin
       c :=  cos(i/sides * 2 * PI);
       s :=  sin(i/sides * 2 * PI);
@@ -640,17 +650,15 @@ begin
       pt.z := (radius * (c * v2.z+ s *v3.z));
       vertices[i] := start+pt;
       vertices[i + sides] := dest+pt;
-      if i < (sides-1) then begin
-        faces[i * 2] := pti( i,  i + 1, i + sides);
-        faces[(i * 2)+1] := pti( i + 1,  i + sides + 1, i + sides);
-      end else begin //final 2 triangles of cylinder share vertices with first triangle (close the loop)
-        faces[i * 2] := pti( i,  0, i + sides);
-        faces[i * 2 + 1] := pti( 0,  0 + sides, i + sides);
-      end;
+      if i < (sides-1) then
+        nxt := i + 1
+      else //final 2 triangles of cylinder share vertices with first triangle (close the loop)
+        nxt := 0;
+      faces[i * 2] := pti( i,  nxt, i + sides);
+      faces[(i * 2)+1] := pti(nxt,  nxt + sides, i + sides);
       {$IFDEF ENDCAPS}
-      if i < 2 then continue; //a prism endcap is one triangle, hexagonal has 4, etc.
-      faces[(sides*2)+(i-2)] := pti(i, 0, i - 1);
-      faces[(sides*2)+(i-2)+(sides-2)] := pti(i+ sides, 0+ sides, i - 1+ sides);
+      faces[(sides*2)+i] := pti(i, startPole, nxt);
+      faces[(sides*2)+i+sides] := pti( destPole, i + sides, nxt + sides);
       {$ENDIF}
     end;
 end;
@@ -673,7 +681,7 @@ end;
 
 procedure MakeCrosshair(var faces: TFaces; var vertices: TVertices);
 var
-    radius: single = 0.05;
+    radius: single = 0.025;
     sliceFrac: TVec3; //location of crosshairs, 0..1 in each dimension
 begin
   sliceFrac := Vec3(0.5, 0.5, 0.5);
